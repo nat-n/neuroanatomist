@@ -9,6 +9,8 @@
 
 <% @meshes.each do |mesh| %>
   <tr>
+    <td><%= mesh.id %></td>
+    <td><%= mesh.meshdata_id %></td>
     <td><%= link_to 'Show', mesh %></td>
     <td><%= link_to 'Edit', edit_mesh_path(mesh) %></td>
     <td><%= link_to 'Destroy', mesh, confirm: 'Are you sure?', method: :delete %></td>
