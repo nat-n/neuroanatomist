@@ -1,0 +1,21 @@
+<h1>Listing meshes</h1>
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @meshes.each do |mesh| %>
+  <tr>
+    <td><%= link_to 'Show', mesh %></td>
+    <td><%= link_to 'Edit', edit_mesh_path(mesh) %></td>
+    <td><%= link_to 'Destroy', mesh, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Mesh', new_mesh_path %>
