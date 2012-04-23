@@ -14,10 +14,10 @@ class MeshesController < ApplicationController
   # GET /meshes/1.json
   def show
     @mesh = Mesh.find(params[:id])
-
+    
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render json: @mesh }
+      format.json #{ render json: @mesh }
     end
   end
 
