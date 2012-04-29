@@ -1,0 +1,41 @@
+<%= form_for(@shape_set) do |f| %>
+  <% if @shape_set.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@shape_set.errors.count, "error") %> prohibited this shape set from being saved:</h2>
+
+      <ul>
+      <% @shape_set.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <%= params %>
+  <% disable_some = params["action"]=="edit" %>
+
+  <div class="field">
+    <%= f.label :subject %><br />
+    <%= f.text_field :subject, :disabled=>disable_some %>
+  </div>
+  <div class="field">
+    <%= f.label :version %><br />
+    <%= f.text_field :version, :disabled=>disable_some %>
+  </div>
+  <div class="field">
+    <%= f.label :change_log %><br />
+    <%= f.text_area :change_log, :size => "33x6", :disabled=>disable_some %>
+  </div>
+  <div class="field">
+    <%= f.label :notes %><br />
+    <%= f.text_area :notes, :size => "33x6" %>
+  </div>
+  <% unless disable_some %>
+  <div class="field">
+    <%= f.label :shape_data_file, "Upload a shape set" %>
+	  <%= f.file_field :shape_data_file %>
+	</div>
+	<% end %>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

@@ -40,6 +40,8 @@ gem 'cancan'
 gem 'paperclip'
 gem 'searcher'
 
+gem 'versionomy'
+
 gem 'jax', '~> 2.0.7'
 gem 'jquery-rails'
 

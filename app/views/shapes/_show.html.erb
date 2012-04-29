@@ -1,0 +1,20 @@
+<p>
+  <b>Volume:</b>
+  <%= @shape.volume_value %>
+</p>
+
+<p>
+  <b>Label:</b>
+  <%= @shape.label %>
+</p>
+
+<p>
+<b>Meshes:</b>
+<ul id='meshes'>
+  <% @shape.meshes.each do |mesh| @mesh = mesh %>
+  <li>
+    <%= render :partial => 'meshes/show' %>
+  </li>
+  <% end %>
+</ul>
+</p>

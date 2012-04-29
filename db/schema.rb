@@ -11,16 +11,36 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120423111009) do
+ActiveRecord::Schema.define(:version => 20120426163106) do
 
   create_table "meshes", :force => true do |t|
+    t.string   "mesh_data_id"
+    t.integer  "back_shape_id"
+    t.integer  "front_shape_id"
+    t.integer  "datasize"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "meshdata_id"
-    t.string   "meshdata_file_name"
-    t.string   "meshdata_content_type"
-    t.integer  "meshdata_file_size"
-    t.datetime "meshdata_updated_at"
+  end
+
+  create_table "shape_sets", :force => true do |t|
+    t.string   "subject"
+    t.string   "version"
+    t.string   "change_log"
+    t.string   "notes"
+    t.integer  "mesh_count"
+    t.integer  "shape_count"
+    t.integer  "datasize"
+    t.string   "data_created_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "shapes", :force => true do |t|
+    t.integer  "volume_value"
+    t.string   "label"
+    t.integer  "shape_set_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end

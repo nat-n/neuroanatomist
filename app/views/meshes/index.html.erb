@@ -2,22 +2,16 @@
 
 <table>
   <tr>
-    <th></th>
-    <th></th>
-    <th></th>
+    <th>Shape set</th>
+    <th>Mesh id</th>
+    <th>Mesh data id</th>
   </tr>
 
-<% @meshes.each do |mesh| %>
+<% @meshes.each do |mesh| @mesh = mesh%>
   <tr>
+    <td><%= (mesh.front_shape or mesh.back_shape).shape_set.title if mesh.front_shape or mesh.back_shape %>&nbsp;</td>
     <td><%= mesh.id %></td>
-    <td><%= mesh.meshdata_id %></td>
-    <td><%= link_to 'Show', mesh %></td>
-    <td><%= link_to 'Edit', edit_mesh_path(mesh) %></td>
-    <td><%= link_to 'Destroy', mesh, confirm: 'Are you sure?', method: :delete %></td>
+    <td><%= mesh.mesh_data_id %></td>
   </tr>
 <% end %>
 </table>
-
-<br />
-
-<%= link_to 'New Mesh', new_mesh_path %>

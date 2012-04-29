@@ -1,0 +1,29 @@
+<% name =  "#{@shape_set.subject} - #{@shape_set.version}"%>
+<% #title(name, "Shape Set") %>
+
+<p id="notice"><%= notice %></p>
+
+<h2><%= name %></h2>
+<p>
+  <b>Changes:</b>
+  <%= @shape_set.change_log %>
+</p>
+<p>
+  <b>Notes:</b>
+  <%= @shape_set.notes %>
+</p>
+
+<p>
+<b>Shapes:</b>
+<ul id='shapes'>
+  <% @shapes.each do |shape| @shape = shape %>
+  <li> <%= link_to shape.id , "" %><br />
+    <%= render :partial => 'shapes/show' %>
+  </li>
+  <% end %>
+</ul>
+</p>
+
+
+<%= link_to 'Edit', edit_shape_set_path(@shape_set) %> |
+<%= link_to 'Back', shape_sets_path %>

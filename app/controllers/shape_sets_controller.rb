@@ -1,0 +1,67 @@
+class ShapeSetsController < ApplicationController
+  before_filter :find_shape_set, :only => [:show, :edit, :update, :destroy]
+  
+  def index
+    @shape_sets = ShapeSet.all
+  end
+  
+  def new
+    @shape_set = ShapeSet.new
+  end
+  
+  def create
+    @shape_data = params[:shape_set].delete(:shape_data_file)
+    @shape_set = ShapeSet.new(params[:shape_set])
+    
+    if @shape_set.validate_and_save @shape_data
+      @shape_set.save_shape_data
+      flash[:notice] = "Shape Set has been created."
+      redirect_to @shape_set
+    else
+      flash[:alert] = "Shape Set has not been created."
+      render :action => "new"
+    end
+  end
+  
+  def show
+    @shapes = @shape_set.shapes
+  end
+  
+  def edit
+  end
+    
+  def update
+    notes = params[:shape_set][:notes]
+    
+    if notes and @shape_set.update_attribute :notes, notes
+      flash[:notice] = "Shape Set has been updated."
+      redirect_to @shape_set
+    else
+      flash[:alert] = "Shape Set has not been updated."
+      render :action => "edit"
+    end
+  end
+  
+  def destroy
+    # delete mesh data from filesystem and the subject folder if this is the only version of this subject
+    if ShapeSet.where("subject == '#{@shape_set.subject}'").length == 1
+      FileUtils.rm_rf @shape_set.data_path[0...-@shape_set.subject.size]
+    else
+      FileUtils.rm_rf @shape_set.data_path
+    end  
+      
+    @shape_set.destroy
+    
+    flash[:notice] = "Shape Set has been deleted."
+    redirect_to shape_sets_path
+  end
+  
+  private
+    def find_shape_set
+      @shape_set = ShapeSet.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+      flash[:alert] = "The shape set you were looking for could not be found."
+      redirect_to shape_sets_path
+    end
+    
+end

@@ -1,8 +1,0 @@
-<% data_dir = "#{Rails.root}/mesh_data/#{@mesh.meshdata_id}" %>
-{
-  "mesh_id"          : "<%= @mesh.meshdata_id %>",
-  "vertex_positions" : <%= File.open("#{data_dir}/vertex_positions", "r").read.split(" ").map{|x| x.to_f}.to_s %>,
-  "vertex_normals"   : <%= File.open("#{data_dir}/vertex_normals", "r").read.split(" ").map{|x| x.to_f}.to_s %>,
-  "faces"            : <%= File.open("#{data_dir}/faces", "r").read.split(" ").map{|x| x.to_f}.to_s %>,
-  "borders"          : <%= raw File.open("#{data_dir}/borders", "r").read %>
-}

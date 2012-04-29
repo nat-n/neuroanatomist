@@ -1,0 +1,23 @@
+<h2>Shape Sets</h2>
+
+<table>
+  <tr>
+    <th>Subject</th>
+    <th>Version</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @shape_sets.each do |shape_set| %>
+  <tr>
+    <td><%= shape_set.subject %></td>
+    <td><%= shape_set.version %></td>
+    <td><%= link_to 'Show', shape_set %></td>
+    <td><%= link_to 'Edit', edit_shape_set_path(shape_set) %></td>
+    <td><%= link_to 'Destroy', shape_set, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<%= link_to "New Shape Set", new_shape_set_path %>
