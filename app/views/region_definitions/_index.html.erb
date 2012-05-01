@@ -1,0 +1,21 @@
+<table border=1>
+  <tr>
+    <th>Shape set</th>
+    <th>Shape set version</th>
+    <th>Number of Shapes</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @region_definitions.each do |region_definition| %>
+  <tr>
+    <td><%= region_definition.shape_set.subject %></td>
+    <td><%= region_definition.shape_set.version %></td>
+    <td><%= region_definition.shapes.size %></td>
+    <td><%= link_to 'Show', region_definition %></td>
+    <td><%= link_to 'Edit', edit_region_definition_path(region_definition) %></td>
+    <td><%= link_to 'Destroy', region_definition, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>

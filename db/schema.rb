@@ -11,13 +11,46 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120426163106) do
+ActiveRecord::Schema.define(:version => 20120430112239) do
 
   create_table "meshes", :force => true do |t|
     t.string   "mesh_data_id"
     t.integer  "back_shape_id"
     t.integer  "front_shape_id"
     t.integer  "datasize"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "region_definitions", :force => true do |t|
+    t.integer  "region_id"
+    t.integer  "shape_set_id"
+    t.boolean  "orphaned"
+    t.string   "notes"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "region_definitions_shapes", :id => false, :force => true do |t|
+    t.integer "region_definition_id"
+    t.integer "shape_id"
+  end
+
+  create_table "region_sets", :force => true do |t|
+    t.string   "name"
+    t.string   "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "region_sets_regions", :id => false, :force => true do |t|
+    t.integer "region_set_id"
+    t.integer "region_id"
+  end
+
+  create_table "regions", :force => true do |t|
+    t.string   "name"
+    t.string   "description"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

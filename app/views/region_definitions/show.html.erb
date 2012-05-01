@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+<p id="alert"><%= alert %></p>
+
+<h2>Definition for Region: <%= @region_definition.region.name %></h2>
+
+<b>Shape set: <%= @region_definition.shape_set.name %></b>
+
+<p>
+  <b>Notes:</b>
+  <%= @region_definition.notes %>
+</p>
+<br>
+
+<p>
+<b>Shapes:</b>
+<ul id='shapes'>
+  <% @region_definition.shapes.each do |shape| @shape = shape %>
+  <li>
+    <%= render :partial => 'shapes/show' %>
+  </li>
+  <% end %>
+</ul>
+</p>
+
+
+<%= link_to 'Back to Region', region_path(@region_definition.region) %> |
+<%= link_to 'Edit this Definition', edit_region_definition_path(@region_definition) %> |
+<%= link_to 'Delete this Definition', @region_definition, confirm: 'Are you sure?', method: :delete %>
+

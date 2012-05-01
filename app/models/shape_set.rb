@@ -1,8 +1,6 @@
 class ShapeSet < ActiveRecord::Base
-  
-  #include ActiveModel::Validations
-  #validates_with ShapeSetValidator
-  
+  has_many    :region_definitions
+  has_many    :regions, :through => :region_definitions
   has_many    :shapes, :dependent => :destroy
   has_many    :meshes, :through => :shapes, :source => :low_meshes
   validates   :subject, :presence => true
@@ -11,11 +9,11 @@ class ShapeSet < ActiveRecord::Base
 
   
   def data_path
-    # should sanitise subject and version to make sure they're path friendly !!! ***
+    # should sanitise subject to make sure they're path friendly !!! ***
     "#{Rails.root}/shape_sets/#{self.subject}/#{self.version}"
   end
   
-  def title
+  def name
     "#{subject} - #{version}"
   end
   

@@ -1,0 +1,43 @@
+<%= form_tag *(params[:action]=="new" ? [region_definitions_path, :method => "post"] : [@region_definition, :method => "put"]) do %>
+<%= hidden_field :region_definition, :region, :value => @region.id %>
+<%= hidden_field :region_definition, :shape_set, :value => @shape_set.id %>
+<% @shape_ids ||= [] %>
+
+  <% if @region_definition.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@region_definition.errors.count, "error") %> prohibited this region definition from being saved:</h2>
+      <ul>
+      <% @region_definition.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  
+  
+  <h4> Shapes </h4>
+  <table>
+    <tr>
+      <th>volume_value</th>
+      <th>label</th>
+      <th>include</th>
+    </tr>
+  <% @shape_set.shapes.each do |shape| %>
+    <tr>
+      <td><%= shape.volume_value %></td>
+      <td><%= label :shapes, "shape_#{shape.id}".to_sym, shape.label %></td>
+      <td><%= check_box :shapes, "shape_#{shape.id}".to_sym, :checked => @shape_ids.include?(shape.id) %></td>
+    </tr>
+  <% end %>
+  </table>
+
+  <div class="field">
+    <%= label :region_definition, :notes %><br />
+    <%= text_area :region_definition, :notes, :size => "33x6" %>
+  </div>
+
+  <div class="actions">
+    <%= submit_tag %>
+  </div>
+  
+<% end %>

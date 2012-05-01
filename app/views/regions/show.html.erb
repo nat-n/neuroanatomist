@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+<p id="alert"><%= alert %></p>
+
+<h2><%= "Region: #{@region.name}" %></h2>
+
+<p>
+  <b>Description:</b>
+  <%= @region.description %>
+</p>
+<br>
+
+<h4>Definitions:</h4>
+
+<%= @region_definitions = @region.region_definitions
+    render :partial => 'region_definitions/index' %>
+
+<br>
+<div>
+  <%= form_tag(new_region_definition_path, :method => "get") do  %>
+  <%= hidden_field_tag(:region, @region.id) %>
+  <%= label_tag :shape_set, "Select a shape set"%>
+  <%= select_tag :shape_set, options_for_select(@free_shape_sets.map {|shape_set| [shape_set.name, shape_set.id]}) %>
+  <%= submit_tag "New Definition" %>
+    
+  <% end %>
+</div>
+
+<%= link_to 'Back to Regions', regions_path %> | 
+<%= link_to 'Edit', edit_region_path(@region) %>

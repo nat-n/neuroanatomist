@@ -1,0 +1,25 @@
+<h2>Regions</h2>
+
+<table border="1">
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Number of Definitions</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @regions.each do |region| %>
+  <tr>
+    <td><%= region.name %></td>
+    <td><%= region.description %></td>
+    <td><%= region.region_definitions.size %></td>
+    <td><%= link_to 'Show', region %></td>
+    <td><%= link_to 'Edit', edit_region_path(region) %></td>
+    <td><%= link_to 'Destroy', region, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<%= link_to "New Region", new_region_path %>

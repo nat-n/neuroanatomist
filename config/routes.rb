@@ -4,6 +4,10 @@ Neuroanatomist::Application.routes.draw do
   resources :shapes
   resources :meshes
   
+  resources :region_sets
+  resources :regions
+  resources :region_definitions
+  
   mount Jax::Engine => "/jax" unless Rails.env == "production"
 
   # The priority is based upon order of creation:
