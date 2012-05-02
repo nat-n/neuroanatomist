@@ -1,0 +1,18 @@
+{
+  "id":"<%= @region.id %>",
+  "name":"<%= @region.name %>",
+  "meshes":[
+    <% @meshes.each do |mesh| %>
+    {
+      "id":"<%= mesh.id %>",
+      "mesh_data_id":"<%= mesh.mesh_data_id %>",
+      "required":<%= required[mesh.id] %><% if required[mesh.id] %>,
+      "vertex_positions":<%= mesh.vertices :json %>,
+      "vertex_normals":<%= mesh.normals :json %>,
+      "faces":<%= mesh.faces :json %>,
+      "borders":<%= mesh.borders :json %>
+      <% end %>
+    }
+    <% end %>
+  ]
+}

@@ -3,6 +3,7 @@ class ShapeSet < ActiveRecord::Base
   has_many    :regions, :through => :region_definitions
   has_many    :shapes, :dependent => :destroy
   has_many    :meshes, :through => :shapes, :source => :low_meshes
+  has_one     :default_region_set_attr, :class_name => 'RegionSet', :foreign_key => 'default_region_set'
   validates   :subject, :presence => true
   validates   :version, :presence => true
   validate    :validate_version
@@ -17,6 +18,34 @@ class ShapeSet < ActiveRecord::Base
     "#{subject} - #{version}"
   end
   
+  def self.default
+    defaults = ShapeSet.where("is_default")
+    case defaults.size
+    when 1
+      return defaults.first
+    when 0
+      return ShapeSet.all.last.make_default! # what else can i DO? also fire off an admin email alert?
+    else
+      return defaults.first.make_default!
+    end
+  end
+  
+  def make_default!
+    ShapeSet.update_all(:is_default => false)
+    self.update_attribute :is_default, true
+    self
+  end
+  
+  def default_region_set
+    return default_region_set_attr if default_region_set_attr.kind_of? RegionSet
+    set_of_all_defined_regions = RegionSet.new
+    set_of_all_defined_regions.regions = RegionDefinition.all_definitions_for_shape_set self
+    return set_of_all_defined_regions
+  end
+  
+  def mesh_ids
+    meshes.map { |mesh| mesh.id }
+  end
   
   def validate_and_save shape_data
 

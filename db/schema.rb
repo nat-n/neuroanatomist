@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120430112239) do
+ActiveRecord::Schema.define(:version => 20120501195159) do
 
   create_table "meshes", :force => true do |t|
     t.string   "mesh_data_id"
@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(:version => 20120430112239) do
     t.string   "description"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "is_default",  :default => false
   end
 
   create_table "region_sets_regions", :id => false, :force => true do |t|
@@ -66,6 +67,8 @@ ActiveRecord::Schema.define(:version => 20120430112239) do
     t.string   "data_created_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "is_default",         :default => false
+    t.integer  "default_region_set"
   end
 
   create_table "shapes", :force => true do |t|

@@ -1,0 +1,12 @@
+{
+  "id":<%= @shape.id %>,
+  "name":"<%= @shape.name %>"
+  <% if [:yes,:partial].include? @cascade %>,
+  "shapes":[
+    <% @shape.meshes.each do |mesh| @mesh = mesh 
+       @included[@mesh.id] = :no if @cascade = :partial %>
+    <%= render :partial => 'mesh/show' %>
+    <% end %>
+  ]
+  <% end %>
+}

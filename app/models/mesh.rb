@@ -7,6 +7,10 @@ class Mesh < ActiveRecord::Base
     "#{@shape_set.data_path}/#{@mesh.mesh_data_id}"
   end
   
+  def name
+    self.mesh_data_id
+  end
+  
   def vertices form=:json
     case form
     when :json  

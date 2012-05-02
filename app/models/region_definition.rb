@@ -6,7 +6,9 @@ class RegionDefinition < ActiveRecord::Base
   validates   :region, :presence => true
   validate    :only_one_definition_per_region, :message => "A region may be defined only once per shape set"
   
-  
+  def self.all_definitions_for_shape_set shape_set
+    RegionDefinitions.where "shape_set_id = ?", shape_set.id
+  end
   
   def only_one_definition_per_region
     existing_definitions = RegionDefinition.where("region_id = #{region.id} and shape_set_id = #{shape_set.id}")

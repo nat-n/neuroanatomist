@@ -1,0 +1,12 @@
+{
+  "id":<%= @region.id %>,
+  "name":"<%= @region.name %>"
+  <% if [:yes,:partial].include? @cascade %>,
+  "shapes":[
+    <% # need to get the right region definition!!!
+    @region.definition_for(@shape_set).shapes.each do |shape| @shape = shape %>
+    <%= render :partial => 'shape/show' %>
+    <% end %>
+  ]
+  <% end %>
+}

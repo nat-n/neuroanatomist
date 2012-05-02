@@ -1,0 +1,32 @@
+<% # @shape_set, @included and @assets should be defined %>
+{
+  <% @assets.each_with_index do |asset, i|
+     case asset[:type] 
+     when :shape_set 
+       @cascade = @asset[:cascade] %>
+  <%= i %> : <%= render :partial => 'shape_sets/show' %>
+  
+  <% when :region_set 
+       @region_set = RegionSet.find asset[:id] 
+       @cascade = @asset[:cascade] %>
+  <%= i %> : <%= render :partial => 'region_sets/show'  %>
+  
+  <% when :region
+       @region = Region.find asset[:id]
+       @cascade = @asset[:cascade] %>
+  <%= i %> : <%= render :partial => 'regions/show'  %>
+
+  <% when :shape
+       @shape = Shape.find asset[:id]
+       @cascade = @asset[:cascade] %>
+  <%= i %> : <%= render :partial => 'shapes/show'  %>
+    
+  <% when :mesh
+       @mesh = Mesh.find asset[:id]
+       @cascade = @asset[:cascade] %>
+  <%= i %> : <%= render :partial => 'meshes/show' %>
+    
+  <% when :error %>
+  <%= i %> : { "type":"error", "message":"<%= asset[:message]%>"}
+  <% end %><%= "," unless i == @assets.size-1 %>
+}

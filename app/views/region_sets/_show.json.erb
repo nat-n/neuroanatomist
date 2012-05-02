@@ -1,0 +1,11 @@
+{
+  "id":<%= @region_set.id %>,
+  "name":"<%= @region_set.name %>"
+  <% if [:yes,:partial].include? @cascade %>,
+  "regions":[
+    <% @region_set.regions.each do |region| @region = region %>
+    <%= render :partial => 'region/show' %>
+    <% end %>
+  ]
+  <% end %>
+}

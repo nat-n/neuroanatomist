@@ -1,7 +1,11 @@
+<% @included ||= nil %>
 {
-  "mesh_id"          : "<%= @mesh.mesh_data_id %>",
-  "vertex_positions" : <%= @mesh.vertices %>,
-  "vertex_normals"   : <%= @mesh.vertex_normals %>,
-  "faces"            : <%= @mesh.faces %>,
-  "borders"          : <%= raw @mesh.borders %>
+  "id":<%= @mesh.id %>,
+  "name":"<%= @mesh.name %>",
+  <% "\"included\": #{@included[@mesh.id].to_s}" if @included %><% if !@included or @included[@mesh.id] == :yes %>,
+  "vertex_positions":<%= @mesh.vertices :json %>,
+  "vertex_normals":<%= @mesh.normals :json %>,
+  "faces":<%= @mesh.faces :json %>,
+  "borders":<%= @mesh.borders :json %>
+  <% @included[@mesh.id] = :elsewhere end %>
 }
