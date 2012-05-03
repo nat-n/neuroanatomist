@@ -3,8 +3,8 @@
   "name":"<%= @region_set.name %>"
   <% if [:yes,:partial].include? @cascade %>,
   "regions":[
-    <% @region_set.regions.each do |region| @region = region %>
-    <%= render :partial => 'region/show' %>
+    <% @region_set.regions.each_with_index do |region, i| @region = region %>
+    <%= render :partial => 'regions/show.json' %><%= "," unless i == @region_set.regions.size-1 %>
     <% end %>
   ]
   <% end %>

@@ -4,7 +4,7 @@ class Mesh < ActiveRecord::Base
   after_save  :save_mesh_data
     
   def data_path
-    "#{@shape_set.data_path}/#{@mesh.mesh_data_id}"
+    "#{front_shape.shape_set.data_path}/#{mesh_data_id}"
   end
   
   def name

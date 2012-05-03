@@ -8,4 +8,8 @@ class Shape < ActiveRecord::Base
     self.low_meshes + self.high_meshes
   end
   
+  def name
+    self.label
+  end
+  
 end

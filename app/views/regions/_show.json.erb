@@ -3,9 +3,9 @@
   "name":"<%= @region.name %>"
   <% if [:yes,:partial].include? @cascade %>,
   "shapes":[
-    <% # need to get the right region definition!!!
-    @region.definition_for(@shape_set).shapes.each do |shape| @shape = shape %>
-    <%= render :partial => 'shape/show' %>
+    <% shapes = @region.definition_for(@shape_set).shapes
+    shapes.each_with_index do |shape| @shape = shape %>
+    <%= render :partial => 'shapes/show.json' %><%= "," unless i == shapes.size-1 %>
     <% end %>
   ]
   <% end %>

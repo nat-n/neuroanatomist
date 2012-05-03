@@ -3,8 +3,8 @@
   "name":"<%= @shape_set.name %>"
   <% if [:yes,:partial].include? @cascade %>,
   "shapes":[
-    <% @shape_set.regions.each do |shape| @shape = shape %>
-    <%= render :partial => 'shape/show' %>
+    <% @shape_set.shapes.each_with_index do |shape, i| @shape = shape %>
+    <%= render :partial => 'shapes/show.json' %><%= "," unless i == @shape_set.shapes.size-1 %>
     <% end %>
   ]
   <% end %>

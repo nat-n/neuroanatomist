@@ -9,10 +9,10 @@ Jax.getGlobal()['Region'] = Jax.Model.create
   cache_region: ->
     
   
-  formulate_region: ()->
+  formulate_region: () ->
     # determine exactly which meshes are required
   
-  compose: (region_def)->
+  compose: (region_def) ->
     # this is where we get down to business
     # a region is defined by a set of shapes to be stitched together into one solid shape
     # though it would be very nice to be able to define subregions which can be picked and manipulated individually!!!

@@ -24,8 +24,23 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     
     
     
+  test_load: () ->
+    test_requests = [{type: "shape_set", id:"default", cascade: "yes"}]
+    this.load 1,
+      {include: [1,2,3], requests: test_requests, cascade: "no"},
+      (data, textStatus, jqXHR) -> 
+        console.log (data)
   
-  
-  load: () ->
-    # takes a hash of loadable items and processes them all, requiring only <= 1 iDB transaction and <=1 AJAX request.
-    # all other loaders use this method!!!
+  load: (shape_set, params, callback) ->
+    url = "<%= "/jaxdata" %>/" + shape_set + "?"   #"
+    if params["include"] and params["include"].length
+      url += "included=" + params["include"]
+    else if params["exclude"] and params["exclude"].length
+      url += "excluded=" + params["exclude"]
+    url += "&requests=" + encodeURIComponent(JSON.stringify(params["requests"]))
+    console.log url
+    $.ajax
+      url: url
+      dataType: 'json'
+      error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: #{textStatus}"
+      success: (data, textStatus, jqXHR) -> callback(data, textStatus, jqXHR)

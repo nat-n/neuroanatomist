@@ -6,6 +6,7 @@ Jax.Controller.create "Scene", ApplicationController,
     present_scene = Scene.find "primary"
     #display present_scene.region_set
     
+    
     for region_def in present_scene.region_set
       new_region = Region.find "standard"
       new_region.compose_region region_def

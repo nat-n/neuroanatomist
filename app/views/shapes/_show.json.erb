@@ -2,10 +2,10 @@
   "id":<%= @shape.id %>,
   "name":"<%= @shape.name %>"
   <% if [:yes,:partial].include? @cascade %>,
-  "shapes":[
-    <% @shape.meshes.each do |mesh| @mesh = mesh 
-       @included[@mesh.id] = :no if @cascade = :partial %>
-    <%= render :partial => 'mesh/show' %>
+  "meshes":[
+    <% @shape.meshes.each_with_index do |mesh, i| @mesh = mesh 
+       @included[@mesh.id] = :no if @cascade == :partial %>
+    <%= render :partial => 'meshes/show.json' %><%= "," unless i == @shape.meshes.size-1 %>
     <% end %>
   ]
   <% end %>
