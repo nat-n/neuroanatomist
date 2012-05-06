@@ -4,17 +4,18 @@ class JaxDataController < ApplicationController
     @assets = []
     
     ## find shape_set
+    shape_set = false
     @shape_set = case params[:shape_set_id]
       when "default"; ShapeSet.default
-      else            ShapeSet.find(params[:shape_set_id]) rescue ShapeSet.default
+      else            shape_set = true and ShapeSet.find(params[:shape_set_id]) rescue (shape_set = false or ShapeSet.default)
     end
     
     
     # to request the shape set, simply exclude the type and id
     
     ## prepare includes array
-    params[:included] = params["included"].split(",").map{|x| x.to_i} rescue []
-    params[:excluded] = params["excluded"].split(",").map{|x| x.to_i} rescue []
+    params[:included] = params["include"].split(",").map{|x| x.to_i} rescue []
+    params[:excluded] = params["exclude"].split(",").map{|x| x.to_i} rescue []
     mesh_ids = (params[:included]+params[:excluded]).map { |id| (@shape_set.mesh_ids.include?(id.to_i) ? id.to_i : nil) }.compact
     @included = (mesh_ids.empty? ? Hash.new {|h,k| h[k]=:yes } : Hash.new {|h,k| h[k]=:no })
 
@@ -23,7 +24,7 @@ class JaxDataController < ApplicationController
     elsif !params[:excluded].empty?
       @shape_set.mesh_ids.each { |mesh_id| @included[mesh_id] = :yes unless mesh_ids.include?(mesh_id) }
     end
-
+        
     ## prepare descriptions of requested assets
     if params[:requests]
       request_types = ["region_set", "region", "shape", "mesh"] # to request a shape_set: exclude type & id and include cascade
@@ -42,11 +43,15 @@ class JaxDataController < ApplicationController
         end
       end
     else
-      # if there are no requests then respond with the default view
-      @region_set = @shape_set.default_region_set
-      @cascade = encode_cascade(request["cascade"])
-      render :action => "defaults.json"
-      return
+      # if there are no requests then respond with the default view or the shape_set if specified
+      if not shape_set
+        @region_set = @shape_set.default_region_set
+        @cascade = encode_cascade(request["cascade"])
+        render :action => "defaults.json"
+        return
+      else
+        @assets << describe_shape_set(request)
+      end
     end
     
     render :action => "response.json"
