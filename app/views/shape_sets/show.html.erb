@@ -17,7 +17,7 @@
 <b>Shapes:</b>
 <ul id='shapes'>
   <% @shapes.each do |shape| @shape = shape %>
-  <li> <%= link_to shape.id , "" %><br />
+  <li>
     <%= render :partial => 'shapes/show' %>
   </li>
   <% end %>

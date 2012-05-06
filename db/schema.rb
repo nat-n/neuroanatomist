@@ -67,8 +67,8 @@ ActiveRecord::Schema.define(:version => 20120501195159) do
     t.string   "data_created_at"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "is_default",         :default => false
-    t.integer  "default_region_set"
+    t.boolean  "is_default",            :default => false
+    t.integer  "default_region_set_id"
   end
 
   create_table "shapes", :force => true do |t|

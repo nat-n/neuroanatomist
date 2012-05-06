@@ -1,10 +1,12 @@
 {
   "id":<%= @region.id %>,
   "name":"<%= @region.name %>"
-  <% if [:yes,:partial].include? @cascade %>,
+  <% if [:yes,:partial].include? @cascade 
+      @region_definition = @region.definition_for(@shape_set)
+      @region_definition.redundant_meshes.each {|m| @included[@mesh.id] = :redundant } %>,
   "shapes":[
-    <% shapes = @region.definition_for(@shape_set).shapes
-    shapes.each_with_index do |shape| @shape = shape %>
+    <% shapes = @region_definition.shapes
+    shapes.each_with_index do |shape, i| @shape = shape %>
     <%= render :partial => 'shapes/show.json' %><%= "," unless i == shapes.size-1 %>
     <% end %>
   ]

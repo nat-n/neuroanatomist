@@ -3,7 +3,7 @@ class CreateRegionDefinitions < ActiveRecord::Migration
     create_table :region_definitions do |t|
       t.references  :region
       t.references  :shape_set
-      t.boolean     :orphaned
+      t.boolean     :orphaned, :default => false
       t.string      :notes
       t.timestamps
     end

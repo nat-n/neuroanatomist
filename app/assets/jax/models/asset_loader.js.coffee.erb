@@ -32,15 +32,15 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         console.log (data)
   
   load: (shape_set, params, callback) ->
-    url = "<%= "/jaxdata" %>/" + shape_set + "?"   #"
+    url = @jax_data_path + "/" + shape_set + "?"   #"
     if params["include"] and params["include"].length
       url += "included=" + params["include"]
     else if params["exclude"] and params["exclude"].length
       url += "excluded=" + params["exclude"]
-    url += "&requests=" + encodeURIComponent(JSON.stringify(params["requests"]))
-    console.log url
+    console.log "requests=" + encodeURIComponent(JSON.stringify(params["requests"]))
     $.ajax
       url: url
+      data: "requests=" + encodeURIComponent(JSON.stringify(params["requests"]))
       dataType: 'json'
-      error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: #{textStatus}"
+      error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: " + textStatus
       success: (data, textStatus, jqXHR) -> callback(data, textStatus, jqXHR)

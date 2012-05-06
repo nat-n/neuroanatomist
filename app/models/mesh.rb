@@ -1,14 +1,18 @@
 class Mesh < ActiveRecord::Base
-  belongs_to  :back_shape, :class_name => "Shape", :foreign_key => 'back_shape_id'
-  belongs_to  :front_shape, :class_name => "Shape", :foreign_key => 'front_shape_id'
+  belongs_to  :front_shape, :class_name => "Shape", :foreign_key => 'back_shape_id'
+  belongs_to  :back_shape, :class_name => "Shape", :foreign_key => 'front_shape_id'
   after_save  :save_mesh_data
     
   def data_path
-    "#{front_shape.shape_set.data_path}/#{mesh_data_id}"
+    "#{shapes.first.shape_set.data_path}/#{mesh_data_id}"
   end
   
   def name
     self.mesh_data_id
+  end
+  
+  def shapes
+    [front_shape, back_shape].compact
   end
   
   def vertices form=:json
@@ -56,8 +60,8 @@ class Mesh < ActiveRecord::Base
     @new_params = { :mesh_data_id => @mesh_data["name"] }
     
     shape_ids = @mesh_data["name"].split("-").map { |x| x.to_i }
-    @new_params[:back_shape_id] = Shape.where("shape_set_id = #{@shape_set.id} and volume_value = #{shape_ids[0]}").first.id unless shape_ids[0] == 0
-    @new_params[:front_shape_id] = Shape.where("shape_set_id = #{@shape_set.id} and volume_value = #{shape_ids[1]}").first.id
+    @new_params[:front_shape_id] = Shape.where("shape_set_id = #{@shape_set.id} and volume_value = #{shape_ids[0]}").first.id unless shape_ids[0] == 0
+    @new_params[:back_shape_id] = Shape.where("shape_set_id = #{@shape_set.id} and volume_value = #{shape_ids[1]}").first.id
      
     mesh_data = {}    
     mesh_data[:vertex_positions] = @mesh_data["vertex_positions"].join(",")

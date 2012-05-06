@@ -9,7 +9,7 @@
 
 <% @meshes.each do |mesh| @mesh = mesh%>
   <tr>
-    <td><%= (mesh.front_shape or mesh.back_shape).shape_set.name if mesh.front_shape or mesh.back_shape %>&nbsp;</td>
+    <td><%= (mesh.back_shape or mesh.front_shape).shape_set.name if mesh.back_shape or mesh.front_shape %>&nbsp;</td>
     <td><%= mesh.id %></td>
     <td><%= mesh.mesh_data_id %></td>
   </tr>

@@ -2,12 +2,15 @@ class JaxDataController < ApplicationController
   
   def fetch    
     @assets = []
-    #throw JSON.parse(params[:requests])
+    
     ## find shape_set
     @shape_set = case params[:shape_set_id]
       when "default"; ShapeSet.default
-      else            ShapeSet.find(request["id"]) rescue ShapeSet.default
+      else            ShapeSet.find(params[:shape_set_id]) rescue ShapeSet.default
     end
+    
+    
+    # to request the shape set, simply exclude the type and id
     
     ## prepare includes array
     params[:included] = params["included"].split(",").map{|x| x.to_i} rescue []
@@ -21,19 +24,30 @@ class JaxDataController < ApplicationController
       @shape_set.mesh_ids.each { |mesh_id| @included[mesh_id] = :yes unless mesh_ids.include?(mesh_id) }
     end
 
-    ## prepare requested assets
-    request_types = ["shape_set", "region_set", "region", "shape", "mesh"]
-    required_feilds = ["type", "id"] # optional: "cascade", "included", "excluded"
-    
-    JSON.parse(params[:requests]).each do |request|
-      if !(required_feilds-request.keys).empty?
-        @assets << { :type => :error, :message => "invalid request, missing required feilds: #{required_feilds-request.keys}" }
-      elsif request_types.include?(@type = request.delete("type"))
-        @assets << describe_asset(request)
-      else
-        @assets << { :type => :error, :message => "unknown request type: #{@type}" }
+    ## prepare descriptions of requested assets
+    if params[:requests]
+      request_types = ["region_set", "region", "shape", "mesh"] # to request a shape_set: exclude type & id and include cascade
+      required_feilds = ["type", "id"] # optional: "cascade", "included", "excluded"
+      
+      JSON.parse(params[:requests]).each do |request|
+        missing_required_feilds = !(required_feilds-request.keys).empty?
+        if missing_required_feilds and request["cascade"]
+          @assets << describe_shape_set(request)
+        elsif missing_required_feilds
+          @assets << describe_error("invalid request, missing required feilds: #{required_feilds-request.keys}")
+        elsif request_types.include?(@type = request.delete("type"))
+          @assets << describe_asset(request)
+        else
+          @assets << describe_error("unknown request type: #{@type}")
+        end
       end
-    end if params[:requests]
+    else
+      # if there are no requests then respond with the default view
+      @region_set = @shape_set.default_region_set
+      @cascade = encode_cascade(request["cascade"])
+      render :action => "defaults.json"
+      return
+    end
     
     render :action => "response.json"
   end
@@ -43,8 +57,8 @@ class JaxDataController < ApplicationController
       new_asset = { :type => @type.to_sym }
       
       case new_asset[:type]
-      when :shape_set
-        new_asset[:id] = @shape_set.id
+      #when :shape_set
+      #  new_asset[:id] = @shape_set.id
       when :region_set
         new_asset[:id] = RegionSet.find request["id"] rescue RegionSet.default
       when :region
@@ -55,13 +69,25 @@ class JaxDataController < ApplicationController
         new_asset[:id] = Mesh.find request["id"] rescue return { :type => :error, :message => "Mesh not found with id: #{request["id"]}" }
       end
       
-      new_asset[:cascade] = case request["cascade"]
+      new_asset[:cascade] = encode_cascade request["cascade"]
+      
+      return new_asset
+    end
+    
+    def describe_error error_string
+      { :type => :error, :message => error_string }
+    end
+    
+    def describe_shape_set request
+      { :type => :shape_set, :id => @shape_set, :cascade => encode_cascade(request["cascade"]) }
+    end
+    
+    def encode_cascade cascade
+      case cascade
         when "yes";     :yes
         when "partial"; :partial
         else            :no
       end
-      
-      return new_asset
     end
     
 end

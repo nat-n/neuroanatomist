@@ -3,8 +3,10 @@ class Region < ActiveRecord::Base
   has_many :region_definitions
   has_many :shape_sets, :through => :region_definitions
   
+  alias :definitions :region_definitions
+    
   def definition_for shape_set
-    (definitions = region_definitions.where("shape_set = ?", shape_set.id)).empty? ? false : definitions
+    (definitions = region_definitions.select{ |x| x.shape_set_id == shape_set.id }).empty? ? false : definitions[0]
   end
-  
+    
 end

@@ -15,6 +15,7 @@ class ShapeSetsController < ApplicationController
     
     if @shape_set.validate_and_save @shape_data
       @shape_set.save_shape_data
+      @shape_set.copy_region_definitons_from @shape_set.previous_version rescue nil
       flash[:notice] = "Shape Set has been created."
       redirect_to @shape_set
     else
