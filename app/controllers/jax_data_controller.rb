@@ -10,9 +10,6 @@ class JaxDataController < ApplicationController
       else            shape_set = true and ShapeSet.find(params[:shape_set_id]) rescue (shape_set = false or ShapeSet.default)
     end
     
-    
-    # to request the shape set, simply exclude the type and id
-    
     ## prepare includes array
     params[:included] = params["include"].split(",").map{|x| x.to_i} rescue []
     params[:excluded] = params["exclude"].split(",").map{|x| x.to_i} rescue []

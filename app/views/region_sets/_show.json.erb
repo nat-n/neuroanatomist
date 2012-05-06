@@ -1,5 +1,5 @@
 {
-  "id":<%= @region_set.id %>,
+  "id":<%= @region_set.id or "null" %>,
   "name":"<%= @region_set.name %>"
   <% if [:yes,:partial].include? @cascade %>,
   "regions":[
