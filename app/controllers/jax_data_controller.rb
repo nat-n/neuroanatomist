@@ -62,17 +62,16 @@ class JaxDataController < ApplicationController
       #when :shape_set
       #  new_asset[:id] = @shape_set.id
       when :region_set
-        new_asset[:id] = RegionSet.find request["id"] rescue RegionSet.default
+        new_asset[:object] = (RegionSet.find request["id"] rescue @shape_set.default_region_set)
       when :region
-        new_asset[:id] = Region.find request["id"] rescue return { :type => :error, :message => "Region not found with id: #{request["id"]}" }
+        new_asset[:object] = Region.find request["id"] rescue return { :type => :error, :message => "Region not found with id: #{request["id"]}" }
       when :shape
-        new_asset[:id] = Shape.find request["id"] rescue return { :type => :error, :message => "Shape not found with id: #{request["id"]}" }
+        new_asset[:object] = Shape.find request["id"] rescue return { :type => :error, :message => "Shape not found with id: #{request["id"]}" }
       when :mesh
-        new_asset[:id] = Mesh.find request["id"] rescue return { :type => :error, :message => "Mesh not found with id: #{request["id"]}" }
+        new_asset[:object] = Mesh.find request["id"] rescue return { :type => :error, :message => "Mesh not found with id: #{request["id"]}" }
       end
       
       new_asset[:cascade] = encode_cascade request["cascade"]
-      
       return new_asset
     end
     

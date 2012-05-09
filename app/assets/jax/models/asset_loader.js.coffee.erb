@@ -4,25 +4,36 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     # particularly in service of scene and region
     # also responsible for local caching of assets
     # can bundle assets into a single request to the server to reduce overhead
-    
-    
-    
-  load_shape_set: ->
-    # checks for more recent versions of the shape_set
-    # retrieves shapeset.index
-    #   this includes the meta_data, and graph of a shape set.
-    # also retrieves meshes of the the default region_set of the shape_set, which is specified in the metadata
+    window.JAS = {} # create jax asset store
     
   
-  load_meshes: (assets) ->
-    
-    
-  load_regions: (assets) ->
-    # there is a large index of regions on the server
-    # user creation of regions would be a nice feature, they can then be uploaded and given a universal region id
-    
+  region_set2region_descs: (json_data) ->
+    regions = []
+    meshes = {}
+    console.log "-"
+    for region in json_data["regions"]
+      new_region = []
+      shape_vids = (shape["volume_value"] for shape in region["shapes"])
+      for shape in region["shapes"]
+        for mesh in shape["meshes"]
+          bf = mesh["name"].split("-")
+          if (bf[0] in shape_vids) or (bf[1] in shape_vids)
+            mesh_id = parseInt(mesh["id"])
+            meshes[mesh_id] = mesh if mesh["included"] == "yes"
+            new_region.push mesh_id
+      regions.push new_region
+    ((meshes[mesh_id] for mesh_id in region) for region in regions)
   
-  
+  fetch_default_region_set: (callback, excludes) ->
+    params = 
+      excludes: excludes
+      requests: [
+        type:"region_set"
+        id:"default"
+        cascade:"yes"
+      ]
+    this.fetch params, (data, textStatus, jqXHR) -> callback(data[0], textStatus, jqXHR)
+      
   test_fetch: () ->
     test_fetch_params = 0#{shape_set:4, exclude:[13,14], requests: [{type:"shape",id:1,cascade:"yes"}]}
     this.fetch test_fetch_params,

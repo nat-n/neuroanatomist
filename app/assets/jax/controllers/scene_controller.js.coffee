@@ -1,24 +1,27 @@
 
 Jax.Controller.create "Scene", ApplicationController,
   index: ->
-    # initialise user_interface model
-    # initialise scene model
-    present_scene = Scene.find "primary"
-    #display present_scene.region_set
+    loader = AssetLoader.find "standard"
+    scene = Scene.find "primary"
+    
+    params = 
+      requests: [
+        type:"region"
+        id:"3"
+        cascade:"yes" ]
+    loader.fetch params, (data, textStatus, jqXHR) =>
+      new_region = Region.find("standard")
+      new_region.compose(data[0])
+      @world.addObject new_region
+    
+    teapot = new Jax.Model
+      position: [0, 0, -5]
+      mesh: new Jax.Mesh.Teapot
+
+    @world.addObject teapot
+    @player.lantern = LightSource.find "headlamp"
+    @world.addLightSource @player.lantern
+    @player.camera.setPosition  [175.1494,87.0477,39.7259]
     
     
-    for region_def in present_scene.region_set
-      new_region = Region.find "standard"
-      new_region.compose_region region_def
-      @world.addObject new_region
-  
-  
-  
-  display: (region_set) ->
-    # region is a definition of a composite-mesh, it specifies a set of shapes to be joined.
-    # a region set is constrained simply in that no two regions may share mesh primatives (this might need rethinking)
-    for region_def in region_set
-      new_region = Region.find "standard"
-      new_region.compose_region region_def
-      @world.addObject new_region
-  
+  helpers: -> [ UserMovementHelper ]
