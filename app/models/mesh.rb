@@ -51,6 +51,24 @@ class Mesh < ActiveRecord::Base
     end
   end
   
+  def to_obj
+    vertices  = vertices(:data)
+    normals   = normals(:data)
+    faces     = faces(:data)
+    obj_string = "# #{name}\n"
+    
+    0.upto(vertices.size/3-1) do |vi|
+      obj_string << "v #{vertices[vi*3]} #{vertices[vi*3+1]} #{vertices[vi*3+2]}\n"
+      obj_string << "vn #{normals[vi*3]} #{normals[vi*3+1]} #{normals[vi*3+2]}\n"
+    end
+    
+    faces.each_slice(3) do |i1,i2,i3|
+      obj_string << "f #{i1+1} #{i2+1} #{i3+1}\n"
+    end
+    
+    obj_string
+  end
+  
   def validate_and_save mesh_data, shape_set
     # should have some form of validation of mesh data, i.e. catch errors before they become webGL errors
     

@@ -9,4 +9,11 @@ class MeshesController < ApplicationController
     end
   end
   
+  def show
+    if (params["format"] == "obj" rescue false)
+      @mesh = Mesh.find params[:id]
+      render :text => @mesh.to_obj, :layout  => nil
+      return true
+    end
+  end
 end

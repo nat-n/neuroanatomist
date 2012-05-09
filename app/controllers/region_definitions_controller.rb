@@ -1,3 +1,8 @@
+ActionController.add_renderer :obj do |mesh, options|
+ #self.content_type ||= Mime::text
+ self.response_body = json
+end
+
 class RegionDefinitionsController < ApplicationController
   before_filter :find_region_definition, :only => [:show, :edit, :update, :destroy]
   before_filter :validate_region_and_shape_set, :only => [:create]
@@ -47,6 +52,11 @@ class RegionDefinitionsController < ApplicationController
   end
   
   def show
+    if (params["format"] == "obj" rescue false)
+      @mesh = RegionDefinition.find params[:id]
+      render :text => @mesh.to_obj, :layout  => nil
+      return true
+    end
   end
   
   def edit
