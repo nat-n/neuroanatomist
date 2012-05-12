@@ -2,29 +2,29 @@ shadowcaster: true
 
 enabled: true
 
-position:
-  x: 0
-  y: 0
+direction:
+  x: 0.01
+  y: -1
   z: 0
 
-type: POINT_LIGHT
+type: DIRECTIONAL_LIGHT
 
 attenuation:
-  constant: 0.0
-  linear: 0.1
-  quadratic: 0.0
+  constant: 0.9
+  linear: 1.0
+  quadratic: 0.9
 
 color:
   ambient:
-    red: 0.6
-    green: 0.6
-    blue: 0.6
+    red: 0.3
+    green: 0.3
+    blue: 0.3
     alpha: 1
 
   diffuse:
-    red: 1.0
-    green: 1.0
-    blue: 1.0
+    red: 0.3
+    green: 0.3
+    blue: 0.3
     alpha: 1.0
 
   specular:

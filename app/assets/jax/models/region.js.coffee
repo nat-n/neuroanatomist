@@ -31,6 +31,7 @@ Jax.getGlobal()['Region'] = Jax.Model.create
   compose: (region_def) ->
     model_data = null
     @mesh = new Jax.Mesh
+      material: "scene"
       init: (vertices, colors, texCoords, normals, indices) ->
         if model_data
           vertices.push datum for datum in model_data["vertex_positions"]
@@ -50,12 +51,14 @@ Jax.getGlobal()['Region'] = Jax.Model.create
       not((fb[0] in shape_vvs) and (fb[1] in shape_vvs))
     meshes = (mesh for mesh in meshes when mesh_is_required(mesh,meshes))
     
+    # ensure normals face outwards
+    for mesh in meshes
+      if mesh["name"].split("-")[0] in shape_vvs
+        mesh["vertex_normals"] = (-vn for vn in mesh["vertex_normals"])
+    
     # compose mesh and update
     model_data = meshes.pop()
     for mesh in meshes
-      console.log model_data.vertex_positions.length
-      console.log mesh.vertex_positions.length
-      console.log "-"
       model_data = this.stitch(model_data, mesh)
     @mesh.update model_data
   

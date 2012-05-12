@@ -4,24 +4,35 @@ Jax.Controller.create "Scene", ApplicationController,
     loader = AssetLoader.find "standard"
     scene = Scene.find "primary"
     
-    params = 
+    params =
+      shape_set: 14
       requests: [
         type:"region"
-        id:"3"
+        id: 6
         cascade:"yes" ]
     loader.fetch params, (data, textStatus, jqXHR) =>
       new_region = Region.find("standard")
       new_region.compose(data[0])
       @world.addObject new_region
     
-    teapot = new Jax.Model
-      position: [0, 0, -5]
-      mesh: new Jax.Mesh.Teapot
+    teapot = Teapot.find "reference"
 
     @world.addObject teapot
-    @player.lantern = LightSource.find "headlamp"
+    @player.lantern = LightSource.find "floodlight"
     @world.addLightSource @player.lantern
-    @player.camera.setPosition  [175.1494,87.0477,39.7259]
     
     
-  helpers: -> [ UserMovementHelper ]
+    #@player.sun = LightSource.find "floodlight"
+    #@player.sun.torus = new Jax.Model
+    #  position: [0, 5, 0]
+    #  mesh: new Jax.Mesh.Torus
+    #@world.addObject @player.sun.torus
+    
+    #console.log @player.sun.camera
+    
+    #@world.addLightSource @player.lantern
+    #@world.addLightSource @player.sun
+    
+  helpers: -> [ ObjectMovementHelper ]
+  
+  

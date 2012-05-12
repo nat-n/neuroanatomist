@@ -3,7 +3,7 @@
   "name":"<%= @region.name %>"
   <% if [:yes,:partial].include? @cascade 
       @region_definition = @region.definition_for(@shape_set)
-      @region_definition.redundant_meshes.each {|m| @included[@mesh.id] = :redundant } %>,
+      @region_definition.redundant_meshes.each {|m| @included[m.id] = :redundant } %>,
   "shapes":[
     <% shapes = @region_definition.shapes
     shapes.each_with_index do |shape, i| @shape = shape %>
