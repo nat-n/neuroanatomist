@@ -6,7 +6,7 @@ min_d = 15
 max_d = 40
 half_pi = Math.PI/2
 
-prev_picked = picked = null
+picked = {mesh: {}}
 
 Jax.getGlobal().ObjectMovementHelper = Jax.Helper.create
   key_pressed: (event) ->
@@ -17,13 +17,11 @@ Jax.getGlobal().ObjectMovementHelper = Jax.Helper.create
     d = max_d if d > max_d
   
   mouse_moved: (event) ->
-    picked = @world.pick(event.offsetX, event.offsetY)
-    if picked and picked != prev_picked
+    if picked?
+      picked.mesh.material = "scene"
+    picked = @world.pick(event.x, event.y)
+    if picked
       picked.mesh.material = "teapot"
-      prev_picked = picked
-    else if prev_picked
-      prev_picked.mesh.material = "scene"
-      prev_picked = null
     
   mouse_dragged: (event) ->
     a += 0.02 * -event.diffx
@@ -38,4 +36,3 @@ Jax.getGlobal().ObjectMovementHelper = Jax.Helper.create
     @player.camera.lookAt c, [x,y,z]
     @player.lantern.camera.lookAt c, [x,y+1,z]
 
-      
