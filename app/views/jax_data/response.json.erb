@@ -2,11 +2,11 @@
 {
   <% @assets.each_with_index do |asset, i| @asset = asset
       case asset[:type] 
-      when :shape_set 
+      when :shape_set
        @cascade = @asset[:cascade] %>
   "<%= i %>" : <%= render :partial => 'shape_sets/show.json' %>
   
-   <% when :region_set 
+   <% when :region_set
        @region_set = asset[:object] 
        @cascade = @asset[:cascade] %>
   "<%= i %>" : <%= render :partial => 'region_sets/show.json'  %>

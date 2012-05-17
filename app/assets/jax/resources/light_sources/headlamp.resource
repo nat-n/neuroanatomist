@@ -10,21 +10,21 @@ position:
 type: POINT_LIGHT
 
 attenuation:
-  constant: 0.0
-  linear: 0.1
-  quadratic: 0.0
+  constant: 0.85
+  linear: 0
+  quadratic: 0
 
 color:
   ambient:
-    red: 0.6
-    green: 0.6
-    blue: 0.6
+    red: 0.4
+    green: 0.4
+    blue: 0.4
     alpha: 1
 
   diffuse:
-    red: 1.0
-    green: 1.0
-    blue: 1.0
+    red: 0.45
+    green: 0.45
+    blue: 0.45
     alpha: 1.0
 
   specular:

@@ -1,38 +1,33 @@
 
 Jax.Controller.create "Scene", ApplicationController,
   index: ->
-    loader = AssetLoader.find "standard"
-    scene = Scene.find "primary"
-    
-    params =
-      shape_set: 14
-      requests: [
-        type:"region"
-        id: 6
-        cascade:"yes" ]
-    loader.fetch params, (data, textStatus, jqXHR) =>
-      new_region = Region.find("standard")
-      new_region.compose(data[0])
-      @world.addObject new_region
-    
-    teapot = Teapot.find "reference"
+    @context.gl.clearColor(0.0, 0.0, 0.0, 0.0)
+    @loader = AssetLoader.find "standard"
+    @scene = Scene.find "primary"
+    @tooltip = Tooltip.find "region"
 
-    @world.addObject teapot
-    @player.lantern = LightSource.find "floodlight"
-    @world.addLightSource @player.lantern
+    @world.addLightSource(@player.lantern = LightSource.find "headlamp")
+    
+    # load a region_set
+    params =
+      shape_set: 15
+      requests: [
+        type:"region_set"
+        id: "3"
+        cascade:"yes" ]
+    @loader.fetch params, (data, textStatus, jqXHR) =>
+      for region_def in data[0].regions
+        this.show_region @scene.new_region(region_def)
+    
+  helpers: -> [ ObjectMovementHelper, PickingHelper ]
+  
+  
+  show_region: (id) ->
+    @world.addObject(@scene.activate_region(id)).id()
+    
+  hide_region: (id) ->
+    @world.removeObject @scene.deactivate_region(id)
     
     
-    #@player.sun = LightSource.find "floodlight"
-    #@player.sun.torus = new Jax.Model
-    #  position: [0, 5, 0]
-    #  mesh: new Jax.Mesh.Torus
-    #@world.addObject @player.sun.torus
-    
-    #console.log @player.sun.camera
-    
-    #@world.addLightSource @player.lantern
-    #@world.addLightSource @player.sun
-    
-  helpers: -> [ ObjectMovementHelper ]
   
   

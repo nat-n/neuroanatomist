@@ -1,36 +1,20 @@
 Jax.getGlobal()['Region'] = Jax.Model.create
   after_initialize: ->
-     
-      
-    
+    @name = "" 
+    @mesh_id = 0
+  
+  id: -> @mesh_id
   
   find: (region_id) ->  
-
     
-  load_a_mesh: () ->
-    model_data = null
-    @mesh = new Jax.Mesh
-      init: (vertices, colors, texCoords, normals, indices) ->
-        if model_data
-          vertices.push datum for datum in model_data["vertex_positions"]
-          normals.push  datum for datum in model_data["vertex_normals"]
-          indices.push  datum for datum in model_data["faces"]
-      update: ((updated_model_data) => model_data = updated_model_data; @mesh.rebuild())
-  
-    loader = AssetLoader.find "standard"
-    params = 
-      requests: [
-        type:"mesh"
-        id:"31"
-        cascade:"yes"
-      ]
-    loader.fetch params, (data, textStatus, jqXHR) => 
-      @mesh.update data[0]
         
   
   compose: (region_def) ->
+    @mesh_id = region_def.id
+    @name = region_def.name
     model_data = null
     @mesh = new Jax.Mesh
+      color: [Math.random(),Math.random(),Math.random(),1]
       material: "scene"
       init: (vertices, colors, texCoords, normals, indices) ->
         if model_data
@@ -46,21 +30,23 @@ Jax.getGlobal()['Region'] = Jax.Model.create
       meshes = meshes.concat (mesh for mesh in more_meshes when mesh.included== "yes")
 
     # filter out internal meshes
-    mesh_is_required = (mesh,meshes) ->
+    meshes = (mesh for mesh in meshes when ((mesh,meshes) ->
       fb = mesh["name"].split("-")
-      not((fb[0] in shape_vvs) and (fb[1] in shape_vvs))
-    meshes = (mesh for mesh in meshes when mesh_is_required(mesh,meshes))
-    
-    # ensure normals face outwards
-    for mesh in meshes
-      if mesh["name"].split("-")[0] in shape_vvs
-        mesh["vertex_normals"] = (-vn for vn in mesh["vertex_normals"])
+      not((fb[0] in shape_vvs) and (fb[1] in shape_vvs)))(mesh,meshes))
     
     # compose mesh and update
-    model_data = meshes.pop()
+    model_data = window.JAS.meshes[meshes.pop().id] unless meshes.length == 0
     for mesh in meshes
+      # find mesh data
+      mesh = window.JAS.meshes[mesh.id]
+      # ensure normals face outwards
+      if mesh["name"].split("-")[0] in shape_vvs
+        mesh["vertex_normals"] = (-vn for vn in mesh["vertex_normals"])
       model_data = this.stitch(model_data, mesh)
+    
     @mesh.update model_data
+    return this
+  
   
   stitch: (model_data, mesh) ->
     # determine shared borders

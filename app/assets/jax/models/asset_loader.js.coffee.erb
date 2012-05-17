@@ -4,8 +4,12 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     # particularly in service of scene and region
     # also responsible for local caching of assets
     # can bundle assets into a single request to the server to reduce overhead
-    window.JAS = {} # create jax asset store
     
+    # create jax asset store
+    # all meshes are stripped out of the loaded asset and stored here by id, where region can find them later
+    window.JAS =
+      meshes: {}
+    console.log window.JAS
   
   region_set2region_descs: (json_data) ->
     regions = []
@@ -57,4 +61,38 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       url: url
       dataType: 'json'
       error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: " + textStatus
-      success: (data, textStatus, jqXHR) -> callback(data, textStatus, jqXHR)
+      success: (data, textStatus, jqXHR) -> 
+        unless "default_shape_set" of data
+          for ri of data
+            if "type" of params.requests[ri]
+              switch params.requests[ri].type
+                when "region_set"                  
+                  for region in data[ri].regions
+                    if "shapes" of region
+                      for shape in region.shapes
+                        if "meshes" of shape
+                          new_meshes_index = []
+                          console.log shape if shape.meshes.length == 0
+                          until shape.meshes.length == 0
+                            mesh = shape.meshes.shift()
+                            new_meshes_index.push
+                              id: mesh.id
+                              name: mesh.name
+                              included: mesh.included
+                            if mesh.included == "yes"
+                              window.JAS.meshes[mesh.id] = mesh
+                          shape.meshes = new_meshes_index
+                when "region"
+                  0
+                when "shape"
+                  0
+                when "mesh"
+                  0
+            else
+              null # it's a shape_set
+        callback(data, textStatus, jqXHR)
+
+
+
+
+

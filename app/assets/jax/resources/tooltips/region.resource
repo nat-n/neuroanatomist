@@ -1,0 +1,5 @@
+ttdiv: "tooltip"
+ttlabel: "ttlabel"
+ttinfo: "ttinfo"
+ttmenu: "ttmenu"
+ttmenuitem: "ttmenuitem"

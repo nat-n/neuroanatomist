@@ -1,8 +1,8 @@
 # ambient component multiplied with the light source's ambient component
 ambient:
-  red:   0.8
-  green: 0.8
-  blue:  0.8
+  red:   1.0
+  green: 1.0
+  blue:  1.0
   alpha: 1.0
 
 # diffuse component multiplied with the light source's diffuse component
@@ -19,7 +19,7 @@ specular:
   blue:  1.0
   alpha: 1.0
 
-shininess: 300
+shininess: 40
 
 layers:
   - type: Lighting
