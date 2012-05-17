@@ -31,4 +31,9 @@ Jax.getGlobal().ObjectMovementHelper = Jax.Helper.create
     @player.camera.lookAt c, [x,y,z]
     @player.lantern.camera.setPosition [x,y,z]
 
-
+  camera_poistion: (ca,ch,cd) ->
+    a = ca if ca
+    h = ch if ch
+    d = cd if cd
+    [a,h,d]
+    
