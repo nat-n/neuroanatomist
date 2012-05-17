@@ -3,7 +3,15 @@ Jax.getGlobal()['Scene'] = Jax.Model.create
     @active_regions = {}
     @inactive_regions = {}
     @newest_region = null
-    
+    @highlighted = null
+  
+  highlight: (region_id) ->
+    if @highlighted
+      @highlighted.mesh.material = @default_material
+      @highlighted = null
+    if region_id
+      @highlighted = @active_regions[region_id]
+      @highlighted.mesh.material = @highlight_material
   
   new_region: (region_def) ->
     @newest_region = Region.find("standard").compose(region_def)

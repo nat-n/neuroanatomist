@@ -21,16 +21,17 @@ Jax.getGlobal().ObjectMovementHelper = Jax.Helper.create
     h += 0.02 * -event.diffy
     h = half_pi  if h > half_pi
     h = -half_pi if h < -half_pi
+    @scene.highlight()
     if @tooltip
-      @tooltip.dragged(event.clientX, event.clientY)
-    
+      @tooltip.mouse_dragged event.pageX, event.pageY, @picked
+  
   update: (timechange) ->
     x = c[0] + d * Math.cos(h) * Math.sin(a)
     y = c[1] + d * Math.sin(h)
     z = c[2] + d * Math.cos(h) * Math.cos(a)
     @player.camera.lookAt c, [x,y,z]
     @player.lantern.camera.setPosition [x,y,z]
-
+  
   camera_poistion: (ca,ch,cd) ->
     a = ca if ca
     h = ch if ch

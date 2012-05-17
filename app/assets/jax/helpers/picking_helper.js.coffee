@@ -1,15 +1,10 @@
 Jax.getGlobal().PickingHelper = Jax.Helper.create
   mouse_moved: (event) ->
-    if @picked?
-      @picked.mesh.material = "scene"
-    @picked = @world.pick(event.x, event.y)
-    if @picked
-      @picked.mesh.material = "bright"
+    picked = @world.pick(event.x, event.y)
+    @scene.highlight(picked and picked.id)
     if @tooltip
-      @tooltip.hovering event.clientX, event.clientY, @picked
-  
-  mouse_clicked: (event) ->
-    @picked = @world.pick(event.x, event.y)
+      @tooltip.mouse_moved event.pageX, event.pageY, picked
+    
+  mouse_released: (event) ->
     if @tooltip
-      @tooltip.region_clicked(event.clientX,event.clientY,@picked)
-  
+      @tooltip.mouse_released event.pageX, event.pageY, @world.pick(event.x, event.y)

@@ -1,103 +1,102 @@
-# user should need to click off a menu to deactivate it once activated !!
-
 Jax.getGlobal()['Tooltip'] = Jax.Model.create
   after_initialize: ->
-    # find or create tooltip, ttlabal, ttinfo and ttmenu
     @hovered_region = null
-    @menu_visible = false
-    
-    @tt = 
-      offsetX: 20
-      offsetY: -35
-      width: 130
-      radius: "14px"
-      opacity: 0.85
-      textsize: "0.95em"
-      textcolor: "#fffeff"
-      labelbg: "url(/assets/ttgradient.png) repeat-x"
-      labelheight: "1.5em"
-      bgcolor: "#0a0a0a"
-      content_padding: "0.15em"
-      menuitemcss: ""
-      menu_items:
-        "About": ()-> alert "tell you more?"
-        "Hide": () -> alert "you can't see me!"
+    @menu = null
       
     @ttdiv   = $("<div></div>").attr('id',@ttdiv).appendTo('body');   
     @ttlabel = $("<div></div>").attr('id',@ttlabel).appendTo(@ttdiv);   
     @ttinfo  = $("<div></div>").attr('id',@ttinfo).appendTo(@ttdiv);   
     @ttmenu  = $("<ol></ol>").attr('id',@ttmenu).appendTo(@ttdiv);   
-    @ttdiv.hide()
-    @ttmenu.hide()
-    @ttdiv.css("opacity", @tt.opacity)
-    @ttdiv.css("font-size", @tt.textsize)
-    @ttdiv.css("color", @tt.textcolor)
+
+    @ttdiv.css
+      "display":        "none"
+      "opacity":        @tt.opacity
+      "font-size":      @tt.textsize
+      "color":          @tt.textcolor
+      "border-radius":  @tt.radius
+      "background":     @tt.bgcolor
+      "min-width":      @tt.minwidth
+      "max-width":      @tt.maxwidth
   	
-    @ttdiv.css("border-radius", @tt.radius)
-    @ttdiv.css("background",    @tt.bgcolor)
-    @ttdiv.css("padding-bottom", @tt.content_padding)
-    @ttdiv.width(@tt.width)   
-  	
-    @ttlabel.css("background", @tt.labelbg)
-    @ttlabel.css("border-radius", @tt.radius)
-    @ttlabel.css("padding", @tt.content_padding)
-    @ttlabel.css("text-align", "center")
-    @ttlabel.height(@tt.labelheight)
-    @ttmenu.css("padding", @tt.content_padding)
-    @ttmenu.css("margin", 0)
-    @ttmenu.css("list-style-type", "none")
-    
-  hovering: (pageX,pageY,region) ->
-    unless @menu_visible
-      if @hovered_region == region
-        this.update_position(pageX,pageY)
-      else if region
-        @hovered_region = region
-        this.update_label()
-        this.update_position(pageX,pageY)
-      else
-        @hovered_region = null
-        this.clear_tooltip()
+    @ttlabel.css
+      "background":     @tt.labelbg
+      "border-radius":  @tt.radius
+      "padding":        @tt.content_padding+","+@tt.content_padding+",0,"+@tt.content_padding
+      "text-align":     "center"
+      "height":         @tt.labelheight
+
+    @ttmenu.css
+      "display":          "none"
+      "list-style-type":  "none"
+      "margin":           0
+      "padding":          @tt.content_padding
+      "padding-bottom":   @tt.content_padding
+      
+  mouse_moved: (pageX,pageY,region) ->
+    unless @menu 
+      this.hover_region(pageX,pageY,region)
   
-  region_clicked: (pageX, pageY, region) ->
-    if @menu_visible
+  mouse_dragged: (pageX,pageY,region) ->
+    unless @dragging
+      this.hover_region()
+    @dragging = true
+   
+  mouse_released: (pageX,pageY,region) ->
+    if @menu
       this.hide_menu(pageX,pageY,region)
     else if region
-      this.hovering(pageX, pageY, region)
       this.show_menu(pageX,pageY,region)
-      
-  dragged: () ->
-    this.hovering(event.clientX,event.clientY)
   
-  update_position: (pageX,pageY) ->
-    @ttdiv.offset({left:pageX+@tt.offsetX,top:pageY+@tt.offsetY});
-    @ttdiv.show()
-
-  clear_tooltip: () ->
+  hover_region: (pageX,pageY,region) ->
+    if region
+      if @hovered_region != region
+        @hovered_region = region
+        this.update_label()
+        @ttdiv.show()
+      @ttdiv.offset
+        left: pageX + @tt.offsetX
+        top:  pageY + @tt.offsetY
+    else
+      this.clear()
+      @hovered_region = null
+    @dragging = false
+  
+  update_label: -> @ttlabel.html(@hovered_region.name)
+  
+  clear: ->
     @ttdiv.hide()
-    @ttlabel.html("")
-    @ttinfo.html("")
-    @ttmenu.html("")
+    @ttmenu.hide()
+    @menu = @hovered_region = null
+    @ttlabel.css
+      "border-bottom-left-radius": @tt.radius
+      "border-bottom-right-radius": @tt.radius
+    @ttlabel.empty()
+    @ttinfo.empty()
+    @ttmenu.empty()
     
-  update_label: ->
-    @ttlabel.html(@hovered_region.name)    
+  show_menu: (pageX,pageY) ->
+    if @hovered_region
+      window.Jax.thisScene.hovered = @hovered_region.id
+      @menu = @tt.menu_items
+      for item of @menu
+        mia = $("<a></a>").attr('href',"#").html(item).attr("style","padding: 5px; color: "+@tt.textcolor+";")
+        mia.click () => @tt.menu_items[item]()
+        $("<li></li>").attr('class',@ttmenuitem).appendTo(@ttmenu).append(mia)
+      $("#"+@ttmenuitem).css(@tt.menuitemcss)
+      @ttmenu.slideDown 400
+      @ttlabel.animate
+        "border-bottom-left-radius": "0px"
+        "border-bottom-right-radius": "0px"    
+    
+  hide_menu: (pageX,pageY,region) ->
+    if @hovered_region == region
+      @ttlabel.animate
+        "border-bottom-left-radius": @tt.radius
+        "border-bottom-right-radius": @tt.radius
+        'fast'
+      @ttmenu.slideUp 400, () => @ttmenu.empty()
+    else
+      this.clear()
+    @menu = null
+    this.hover_region(pageX,pageY,region)
   
-  show_menu: (pageX,pageY,region) ->
-    @menu_visible = true
-    this.update_position(pageX,pageY)
-    for item of @tt.menu_items
-      mia = $("<a></a>").attr('href',"#").html(item).attr("style","padding: 5px; color: "+@tt.textcolor+";")
-      mia.click () => @tt.menu_items[item]()
-      $("<li></li>").attr('class',@ttmenuitem).appendTo(@ttmenu).append(mia)
-    $("#"+@ttmenuitem).css(@tt.menuitemcss)
-    @ttmenu.slideDown 400
-    @ttlabel.animate({"border-bottom-left-radius": "0px"; "border-bottom-right-radius": "0px";})
-    
-      
-  hide_menu: (pageX,pageY, region) ->
-    this.clear_tooltip() unless region
-    @menu_visible = false
-    @ttlabel.animate {"border-bottom-left-radius": @tt.radius; "border-bottom-right-radius": @tt.radius;}, 'fast'
-    @ttmenu.slideUp 400, ()=> @ttmenu.html("")
-    this.update_position(pageX,pageY)
-    

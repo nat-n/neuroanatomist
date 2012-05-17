@@ -1,17 +1,13 @@
 Jax.getGlobal()['Region'] = Jax.Model.create
+  name: "" 
+  id: 0
   after_initialize: ->
-    @name = "" 
-    @mesh_id = 0
   
-  id: -> @mesh_id
-  
-  find: (region_id) ->  
-    
         
   
   compose: (region_def) ->
-    @mesh_id = region_def.id
-    @name = region_def.name
+    this.id = region_def.id
+    this.name = region_def.name
     model_data = null
     @mesh = new Jax.Mesh
       color: [Math.random(),Math.random(),Math.random(),1]
