@@ -27,7 +27,7 @@ Jax.getGlobal()['Region'] = Jax.Model.create
     # construct array of meshes included in this region
     meshes = []
     for more_meshes in ((shape_vvs.push(shape["volume_value"]) and shape["meshes"]) for shape in region_def["shapes"])
-      meshes = meshes.concat (mesh for mesh in more_meshes when mesh.included== "yes")
+      meshes = meshes.concat (mesh for mesh in more_meshes when mesh.included != "no")
 
     # filter out internal meshes
     meshes = (mesh for mesh in meshes when ((mesh,meshes) ->
