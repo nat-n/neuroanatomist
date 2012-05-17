@@ -7,7 +7,13 @@ Jax.getGlobal()['Tooltip'] = Jax.Model.create
     @ttlabel = $("<div></div>").attr('id',@ttlabel).appendTo(@ttdiv);   
     @ttinfo  = $("<div></div>").attr('id',@ttinfo).appendTo(@ttdiv);   
     @ttmenu  = $("<ol></ol>").attr('id',@ttmenu).appendTo(@ttdiv);   
-
+    
+    @menu_items =
+      About: () -> alert "tell you more?" 
+      Hide: () ->
+        window.Jax.context.current_controller.hide_region(window.Jax.context.hovered)
+        window.Jax.context.current_controller.tooltip.clear()
+    
     @ttdiv.css
       "display":        "none"
       "opacity":        @tt.opacity
@@ -76,11 +82,11 @@ Jax.getGlobal()['Tooltip'] = Jax.Model.create
     
   show_menu: (pageX,pageY) ->
     if @hovered_region
-      window.Jax.thisScene.hovered = @hovered_region.id
-      @menu = @tt.menu_items
+      window.Jax.context.hovered = @hovered_region.id
+      @menu = @menu_items
       for item of @menu
         mia = $("<a></a>").attr('href',"#").html(item).attr("style","padding: 5px; color: "+@tt.textcolor+";")
-        mia.click () => @tt.menu_items[item]()
+        mia.click @menu[item]
         $("<li></li>").attr('class',@ttmenuitem).appendTo(@ttmenu).append(mia)
       $("#"+@ttmenuitem).css(@tt.menuitemcss)
       @ttmenu.slideDown 400
@@ -93,7 +99,7 @@ Jax.getGlobal()['Tooltip'] = Jax.Model.create
       @ttlabel.animate
         "border-bottom-left-radius": @tt.radius
         "border-bottom-right-radius": @tt.radius
-        'fast'
+        100
       @ttmenu.slideUp 400, () => @ttmenu.empty()
     else
       this.clear()

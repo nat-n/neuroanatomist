@@ -1,8 +1,8 @@
 Jax.getGlobal()['Region'] = Jax.Model.create
-  name: "" 
-  id: 0
   after_initialize: ->
-  
+    @name = "" 
+    @id   = 0
+    
         
   
   compose: (region_def) ->

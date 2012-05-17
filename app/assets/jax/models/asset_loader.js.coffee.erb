@@ -14,7 +14,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   region_set2region_descs: (json_data) ->
     regions = []
     meshes = {}
-    console.log "-"
     for region in json_data["regions"]
       new_region = []
       shape_vids = (shape["volume_value"] for shape in region["shapes"])
@@ -72,7 +71,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
                       for shape in region.shapes
                         if "meshes" of shape
                           new_meshes_index = []
-                          console.log shape if shape.meshes.length == 0
                           until shape.meshes.length == 0
                             mesh = shape.meshes.shift()
                             new_meshes_index.push

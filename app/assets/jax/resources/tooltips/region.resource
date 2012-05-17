@@ -17,6 +17,3 @@ tt:
   bgcolor: "#0a0a0a"
   content_padding: "0.2em"
   menuitemcss: ""
-  menu_items:
-    "About": () -> alert "tell you more?"
-    "Hide": () => window.Jax.thisScene.hide_region(window.Jax.thisScene.hovered)
