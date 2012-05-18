@@ -37,4 +37,6 @@ Jax.getGlobal().ObjectMovementHelper = Jax.Helper.create
     h = ch if ch
     d = cd if cd
     [a,h,d]
+  
+  animate: (ta,th,td,callback) ->
     

@@ -8,12 +8,13 @@ Jax.getGlobal()['Tooltip'] = Jax.Model.create
     @ttinfo  = $("<div></div>").attr('id',@ttinfo).appendTo(@ttdiv);   
     @ttmenu  = $("<ol></ol>").attr('id',@ttmenu).appendTo(@ttdiv);   
     
+    @ttdiv.hover (e) -> window.Jax.context.current_controller.tooltip.mouse_over_tt(e)
     @menu_items =
-      About: () -> alert "tell you more?" 
       Hide: () ->
         window.Jax.context.current_controller.hide_region(window.Jax.context.hovered)
         window.Jax.context.current_controller.tooltip.clear()
-    
+      About: () -> alert "tell you more?" 
+        
     @ttdiv.css
       "display":        "none"
       "opacity":        @tt.opacity
@@ -21,13 +22,12 @@ Jax.getGlobal()['Tooltip'] = Jax.Model.create
       "color":          @tt.textcolor
       "border-radius":  @tt.radius
       "background":     @tt.bgcolor
-      "min-width":      @tt.minwidth
-      "max-width":      @tt.maxwidth
+      "width":          @tt.width
   	
     @ttlabel.css
       "background":     @tt.labelbg
       "border-radius":  @tt.radius
-      "padding":        @tt.content_padding+","+@tt.content_padding+",0,"+@tt.content_padding
+      "padding":        @tt.small_padding
       "text-align":     "center"
       "height":         @tt.labelheight
 
@@ -35,7 +35,7 @@ Jax.getGlobal()['Tooltip'] = Jax.Model.create
       "display":          "none"
       "list-style-type":  "none"
       "margin":           0
-      "padding":          @tt.content_padding
+      "padding":          0
       "padding-bottom":   @tt.content_padding
       
   mouse_moved: (pageX,pageY,region) ->
@@ -52,6 +52,10 @@ Jax.getGlobal()['Tooltip'] = Jax.Model.create
       this.hide_menu(pageX,pageY,region)
     else if region
       this.show_menu(pageX,pageY,region)
+  
+  mouse_over_tt: (event) ->
+    unless @menu
+      this.hover_region(event.pageX, event.pageY)
   
   hover_region: (pageX,pageY,region) ->
     if region
@@ -85,22 +89,37 @@ Jax.getGlobal()['Tooltip'] = Jax.Model.create
       window.Jax.context.hovered = @hovered_region.id
       @menu = @menu_items
       for item of @menu
-        mia = $("<a></a>").attr('href',"#").html(item).attr("style","padding: 5px; color: "+@tt.textcolor+";")
-        mia.click @menu[item]
-        $("<li></li>").attr('class',@ttmenuitem).appendTo(@ttmenu).append(mia)
-      $("#"+@ttmenuitem).css(@tt.menuitemcss)
-      @ttmenu.slideDown 400
+        $("<li></li>").attr('class',@ttmenuitem).appendTo(@ttmenu).html(item).css
+          "padding":          "0.2em 0.5em"
+          'outer-width':      @tt.width
+          'height':           "1.3em"
+        .hover (-> $(this).css
+            "color":            "#333"
+            "text-shadow":      "1px 2px 1px rgba(9,9,9,0.1)"
+            'background-color': '#AAA'),
+          (-> $(this).css
+            "color":            ""
+            "text-shadow":      ""
+            'background-color': '')
+        .click @menu[item]
+
+      @ttmenu.children().last().css
+        "border-bottom-left-radius": @tt.radius
+        "border-bottom-right-radius": @tt.radius
+      
+      @ttmenu.slideDown 200
       @ttlabel.animate
         "border-bottom-left-radius": "0px"
-        "border-bottom-right-radius": "0px"    
+        "border-bottom-right-radius": "0px"
+        200
     
   hide_menu: (pageX,pageY,region) ->
     if @hovered_region == region
       @ttlabel.animate
         "border-bottom-left-radius": @tt.radius
         "border-bottom-right-radius": @tt.radius
-        100
-      @ttmenu.slideUp 400, () => @ttmenu.empty()
+        200
+      @ttmenu.slideUp 200, () => @ttmenu.empty()
     else
       this.clear()
     @menu = null
