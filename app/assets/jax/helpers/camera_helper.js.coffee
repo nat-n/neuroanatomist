@@ -1,18 +1,16 @@
-# maybe the scene and region models should manage the highlight effect etc 
-
-c = [0,0,0]
-a = 0
-h = 0
-d = 30
+c = [0,0,0]     # Center point
+a = 0           # horizonal/longitudinal Angle of camera position
+h = 0           # vertical/latitudinal Height of the camera position
+d = 30          # Depth/distance of camera from the center point
 d_min   = 15
-d_max   = 33
+d_max   = 330
 d_range = d_max-d_min
-halfpi = Math.PI/2
+halfpi  = Math.PI/2
 twopi   = Math.PI*2
 anim    = false
 
-Jax.getGlobal().ObjectMovementHelper = Jax.Helper.create
-  key_pressed: (event) ->
+Jax.getGlobal().CameraHelper = Jax.Helper.create
+  depth_key: (event) ->
     unless anim
       switch event.keyCode
         when KeyEvent.DOM_VK_W then d -= 1
@@ -20,15 +18,13 @@ Jax.getGlobal().ObjectMovementHelper = Jax.Helper.create
       d = d_min if d < d_min
       d = d_max if d > d_max
   
-  mouse_dragged: (event) ->
+  camera_drag: (event) ->
     unless anim
       a += 0.02 * -event.diffx
       h += 0.02 * -event.diffy
       h = halfpi  if h > halfpi
       h = -halfpi if h < -halfpi
       @scene.highlight()
-      if @tooltip
-        @tooltip.mouse_dragged event.pageX, event.pageY, @picked
     
   camera_position: (ca,ch,cd) -> # expects arguments scaled to 1
     if ca or ca==0

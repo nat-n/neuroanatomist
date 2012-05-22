@@ -20,8 +20,9 @@ Jax.Controller.create "Scene", ApplicationController,
         this.show_region @scene.new_region(region_def)
     
     window.Jax.context = @context
+    window.camera = @player.camera
     
-  helpers: -> [ ObjectMovementHelper, PickingHelper ]
+  helpers: -> [ CameraHelper, CanvasEventRoutingHelper ]
   
   
   show_region: (id) ->
