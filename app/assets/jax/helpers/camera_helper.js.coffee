@@ -3,7 +3,7 @@ a = 0           # horizonal/longitudinal Angle of camera position
 h = 0           # vertical/latitudinal Height of the camera position
 d = 30          # Depth/distance of camera from the center point
 d_min   = 15
-d_max   = 330
+d_max   = 34
 d_range = d_max-d_min
 halfpi  = Math.PI/2
 twopi   = Math.PI*2
@@ -25,7 +25,7 @@ Jax.getGlobal().CameraHelper = Jax.Helper.create
       h = halfpi  if h > halfpi
       h = -halfpi if h < -halfpi
       @scene.highlight()
-    
+        
   camera_position: (ca,ch,cd) -> # expects arguments scaled to 1
     if ca or ca==0
       a = twopi*(ca-Math.floor(ca))
@@ -97,7 +97,8 @@ Jax.getGlobal().CameraHelper = Jax.Helper.create
     z = c[2] + d * Math.cos(h) * Math.cos(a)
     @player.camera.lookAt c, [x,y,z]
     @player.lantern.camera.setPosition [x,y,z]
-    
+    if @labels
+      @labels.camera.lookAt [x,y,z], c
         
       
   

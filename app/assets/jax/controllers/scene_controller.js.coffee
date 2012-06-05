@@ -4,9 +4,12 @@ Jax.Controller.create "Scene", ApplicationController,
     @context.gl.clearColor(0.0, 0.0, 0.0, 0.0)
     @loader = AssetLoader.find "standard"
     @scene = Scene.find "primary"
-    @tooltip = Tooltip.find "region"
+    @tooltip = SVGTooltip.find "region_dark"
+    @labels = LabelRing.find "standard"
     
-    @world.addLightSource(@player.lantern = LightSource.find "headlamp")
+    @world.addObject @labels
+    
+    @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
     # load a region_set
     params =
@@ -22,6 +25,9 @@ Jax.Controller.create "Scene", ApplicationController,
     window.Jax.context = @context
     window.camera = @player.camera
     
+    #this.patch_world()
+    #console.log @world.pickRegionalIndices(0,0,@context.canvas.width,@context.canvas.height)
+    
   helpers: -> [ CameraHelper, CanvasEventRoutingHelper ]
   
   
@@ -32,6 +38,4 @@ Jax.Controller.create "Scene", ApplicationController,
     @world.removeObject @scene.deactivate_region(id)
       
     
-    
-  
   
