@@ -1,13 +1,12 @@
 Jax.getGlobal().ApplicationHelper = Jax.Helper.create
   patch_world: ->
-    Jax.World.prototype.pick_all_visible = () ->
+    Jax.World.prototype.find_region_centers = () ->
       context = this.context
       w = context.canvas.width
       h = context.canvas.height
+      f = 4
+      wf = w*f
       data = new Uint8Array(w*h*4)
-      data.w = w
-      data.h = h
-      data.f = f = 4
       pickBuffer = new Jax.Framebuffer
         width:  w
         height: h
@@ -25,68 +24,81 @@ Jax.getGlobal().ApplicationHelper = Jax.Helper.create
       context.gl.viewport 0, 0, w, h
       context.gl.enable GL_BLEND
       
-      # pick all visible
-      ary = []
-      i = -2
-      while i < data.length
-        i+=4
-        if data[i] > 0
-          index = Jax.Util.decodePickingColor data[i-2], data[i-1], data[i], data[i+1]
-          if index != undefined && ary.indexOf(index) == -1
-            ary.push(index)
+      # find all visible border pixels by region and count total of each colour
+      #regions = {} # should maybe calculate bounding box instead?
+      borders_sites = []
+      for i in [0...data.length] by f
+        gi = i+1
+        #regions[data[gi]] = regions[data[gi]] or 0
+        #regions[data[gi]].total += 1
+        if data[gi] and data[gi-f] != data[gi] or data[gi] != data[gi+wf] && Math.random()<0.5 #is border (top, left side only)
+          quater_i = Math.floor(i/4)
+          borders_sites.push {x:quater_i%w, y:Math.ceil(quater_i/w)} # voronoi diagram is in canvas space
+      
+      V = new Voronoi()
+      bbox = {xl:0, xr:w, yt:0, yb:h}
+      diagram = V.compute(borders_sites, bbox)
+      
+      #debug_paper = Raphael(648,8,w,h)
+      
+      #console.log diagram
+      
+      centers = {}
+      # extract intersection points keeping only the best one for each region
+      for edge in diagram.edges
+        x = edge.va.x
+        y = edge.va.y
+        
+        
+        continue if x == bbox.xl || x == bbox.xr || y == bbox.yt || y == bbox.yb || !edge.lSite 
+        
+        
+        # determine site distance (all sites should be at the same distance)
+        d = Math.sqrt(Math.pow(x-edge.lSite.x,2)+Math.pow(y-edge.lSite.y,2))
+        
+        
+        # determine region (green value) at this point
+        continue unless g = data[Math.floor(y)*w*f + Math.floor(x)*f + 1] # get coords of red
+        
+        
+        #debug_paper.circle(edge.va.x,edge.va.y,d).attr(opacity: 0.3) if d>10
+        #debug_paper.rect(edge.lSite.x-0.5,h-edge.lSite.y-0.5,1,1).attr(opacity: 0.2)
+        
+        continue unless d > 5
+        #debug_paper.path([["M", edge.va.x, h-edge.va.y], ["L", edge.vb.x, h-edge.vb.y]]).attr(opacity: 0.1, fill: "red")
+        
+        centers[g] = centers[g] || {x:x, y:h-y, d:d}
+        if d > centers[g].d
+          centers[g] = {x:x, y:h-y, d:d}
+      
+      for r of centers
+        #debug_paper.circle(centers[r].x,centers[r].y,centers[r].d)
+        centers[r].region = this.getObject(r)
       
       # show pickBuffer
-      unless document.getElementById("debug_canvas")
-        $('#content').append($('<canvas id="debug_canvas", width="'+w+'", height="'+h+'"></canvas>'))
-      debug_context = document.getElementById("debug_canvas").getContext('2d')
-      imagedata = debug_context.getImageData 0, 0, w, h
-      
-      # data needs to be flipped vertically as it's loaded into imagedata
-      bytesPerLine = w*4
-      dr = data.length
-      for r in [0...data.length] by bytesPerLine
-        dr -= bytesPerLine
-        for c in [0...w*4] by 4
-          i = r+c
-          di = dr+c
-          imagedata.data[i]   = data[di]
-          imagedata.data[i+1] = data[di+1]
-          imagedata.data[i+2] = data[di+2]
-          imagedata.data[i+3] = data[di+3]
-          
-      debug_context.putImageData imagedata, 0, 0
-      
-      # attempt to find region centers by transformation
-      for i in ary
-        c = this.region_center context.world.getObject(i)
-        console.log c
-        debug_context.fillRect c[0]+w/2, c[1]+h/2, 1, 1
-      
-      return ary
-    
-
-
-    Jax.World.prototype.region_center = (model) ->
-      center = new Float32Array(4)
-      center[3] = 1 # initialize to [0, 0, 0, 1]
-            
-      bounds = model.mesh.getBounds()
-      center[0] = (bounds.left + bounds.right) / 2
-      center[1] = (bounds.top + bounds.bottom) / 2
-      center[2] = (bounds.front + bounds.back) / 2
-      
-      # convert `center` from object space to world space
-      mat4.multiplyVec4 model.camera.getTransformationMatrix(), center, center
-      # convert `center` from world space into camera space
-      mat4.multiplyVec4 this.context.player.camera.getTransformationMatrix(), center, center
-      # convert `center` from camera space into screen space
-      mat4.multiplyVec4 this.context.player.camera.getProjectionMatrix(), center, center
-      
-      # divide x, y, z by w to get normalized device coordinates (NDC)
-      vec3.scale center, 1 / center[3]
-
-      # now x, y and z are all between -1 and 1. Multiply by canvas size:
-      center[0] *= this.context.canvas.width  / 2
-      center[1] *= this.context.canvas.height / 2
-      
-      return center
+      #debug_context = document.getElementById("debug").getContext('2d')
+      #imagedata = debug_context.getImageData 0, 0, w, h
+      #
+      ## data needs to be flipped vertically as it's loaded into imagedata
+      #bytesPerLine = w*4
+      #dr = data.length
+      #for r in [0...data.length] by bytesPerLine
+      #  dr -= bytesPerLine
+      #  for c in [0...w*4] by 4
+      #    di = dr+c
+      #    i = r+c
+      #    gi = i+1
+      #    #unless data[gi] and data[gi-f] != data[gi] or data[gi] != data[gi+wf]
+      #    imagedata.data[i]   = data[di]
+      #    imagedata.data[i+1] = data[di+1]
+      #    imagedata.data[i+2] = data[di+2]*2
+      #    imagedata.data[i+3] = data[di+3]
+      #    #else
+      #    #  imagedata.data[i]   = data[di]
+      #    #  imagedata.data[i+1] = data[di+2]
+      #    #  imagedata.data[i+2] = data[di+1]
+      #    #  imagedata.data[i+3] = data[di+3]
+      #    
+      #debug_context.putImageData imagedata, 0, 0
+              
+      return centers

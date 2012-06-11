@@ -5,10 +5,8 @@ Jax.Controller.create "Scene", ApplicationController,
     @loader = AssetLoader.find "standard"
     @scene = Scene.find "primary"
     @tooltip = SVGTooltip.find "region_dark"
-    @labels = LabelRing.find "standard"
-    
-    @world.addObject @labels
-    
+    @labeler = SVGLabeler.find "regions_light"
+        
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
     # load a region_set
@@ -22,11 +20,7 @@ Jax.Controller.create "Scene", ApplicationController,
       for region_def in data[0].regions
         this.show_region @scene.new_region(region_def)
     
-    window.Jax.context = @context
-    window.camera = @player.camera
-    
-    #this.patch_world()
-    #console.log @world.pickRegionalIndices(0,0,@context.canvas.width,@context.canvas.height)
+    this.patch_world()
     
   helpers: -> [ CameraHelper, CanvasEventRoutingHelper ]
   

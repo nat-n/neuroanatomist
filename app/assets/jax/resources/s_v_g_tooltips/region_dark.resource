@@ -17,8 +17,7 @@ label:
       "font-size":    15
       "fill":         "#FDFDFD"
       "text-anchor":  "middle"
-      
-    
+
 menu:
   button:
     h:      25

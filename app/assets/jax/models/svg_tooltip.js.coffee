@@ -1,3 +1,5 @@
+# should expand to accomodate longer region names
+
 gradient = (h) ->
   h = 23 if h < 23 or not h
   "270-#7d7d7d:0-#0a0a0a:"+20/h*100

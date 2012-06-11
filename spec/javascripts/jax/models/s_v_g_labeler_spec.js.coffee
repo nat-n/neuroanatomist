@@ -1,11 +1,11 @@
-describe "LabelRing", ->
+describe "SVGLabeler", ->
   model = null
   
   describe "defaults", ->
     beforeEach ->
-      model = new LabelRing()
+      model = new SVGLabeler()
       
   
   it "should instantiate without errors", ->
-    expect(-> new LabelRing()).not.toThrow()
+    expect(-> new SVGLabeler()).not.toThrow()
   
