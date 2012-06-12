@@ -1,6 +1,8 @@
 Jax.getGlobal().ApplicationHelper = Jax.Helper.create
   patch_world: ->
     Jax.World.prototype.find_region_centers = () ->
+      show_debug_view = window.location.href.split("?")[1] and window.location.href.split("?")[1].split("&").indexOf("debug")>=0
+      
       context = this.context
       w = context.canvas.width
       h = context.canvas.height
@@ -16,6 +18,7 @@ Jax.getGlobal().ApplicationHelper = Jax.Helper.create
         pickBuffer.viewport(context)
         context.gl.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         context.gl.disable(GL_BLEND)
+        #context.gl.depthFunc GL_LESS
         context.world.render({material:"picking"})
         context.gl.readPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, data)
         data = data.data if data.data
@@ -39,9 +42,10 @@ Jax.getGlobal().ApplicationHelper = Jax.Helper.create
       bbox = {xl:0, xr:w, yt:0, yb:h}
       diagram = V.compute(borders_sites, bbox)
       
-      #debug_paper = Raphael(648,8,w,h)
-      
-      #console.log diagram
+      if show_debug_view
+        window.debug_paper = Raphael(650,50,w,h) unless window.debug_paper
+        debug_paper = window.debug_paper
+        debug_paper.clear()
       
       centers = {}
       # extract intersection points keeping only the best one for each region
@@ -61,8 +65,9 @@ Jax.getGlobal().ApplicationHelper = Jax.Helper.create
         continue unless g = data[Math.floor(y)*w*f + Math.floor(x)*f + 1] # get coords of red
         
         
-        #debug_paper.circle(edge.va.x,edge.va.y,d).attr(opacity: 0.3) if d>10
-        #debug_paper.rect(edge.lSite.x-0.5,h-edge.lSite.y-0.5,1,1).attr(opacity: 0.2)
+        if show_debug_view
+          #debug_paper.circle(edge.va.x,edge.va.y,d).attr(opacity: 0.3) if d>10
+          debug_paper.rect(edge.lSite.x-0.5,h-edge.lSite.y-0.5,1,1).attr(opacity: 0.2)
         
         continue unless d > 5
         #debug_paper.path([["M", edge.va.x, h-edge.va.y], ["L", edge.vb.x, h-edge.vb.y]]).attr(opacity: 0.1, fill: "red")
@@ -72,33 +77,35 @@ Jax.getGlobal().ApplicationHelper = Jax.Helper.create
           centers[g] = {x:x, y:h-y, d:d}
       
       for r of centers
-        #debug_paper.circle(centers[r].x,centers[r].y,centers[r].d)
+        if show_debug_view
+          debug_paper.circle(centers[r].x,centers[r].y,centers[r].d)
         centers[r].region = this.getObject(r)
       
-      # show pickBuffer
-      #debug_context = document.getElementById("debug").getContext('2d')
-      #imagedata = debug_context.getImageData 0, 0, w, h
-      #
-      ## data needs to be flipped vertically as it's loaded into imagedata
-      #bytesPerLine = w*4
-      #dr = data.length
-      #for r in [0...data.length] by bytesPerLine
-      #  dr -= bytesPerLine
-      #  for c in [0...w*4] by 4
-      #    di = dr+c
-      #    i = r+c
-      #    gi = i+1
-      #    #unless data[gi] and data[gi-f] != data[gi] or data[gi] != data[gi+wf]
-      #    imagedata.data[i]   = data[di]
-      #    imagedata.data[i+1] = data[di+1]
-      #    imagedata.data[i+2] = data[di+2]*2
-      #    imagedata.data[i+3] = data[di+3]
-      #    #else
-      #    #  imagedata.data[i]   = data[di]
-      #    #  imagedata.data[i+1] = data[di+2]
-      #    #  imagedata.data[i+2] = data[di+1]
-      #    #  imagedata.data[i+3] = data[di+3]
-      #    
-      #debug_context.putImageData imagedata, 0, 0
+      if show_debug_view
+        # show pickBuffer
+        debug_context = document.getElementById("debug").getContext('2d')
+        imagedata = debug_context.getImageData 0, 0, w, h
+        
+        # data needs to be flipped vertically as it's loaded into imagedata
+        bytesPerLine = w*4
+        dr = data.length
+        for r in [0...data.length] by bytesPerLine
+          dr -= bytesPerLine
+          for c in [0...w*4] by 4
+            di = dr+c
+            i = r+c
+            gi = i+1
+            #unless data[gi] and data[gi-f] != data[gi] or data[gi] != data[gi+wf]
+            imagedata.data[i]   = data[di]
+            imagedata.data[i+1] = data[di+1]
+            imagedata.data[i+2] = data[di+2]*2
+            imagedata.data[i+3] = data[di+3]
+            #else
+            #  imagedata.data[i]   = data[di]
+            #  imagedata.data[i+1] = data[di+2]
+            #  imagedata.data[i+2] = data[di+1]
+            #  imagedata.data[i+3] = data[di+3]
+            
+        debug_context.putImageData imagedata, 0, 0
               
       return centers

@@ -4,9 +4,10 @@ Jax.Controller.create "Scene", ApplicationController,
     @context.gl.clearColor(0.0, 0.0, 0.0, 0.0)
     @loader = AssetLoader.find "standard"
     @scene = Scene.find "primary"
-    @tooltip = SVGTooltip.find "region_dark"
-    @labeler = SVGLabeler.find "regions_light"
-        
+    @tooltip_ = SVGTooltip.find "region_dark"
+    @labeler_ = SVGLabeler.find "regions_light"
+    this.activate_tooltip()
+    
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
     # load a region_set
@@ -30,6 +31,19 @@ Jax.Controller.create "Scene", ApplicationController,
     
   hide_region: (id) ->
     @world.removeObject @scene.deactivate_region(id)
-      
+  
+  activate_tooltip: () ->
+    if @labeler
+      @labeler.clear()
+    @tooltip = @tooltip_
+    @labeler = null
+    
+  activate_labels: () ->
+    @labeler = @labeler_
+    @tooltip.clear()
+    @tooltip = null
+    @labeler.pressed = false
+    @labeler.source_labels()
+    @labeler.draw()
     
   

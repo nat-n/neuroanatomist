@@ -1,21 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>Neuroanatomist</title>
   <%= stylesheet_link_tag    "application" %>
   <%= javascript_include_tag "application" %>
   <%= javascript_include_tag "jax/application" %>
   <%= csrf_meta_tags %>
+  <meta charset="utf-8" />
 </head>
 <body onload="start_jax('webgl','scene')">
-
-<%= yield %>
-
-
-<% #div id="tooltip">
-  #<div id"ttlabel"></div>
-  #<div id"ttinfo"></div>
-  #<div id="ttmenu"></div>
-#<div%>
+<div id="header">
+ <h1 id="page_h">neuroanatomist</h1>
+</div>
+<div id="content">
+<%= yield %>  
+</div>
 </body>
 </html>

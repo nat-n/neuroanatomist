@@ -36,20 +36,16 @@ Jax.getGlobal()['SVGLabeler'] = Jax.Model.create
       x2: window.context.canvas.width
       y2: window.context.canvas.height
     @c = 
-      x: (@bounds.x2+@bounds.x1)/2
-      y: (@bounds.y2+@bounds.y1)/2
+      x: window.context.canvas.width/2
+      y: window.context.canvas.height/2
     
-    @paper = Raphael(@bounds.x1, @bounds.y1, @bounds.x2, @bounds.y2)
-    $(@paper.canvas).css "pointer-events": "none"
+    @paper = Raphael(context.canvas.parentElement, @bounds.x2, @bounds.y2)
+    @paper.canvas.id = "svg_labels_paper"
+    $(@paper.canvas).css
+      "pointer-events": "none"
+      "position":       "absolute"
     @labels = []
-    @label_r = 8
-    @style =
-      "font":         "Helvetica"
-      "font-size":    12
-      "fill":         "#222"
-      "text-anchor":  "middle"
-    
-    
+      
   mouse_pressed: (e) ->
     @pressed = true
     this.clear()
@@ -117,9 +113,7 @@ Jax.getGlobal()['SVGLabeler'] = Jax.Model.create
           label_lengths = []
           label_lengths.push [i+=1,l.length] for l in @labels
           label_lengths.sort (a,b) -> return a[1]-b[1]
-          console.log @labels.length
           @labels.splice label_lengths[0][0], 1
-          console.log @labels.length
           # reduce radius if possible
           @r -= @r_stepsize
           @r = @r_min if @r < @r_min
@@ -138,7 +132,7 @@ Jax.getGlobal()['SVGLabeler'] = Jax.Model.create
       label.graphic = @paper.set()
       label.graphic.push(
         @paper.circle(label.in.x,label.in.y,0.8),
-        @paper.circle(label.out.x,outside_y,0.8)
+        #@paper.circle(label.out.x,outside_y,0.8)
         @paper.path([["M",label.in.x,label.in.y],["L",label.out.x,outside_y]])
         @paper.rect(box_x, outside_y-label.h/2, label.w, label.h, @label_r)
         @paper.text(label.out.x+text_offset, outside_y, label.text).attr(@style)
@@ -162,7 +156,7 @@ Jax.getGlobal()['SVGLabeler'] = Jax.Model.create
       return false if (label.out.x < @c.x && label.out.x-label.w < 1) ||
                       (label.out.x > @c.x && label.out.x+label.w > @bounds.x2-1) ||
                       this.adjusted_y(i)-label.h  < 1 || 
-                      this.adjusted_y(i)+label.h  > @bounds.y2-1
+                      this.adjusted_y(i)+label.h  > @bounds.y2-3
     return true
   
   smooth: (iteration) ->
