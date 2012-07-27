@@ -5,6 +5,6 @@ class CreateTagsResourcesJoinTable < ActiveRecord::Migration
     end
   end
   def down
-    drop_table :region_sets_regions
+    drop_table :tags_resources
   end
 end

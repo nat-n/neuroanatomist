@@ -46,7 +46,7 @@ ActiveRecord::Schema.define(:version => 20120726171050) do
   end
 
   create_table "nodes", :force => true do |t|
-    t.string   "title"
+    t.string   "name"
     t.string   "introduction"
     t.integer  "thing_id"
     t.datetime "created_at"

@@ -6,6 +6,6 @@ class CreateBibliographiesResourcesJoinTable < ActiveRecord::Migration
   end
 
   def down
-    drop_table :region_sets_regions
+    drop_table :bibliographies_resources
   end
 end
