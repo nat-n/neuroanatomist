@@ -1,4 +1,30 @@
 Neuroanatomist::Application.routes.draw do
+  resources :resource_types
+
+  resources :nodes
+
+  resources :sections
+
+  resources :ratings
+
+  resources :bibliographies
+
+  resources :resources
+
+  resources :region_styles
+
+  resources :perspectives
+
+  resources :facts
+
+  resources :relations
+
+  resources :things
+
+  resources :tags
+
+  resources :types
+
   root :to => 'home#index'
   
   resources :shape_sets

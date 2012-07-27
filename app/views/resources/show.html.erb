@@ -1,0 +1,60 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Title:</b>
+  <%= @resource.title %>
+</p>
+
+<p>
+  <b>Authors:</b>
+  <%= @resource.authors %>
+</p>
+
+<p>
+  <b>Journal:</b>
+  <%= @resource.journal %>
+</p>
+
+<p>
+  <b>Publication date:</b>
+  <%= @resource.publication_date %>
+</p>
+
+<p>
+  <b>Volume:</b>
+  <%= @resource.volume %>
+</p>
+
+<p>
+  <b>Issue:</b>
+  <%= @resource.issue %>
+</p>
+
+<p>
+  <b>Pages:</b>
+  <%= @resource.pages %>
+</p>
+
+<p>
+  <b>Doi:</b>
+  <%= @resource.doi %>
+</p>
+
+<p>
+  <b>Url:</b>
+  <%= @resource.url %>
+</p>
+
+<p>
+  <b>Abstract:</b>
+  <%= @resource.abstract %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%= @resource.description %>
+</p>
+
+
+<%= link_to 'Edit', edit_resource_path(@resource) %> |
+<%= link_to 'Back', resources_path %>

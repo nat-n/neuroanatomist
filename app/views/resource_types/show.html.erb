@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @resource_type.name %>
+</p>
+
+<p>
+  <b>Required fields:</b>
+  <%= @resource_type.required_fields %>
+</p>
+
+
+<%= link_to 'Edit', edit_resource_type_path(@resource_type) %> |
+<%= link_to 'Back', resource_types_path %>

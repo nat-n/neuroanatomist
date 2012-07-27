@@ -1,0 +1,41 @@
+<%= form_for(@thing) do |f| %>
+  <% if @thing.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@thing.errors.count, "error") %> prohibited this thing from being saved:</h2>
+
+      <ul>
+      <% @thing.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :description %><br />
+    <%= f.text_field :description %>
+  </div>
+  <div class="field">
+    <%= f.label :synonyms %><br />
+    <%= f.text_field :synonyms %>
+  </div>
+  <div class="field">
+    <%= f.label :neurolex_category %><br />
+    <%= f.text_field :neurolex_category %>
+  </div>
+  <div class="field">
+    <%= f.label :dbpedia_resource %><br />
+    <%= f.text_field :dbpedia_resource %>
+  </div>
+  <div class="field">
+    <%= f.label :wikipedia_title %><br />
+    <%= f.text_field :wikipedia_title %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

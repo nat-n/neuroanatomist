@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Colour:</b>
+  <%= @region_style.colour %>
+</p>
+
+<p>
+  <b>Transparency:</b>
+  <%= @region_style.transparency %>
+</p>
+
+<p>
+  <b>Label:</b>
+  <%= @region_style.label %>
+</p>
+
+<p>
+  <b>Orphaned:</b>
+  <%= @region_style.orphaned %>
+</p>
+
+
+<%= link_to 'Edit', edit_region_style_path(@region_style) %> |
+<%= link_to 'Back', region_styles_path %>

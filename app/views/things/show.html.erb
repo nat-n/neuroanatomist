@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @thing.name %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%= @thing.description %>
+</p>
+
+<p>
+  <b>Synonyms:</b>
+  <%= @thing.synonyms %>
+</p>
+
+<p>
+  <b>Neurolex category:</b>
+  <%= @thing.neurolex_category %>
+</p>
+
+<p>
+  <b>Dbpedia resource:</b>
+  <%= @thing.dbpedia_resource %>
+</p>
+
+<p>
+  <b>Wikipedia title:</b>
+  <%= @thing.wikipedia_title %>
+</p>
+
+
+<%= link_to 'Edit', edit_thing_path(@thing) %> |
+<%= link_to 'Back', things_path %>

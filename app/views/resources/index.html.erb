@@ -1,0 +1,43 @@
+<h1>Listing resources</h1>
+
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Authors</th>
+    <th>Journal</th>
+    <th>Publication date</th>
+    <th>Volume</th>
+    <th>Issue</th>
+    <th>Pages</th>
+    <th>Doi</th>
+    <th>Url</th>
+    <th>Abstract</th>
+    <th>Description</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @resources.each do |resource| %>
+  <tr>
+    <td><%= resource.title %></td>
+    <td><%= resource.authors %></td>
+    <td><%= resource.journal %></td>
+    <td><%= resource.publication_date %></td>
+    <td><%= resource.volume %></td>
+    <td><%= resource.issue %></td>
+    <td><%= resource.pages %></td>
+    <td><%= resource.doi %></td>
+    <td><%= resource.url %></td>
+    <td><%= resource.abstract %></td>
+    <td><%= resource.description %></td>
+    <td><%= link_to 'Show', resource %></td>
+    <td><%= link_to 'Edit', edit_resource_path(resource) %></td>
+    <td><%= link_to 'Destroy', resource, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Resource', new_resource_path %>

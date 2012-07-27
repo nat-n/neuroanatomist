@@ -1,0 +1,20 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Height:</b>
+  <%= @perspective.height %>
+</p>
+
+<p>
+  <b>Angle:</b>
+  <%= @perspective.angle %>
+</p>
+
+<p>
+  <b>Distance:</b>
+  <%= @perspective.distance %>
+</p>
+
+
+<%= link_to 'Edit', edit_perspective_path(@perspective) %> |
+<%= link_to 'Back', perspectives_path %>
