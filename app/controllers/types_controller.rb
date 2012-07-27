@@ -85,7 +85,9 @@ class TypesController < ApplicationController
       redirect_to types_path
     end
     def find_supertype
-      params[:type][:supertype_id] = Type.where(:name => params[:type].delete(:supertype)).first
+      super_type_name = params[:type].delete(:supertype)
+      #throw Type.where(:name => super_type_name).first
+      params[:type][:supertype] = Type.where(:name => super_type_name).first
     end
     
 end
