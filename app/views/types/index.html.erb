@@ -1,6 +1,8 @@
+<p id="notice"><%= notice %></p>
+
 <h1>Listing types</h1>
 
-<table>
+<table class="backend_data">
   <tr>
     <th>Name</th>
     <th>Description</th>
@@ -14,7 +16,7 @@
   <tr>
     <td><%= type.name %></td>
     <td><%= type.description %></td>
-    <td><%= type.supertype %></td>
+    <td><%= type.supertype.name %></td>
     <td><%= link_to 'Show', type %></td>
     <td><%= link_to 'Edit', edit_type_path(type) %></td>
     <td><%= link_to 'Destroy', type, confirm: 'Are you sure?', method: :delete %></td>

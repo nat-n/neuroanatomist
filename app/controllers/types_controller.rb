@@ -1,4 +1,7 @@
 class TypesController < ApplicationController
+  before_filter :find_supertype, :only => [:create, :update]
+  before_filter :find_type, :only => [:show, :edit, :update, :destroy]
+  
   # GET /types
   # GET /types.json
   def index
@@ -13,8 +16,6 @@ class TypesController < ApplicationController
   # GET /types/1
   # GET /types/1.json
   def show
-    @type = Type.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @type }
@@ -34,14 +35,12 @@ class TypesController < ApplicationController
 
   # GET /types/1/edit
   def edit
-    @type = Type.find(params[:id])
   end
 
   # POST /types
   # POST /types.json
-  def create
-    @type = Type.new(params[:type])
-
+  def create    
+    @type = Type.new(params[:type])    
     respond_to do |format|
       if @type.save
         format.html { redirect_to @type, notice: 'Type was successfully created.' }
@@ -56,11 +55,9 @@ class TypesController < ApplicationController
   # PUT /types/1
   # PUT /types/1.json
   def update
-    @type = Type.find(params[:id])
-
     respond_to do |format|
       if @type.update_attributes(params[:type])
-        format.html { redirect_to @type, notice: 'Type was successfully updated.' }
+        format.html { redirect_to types_path, notice: 'Type was successfully updated.' }
         format.json { head :ok }
       else
         format.html { render action: "edit" }
@@ -72,7 +69,6 @@ class TypesController < ApplicationController
   # DELETE /types/1
   # DELETE /types/1.json
   def destroy
-    @type = Type.find(params[:id])
     @type.destroy
 
     respond_to do |format|
@@ -80,4 +76,16 @@ class TypesController < ApplicationController
       format.json { head :ok }
     end
   end
+  
+  private
+    def find_type
+      @type = Type.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+      flash[:alert] = "The Type you were looking for could not be found."
+      redirect_to types_path
+    end
+    def find_supertype
+      params[:type][:supertype_id] = Type.where(:name => params[:type].delete(:supertype)).first
+    end
+    
 end

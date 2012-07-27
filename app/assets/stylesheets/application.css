@@ -62,3 +62,10 @@ table{
   border-collapse:collapse;
   border-spacing:0;
 }
+
+.backend_data, .backend_data td{
+	padding: 2px;
+  border: 1;
+  border-width: 1px;
+	border-style: groove;
+}
