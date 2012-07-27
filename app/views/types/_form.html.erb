@@ -21,7 +21,7 @@
   </div>
   <div class="field">
     <%= f.label :supertype %><br />
-    <%= f.select :supertype, Type.all.map(&:name) %>
+    <%= f.select :supertype, Type.all.map(&:name), :selected => (@type.supertype and @type.supertype.name) %>
   </div>
   <div class="actions">
     <%= f.submit %>
