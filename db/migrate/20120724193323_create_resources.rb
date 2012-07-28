@@ -13,7 +13,7 @@ class CreateResources < ActiveRecord::Migration
       t.string :abstract
       t.string :description
       
-      t.integer :resource_type
+      t.integer :resource_type_id
       
       t.timestamps
     end

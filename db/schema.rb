@@ -146,9 +146,14 @@ ActiveRecord::Schema.define(:version => 20120726171050) do
     t.string   "url"
     t.string   "abstract"
     t.string   "description"
-    t.integer  "resource_type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "resource_type_id"
+  end
+
+  create_table "resources_tags", :id => false, :force => true do |t|
+    t.integer "resource_id"
+    t.integer "tag_id"
   end
 
   create_table "sections", :force => true do |t|
@@ -188,11 +193,6 @@ ActiveRecord::Schema.define(:version => 20120726171050) do
     t.string   "description"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "tags_resources", :id => false, :force => true do |t|
-    t.integer "tag_id"
-    t.integer "resource_id"
   end
 
   create_table "things", :force => true do |t|
