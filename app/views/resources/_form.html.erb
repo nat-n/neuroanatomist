@@ -12,6 +12,10 @@
   <% end %>
 
   <div class="field">
+    <%= f.label :resource_type %><br />
+    <%= f.select :resource_type, ResourceType.all.map(&:name), :selected => (@resource.resource_type and @resource.resource_type.name) %>
+  </div>
+  <div class="field">
     <%= f.label :title %><br />
     <%= f.text_field :title %>
   </div>
@@ -54,6 +58,10 @@
   <div class="field">
     <%= f.label :description %><br />
     <%= f.text_field :description %>
+  </div>
+  <div class="field">
+    <%= f.label :tags %><br />
+    <%= f.text_field :tags, :value => @tags.map {|t| t.name}.join(" ") %>
   </div>
   <div class="actions">
     <%= f.submit %>

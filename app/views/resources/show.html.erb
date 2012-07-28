@@ -1,6 +1,11 @@
 <p id="notice"><%= notice %></p>
 
 <p>
+  <b>Resource Type:</b>
+  <%= @resource.resource_type.name %>
+</p>
+
+<p>
   <b>Title:</b>
   <%= @resource.title %>
 </p>
@@ -53,6 +58,11 @@
 <p>
   <b>Description:</b>
   <%= @resource.description %>
+</p>
+
+<p>
+  <b>Tags:</b>
+  <%= @tags.map {|t| t.name}.join " " %>
 </p>
 
 

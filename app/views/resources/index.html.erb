@@ -1,7 +1,8 @@
 <h1>Listing resources</h1>
 
-<table>
+<table class="backend_data">
   <tr>
+    <th>Type</th>
     <th>Title</th>
     <th>Authors</th>
     <th>Journal</th>
@@ -20,6 +21,7 @@
 
 <% @resources.each do |resource| %>
   <tr>
+    <td><%= resource.type %></td>
     <td><%= resource.title %></td>
     <td><%= resource.authors %></td>
     <td><%= resource.journal %></td>
