@@ -7,10 +7,12 @@ class Tag < ActiveRecord::Base
   
   
   def self.find_by_name tag_name
+    tag_name.gsub! /\s/, "_"
     Tag.where(:name => tag_name).first
   end
   
   def self.find_or_create tag_name
+    tag_name.gsub! /\s/, "_"
     Tag.find_by_name(tag_name) or Tag.create(:name => tag_name)
   end
   
