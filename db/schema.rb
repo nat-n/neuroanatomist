@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120726171050) do
+ActiveRecord::Schema.define(:version => 20120730121239) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -193,7 +193,10 @@ ActiveRecord::Schema.define(:version => 20120726171050) do
     t.string   "description"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "node_id"
   end
+
+  add_index "tags", ["node_id"], :name => "index_tags_on_node_id"
 
   create_table "things", :force => true do |t|
     t.string   "name"
@@ -203,7 +206,6 @@ ActiveRecord::Schema.define(:version => 20120726171050) do
     t.string   "dbpedia_resource"
     t.string   "wikipedia_title"
     t.integer  "type_id"
-    t.integer  "tag_id"
     t.integer  "node_id"
     t.datetime "created_at"
     t.datetime "updated_at"

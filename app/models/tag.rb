@@ -1,5 +1,5 @@
 class Tag < ActiveRecord::Base
-  belongs_to :thing
+  belongs_to :node
   has_and_belongs_to_many :resource
   has_many :ratings
   validates_presence_of :name
