@@ -39,6 +39,14 @@
     <%= f.label :wikipedia_title %><br />
     <%= f.text_field :wikipedia_title %>
   </div>
+  <div class="field">
+    <%= f.label :node %><br />
+    <%= if @thing.node
+          link_to @thing.node.name, @thing.node
+        else
+          f.select :node, ["auto-assign"]+Node.where(:thing_id => nil).map(&:name), :selected => "auto-assign"
+        end %>
+  </div>
   <div class="actions">
     <%= f.submit %>
   </div>

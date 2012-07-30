@@ -2,8 +2,6 @@ class TypesController < ApplicationController
   before_filter :find_supertype, :only => [:create, :update]
   before_filter :find_type, :only => [:show, :edit, :update, :destroy]
   
-  # GET /types
-  # GET /types.json
   def index
     @types = Type.all
 
@@ -13,8 +11,6 @@ class TypesController < ApplicationController
     end
   end
 
-  # GET /types/1
-  # GET /types/1.json
   def show
     respond_to do |format|
       format.html # show.html.erb
@@ -22,8 +18,6 @@ class TypesController < ApplicationController
     end
   end
 
-  # GET /types/new
-  # GET /types/new.json
   def new
     @type = Type.new
 
@@ -33,12 +27,9 @@ class TypesController < ApplicationController
     end
   end
 
-  # GET /types/1/edit
   def edit
   end
 
-  # POST /types
-  # POST /types.json
   def create
     @type = Type.new(params[:type])    
     respond_to do |format|
@@ -52,8 +43,6 @@ class TypesController < ApplicationController
     end
   end
 
-  # PUT /types/1
-  # PUT /types/1.json
   def update
     respond_to do |format|
       if @type.update_attributes(params[:type])
@@ -66,8 +55,6 @@ class TypesController < ApplicationController
     end
   end
 
-  # DELETE /types/1
-  # DELETE /types/1.json
   def destroy
     @type.destroy
 

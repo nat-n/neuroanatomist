@@ -1,9 +1,8 @@
 class ThingsController < ApplicationController
+  before_filter :find_or_create_node, :only => [:create]
   before_filter :find_type, :only => [:create, :update]
   before_filter :find_thing, :only => [:show, :edit, :update, :destroy]
 
-  # GET /things
-  # GET /things.json
   def index
     @things = Thing.all
 
@@ -13,8 +12,6 @@ class ThingsController < ApplicationController
     end
   end
 
-  # GET /things/1
-  # GET /things/1.json
   def show
     respond_to do |format|
       format.html # show.html.erb
@@ -22,8 +19,6 @@ class ThingsController < ApplicationController
     end
   end
 
-  # GET /things/new
-  # GET /things/new.json
   def new
     @thing = Thing.new
 
@@ -32,16 +27,12 @@ class ThingsController < ApplicationController
       format.json { render json: @thing }
     end
   end
-
-  # GET /things/1/edit
+  
   def edit
     @thing = Thing.find(params[:id])
   end
 
-  # POST /things
-  # POST /things.json
-  def create
-    # should find or create new tag and node
+  def create    
     @thing = Thing.new(params[:thing])
     
     respond_to do |format|
@@ -55,8 +46,6 @@ class ThingsController < ApplicationController
     end
   end
 
-  # PUT /things/1
-  # PUT /things/1.json
   def update
     respond_to do |format|
       if @thing.update_attributes(params[:thing])
@@ -69,8 +58,6 @@ class ThingsController < ApplicationController
     end
   end
 
-  # DELETE /things/1
-  # DELETE /things/1.json
   def destroy
     @thing.destroy
 
@@ -89,5 +76,12 @@ class ThingsController < ApplicationController
     end
     def find_type
       params[:thing][:type_id] = Type.where(:name => params[:thing].delete(:type)).first.id
+    end
+    def find_or_create_node
+      if params[:thing][:node] = "auto-assign"
+        params[:thing][:node] = Node.find_or_create params[:thing][:name]
+      else
+        params[:thing][:node] = Node.find_by_name params[:thing][:node]
+      end
     end
 end
