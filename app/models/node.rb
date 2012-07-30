@@ -6,7 +6,7 @@ class Node < ActiveRecord::Base
   has_one   :perspective
   has_one   :tag
   validates_uniqueness_of :name
-  validates_presence_of :name
+  validates_presence_of :name, :tag
   
   
   def self.find_by_name node_name
@@ -14,7 +14,7 @@ class Node < ActiveRecord::Base
   end
   
   def self.find_or_create node_name
-    Node.find_by_name(node_name) or Node.create(:name => node_name)
+    Node.find_by_name(node_name) or Node.create(:name => node_name, :tag => Tag.find_or_create(node_name))
   end
   
 end

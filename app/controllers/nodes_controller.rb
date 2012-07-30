@@ -1,6 +1,7 @@
 class NodesController < ApplicationController
-  # GET /nodes
-  # GET /nodes.json
+  before_filter :find_or_create_tag, :only => [:create]
+  before_filter :find_node, :only => [:show, :edit, :update, :destroy]
+
   def index
     @nodes = Node.all
 
@@ -10,19 +11,13 @@ class NodesController < ApplicationController
     end
   end
 
-  # GET /nodes/1
-  # GET /nodes/1.json
   def show
-    @node = Node.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @node }
     end
   end
 
-  # GET /nodes/new
-  # GET /nodes/new.json
   def new
     @node = Node.new
 
@@ -32,16 +27,12 @@ class NodesController < ApplicationController
     end
   end
 
-  # GET /nodes/1/edit
   def edit
-    @node = Node.find(params[:id])
   end
 
-  # POST /nodes
-  # POST /nodes.json
   def create
     @node = Node.new(params[:node])
-
+    
     respond_to do |format|
       if @node.save
         format.html { redirect_to @node, notice: 'Node was successfully created.' }
@@ -53,11 +44,7 @@ class NodesController < ApplicationController
     end
   end
 
-  # PUT /nodes/1
-  # PUT /nodes/1.json
   def update
-    @node = Node.find(params[:id])
-
     respond_to do |format|
       if @node.update_attributes(params[:node])
         format.html { redirect_to @node, notice: 'Node was successfully updated.' }
@@ -69,10 +56,7 @@ class NodesController < ApplicationController
     end
   end
 
-  # DELETE /nodes/1
-  # DELETE /nodes/1.json
   def destroy
-    @node = Node.find(params[:id])
     @node.destroy
 
     respond_to do |format|
@@ -80,4 +64,19 @@ class NodesController < ApplicationController
       format.json { head :ok }
     end
   end
+
+  private
+    def find_node
+      @node = Node.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+      flash[:alert] = "The Node you were looking for could not be found."
+      redirect_to nodes_path
+    end
+    def find_or_create_tag
+      if not params[:node][:tag] or params[:node][:tag] = "auto-assign"
+        params[:node][:tag] = Tag.find_or_create params[:node][:name]
+      else
+        params[:node][:tag] = Tag.find_by_name params[:node][:tag]
+      end
+    end
 end
