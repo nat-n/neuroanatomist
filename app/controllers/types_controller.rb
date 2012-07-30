@@ -39,7 +39,7 @@ class TypesController < ApplicationController
 
   # POST /types
   # POST /types.json
-  def create    
+  def create
     @type = Type.new(params[:type])    
     respond_to do |format|
       if @type.save

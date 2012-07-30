@@ -12,6 +12,10 @@
   <% end %>
 
   <div class="field">
+    <%= f.label :type %><br />
+    <%= f.select :type, Type.all.map(&:name), :selected => (@thing.type and @thing.type.name) %>
+  </div>
+  <div class="field">
     <%= f.label :name %><br />
     <%= f.text_field :name %>
   </div>

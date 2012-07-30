@@ -1,4 +1,7 @@
 class ThingsController < ApplicationController
+  before_filter :find_type, :only => [:create, :update]
+  before_filter :find_thing, :only => [:show, :edit, :update, :destroy]
+
   # GET /things
   # GET /things.json
   def index
@@ -13,8 +16,6 @@ class ThingsController < ApplicationController
   # GET /things/1
   # GET /things/1.json
   def show
-    @thing = Thing.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @thing }
@@ -40,8 +41,9 @@ class ThingsController < ApplicationController
   # POST /things
   # POST /things.json
   def create
+    # should find or create new tag and node
     @thing = Thing.new(params[:thing])
-
+    
     respond_to do |format|
       if @thing.save
         format.html { redirect_to @thing, notice: 'Thing was successfully created.' }
@@ -56,8 +58,6 @@ class ThingsController < ApplicationController
   # PUT /things/1
   # PUT /things/1.json
   def update
-    @thing = Thing.find(params[:id])
-
     respond_to do |format|
       if @thing.update_attributes(params[:thing])
         format.html { redirect_to @thing, notice: 'Thing was successfully updated.' }
@@ -72,7 +72,6 @@ class ThingsController < ApplicationController
   # DELETE /things/1
   # DELETE /things/1.json
   def destroy
-    @thing = Thing.find(params[:id])
     @thing.destroy
 
     respond_to do |format|
@@ -80,4 +79,15 @@ class ThingsController < ApplicationController
       format.json { head :ok }
     end
   end
+  
+  private
+    def find_thing
+      @thing = Thing.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+      flash[:alert] = "The Thing you were looking for could not be found."
+      redirect_to things_path
+    end
+    def find_type
+      params[:thing][:type_id] = Type.where(:name => params[:thing].delete(:type)).first.id
+    end
 end

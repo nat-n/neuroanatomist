@@ -1,13 +1,16 @@
+<p id="notice"><%= notice %></p>
+
 <h1>Listing things</h1>
 
-<table>
+<table class="backend_data">
   <tr>
     <th>Name</th>
     <th>Description</th>
+    <th>Type</th>
     <th>Synonyms</th>
-    <th>Neurolex category</th>
-    <th>Dbpedia resource</th>
-    <th>Wikipedia title</th>
+    <th>Neurolex Category</th>
+    <th>DBpedia Resource</th>
+    <th>Wikipedia Title</th>
     <th></th>
     <th></th>
     <th></th>
@@ -17,6 +20,7 @@
   <tr>
     <td><%= thing.name %></td>
     <td><%= thing.description %></td>
+    <td><%= thing.type.name %></td>
     <td><%= thing.synonyms %></td>
     <td><%= thing.neurolex_category %></td>
     <td><%= thing.dbpedia_resource %></td>
