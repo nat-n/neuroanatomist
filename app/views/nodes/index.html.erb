@@ -1,6 +1,6 @@
 <h1>Listing nodes</h1>
 
-<table>
+<table  class="backend_data">
   <tr>
     <th>Title</th>
     <th>Introduction</th>
@@ -11,7 +11,7 @@
 
 <% @nodes.each do |node| %>
   <tr>
-    <td><%= node.title %></td>
+    <td><%= node.name %></td>
     <td><%= node.introduction %></td>
     <td><%= link_to 'Show', node %></td>
     <td><%= link_to 'Edit', edit_node_path(node) %></td>
