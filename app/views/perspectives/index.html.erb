@@ -2,6 +2,7 @@
 
 <table>
   <tr>
+    <th>Name</th>
     <th>Height</th>
     <th>Angle</th>
     <th>Distance</th>
@@ -12,6 +13,7 @@
 
 <% @perspectives.each do |perspective| %>
   <tr>
+    <td><%= perspective.name %></td>
     <td><%= perspective.height %></td>
     <td><%= perspective.angle %></td>
     <td><%= perspective.distance %></td>

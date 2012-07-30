@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120730121239) do
+ActiveRecord::Schema.define(:version => 20120730161304) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -60,6 +60,7 @@ ActiveRecord::Schema.define(:version => 20120730121239) do
     t.integer  "region_set_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "name"
   end
 
   create_table "ratings", :force => true do |t|
