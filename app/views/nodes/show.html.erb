@@ -10,6 +10,11 @@
   <%= @node.introduction %>
 </p>
 
+<p>
+  <b>Thing:</b>
+  <%= link_to @node.thing.name, @node.thing %>
+</p>
+
 
 <%= link_to 'Edit', edit_node_path(@node) %> |
 <%= link_to 'Back', nodes_path %>
