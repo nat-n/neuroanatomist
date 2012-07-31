@@ -80,17 +80,24 @@ class PerspectivesController < ApplicationController
       @regions = Region.all      
     end
     def update_region_styles
-      # should create, update and disown region styles as required
-      params[:regions].each do |rstr, inclusion|
-        region_id = rstr.split("_").last.to_i
-        region = Region.find(region_id)
-        if inclusion == "1"
-          @perspective.update_or_create_region_style :colour        => params[:colour][rstr],
-                                                     :transparency  => params[:transparency][rstr],
-                                                     :label         => params[:label][rstr] == "1",
-                                                     :region        => region
-        else
-          @perspective.disown_region_if_styled region
+      # should create, update and disown region styles as required, unless inheritance set
+      if params[:inherit_style_set] != "don't inherit" and (style_set_id = params[:inherit_style_set].to_i)>0
+        @perspective.use_external_styles Perspective.find(style_set_id)
+        params[:regions].each do |rstr, inclusion|
+          @perspective.disown_region_if_styled Region.find(rstr.split("_").last.to_i)
+        end
+      else
+        params[:regions].each do |rstr, inclusion|
+          region_id = rstr.split("_").last.to_i
+          region = Region.find(region_id)
+          if inclusion == "1"
+            @perspective.update_or_create_region_style :colour       => params[:colour][rstr],
+                                                       :transparency => params[:transparency][rstr],
+                                                       :label        => params[:label][rstr] == "1",
+                                                       :region       => region
+          else
+            @perspective.disown_region_if_styled region
+          end
         end
       end
     end

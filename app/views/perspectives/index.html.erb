@@ -1,12 +1,13 @@
 <h1>Listing perspectives</h1>
 
-<table>
+<table class="backend_data">
   <tr>
     <th>Name</th>
     <th>Description</th>
     <th>Height</th>
     <th>Angle</th>
     <th>Distance</th>
+    <th>Inherits from</th>
     <th></th>
     <th></th>
     <th></th>
@@ -19,6 +20,7 @@
     <td><%= perspective.height %></td>
     <td><%= perspective.angle %></td>
     <td><%= perspective.distance %></td>
+    <td><%= perspective.has_external_styles? ? perspective.style_set.name : "-" %></td>
     <td><%= link_to 'Show', perspective %></td>
     <td><%= link_to 'Edit', edit_perspective_path(perspective) %></td>
     <td><%= link_to 'Destroy', perspective, confirm: 'Are you sure?', method: :delete %></td>

@@ -25,6 +25,11 @@
   <%= @perspective.distance %>
 </p>
 
+<p>
+  <b>Inherits RegionStyles from:</b>
+  <%= @perspective.has_external_styles? ? @perspective.style_set.name : "none" %>
+</p>
+
 
 <%= link_to 'Edit', edit_perspective_path(@perspective) %> |
 <%= link_to 'Back', perspectives_path %>

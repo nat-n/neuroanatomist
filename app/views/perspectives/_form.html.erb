@@ -31,6 +31,12 @@
     <%= f.label :distance %><br />
     <%= f.text_field :distance %>
   </div>
+  <div class="field">
+    <%= label :inherit_style_set,  "Inherit Region Styles"%><br />
+    <% selected_ss = @perspective.has_external_styles? ? @perspective.style_set.id : nil
+       other_perspectives = ( @perspective.id ? Perspective.where("id != ?", @perspective.id) : Perspective.all ).map{|ps| [ps[:name],ps[:id]]} %>
+    <%= select_tag :inherit_style_set, options_for_select([["don't inherit",0]]+other_perspectives, selected_ss) %>
+  </div>
   
   <h4> Regions </h4>
   <table border="1">
