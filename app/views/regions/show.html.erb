@@ -4,6 +4,10 @@
 <h2><%= "Region: #{@region.name}" %></h2>
 
 <p>
+  <b>Label:</b>
+  <%= @region.has_label? ? @region.label : "" %>
+</p>
+<p>
   <b>Description:</b>
   <%= @region.description %>
 </p>

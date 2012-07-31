@@ -1,6 +1,6 @@
 {
   "id":<%= @region.id %>,
-  "name":"<%= @region.name %>"
+  "name":"<%= @region.label %>"
   <% if [:yes,:partial].include? @cascade
       @region_definition = @region.definition_for(@shape_set)
       @region_definition.redundant_meshes.each {|m| @included[m.id] = :redundant } %>,

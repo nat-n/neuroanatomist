@@ -3,6 +3,7 @@
 <table border="1">
   <tr>
     <th>Name</th>
+    <th>Label</th>
     <th>Description</th>
     <th>Number of Definitions</th>
     <th></th>
@@ -13,6 +14,7 @@
 <% @regions.each do |region| %>
   <tr>
     <td><%= region.name %></td>
+    <td><%= region.has_label? ? region.label : "" %></td>
     <td><%= region.description %></td>
     <td><%= region.region_definitions.size %></td>
     <td><%= link_to 'Show', region %></td>
