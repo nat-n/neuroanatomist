@@ -1,7 +1,8 @@
 <h1>Listing region_styles</h1>
 
-<table>
+<table class="backend_data">
   <tr>
+    <th>ID</th>
     <th>Colour</th>
     <th>Transparency</th>
     <th>Label</th>
@@ -13,6 +14,7 @@
 
 <% @region_styles.each do |region_style| %>
   <tr>
+    <td><%= region_style.id %></td>
     <td><%= region_style.colour %></td>
     <td><%= region_style.transparency %></td>
     <td><%= region_style.label %></td>

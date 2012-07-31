@@ -1,6 +1,8 @@
 class PerspectivesController < ApplicationController
-  # GET /perspectives
-  # GET /perspectives.json
+  before_filter :find_perspective, :only => [:show, :edit, :update, :destroy]
+  #before_filter :update_region_styles, :only => [:create, :update]
+  before_filter :find_regions, :only => [:new, :edit]
+
   def index
     @perspectives = Perspective.all
 
@@ -10,19 +12,13 @@ class PerspectivesController < ApplicationController
     end
   end
 
-  # GET /perspectives/1
-  # GET /perspectives/1.json
   def show
-    @perspective = Perspective.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @perspective }
     end
   end
 
-  # GET /perspectives/new
-  # GET /perspectives/new.json
   def new
     @perspective = Perspective.new
 
@@ -32,18 +28,15 @@ class PerspectivesController < ApplicationController
     end
   end
 
-  # GET /perspectives/1/edit
   def edit
-    @perspective = Perspective.find(params[:id])
   end
 
-  # POST /perspectives
-  # POST /perspectives.json
   def create
     @perspective = Perspective.new(params[:perspective])
-
+    
     respond_to do |format|
       if @perspective.save
+        update_region_styles
         format.html { redirect_to @perspective, notice: 'Perspective was successfully created.' }
         format.json { render json: @perspective, status: :created, location: @perspective }
       else
@@ -53,11 +46,9 @@ class PerspectivesController < ApplicationController
     end
   end
 
-  # PUT /perspectives/1
-  # PUT /perspectives/1.json
   def update
-    @perspective = Perspective.find(params[:id])
-
+    update_region_styles
+    
     respond_to do |format|
       if @perspective.update_attributes(params[:perspective])
         format.html { redirect_to @perspective, notice: 'Perspective was successfully updated.' }
@@ -69,10 +60,7 @@ class PerspectivesController < ApplicationController
     end
   end
 
-  # DELETE /perspectives/1
-  # DELETE /perspectives/1.json
   def destroy
-    @perspective = Perspective.find(params[:id])
     @perspective.destroy
 
     respond_to do |format|
@@ -80,4 +68,31 @@ class PerspectivesController < ApplicationController
       format.json { head :ok }
     end
   end
+
+  private
+    def find_perspective
+      @perspective = Perspective.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+      flash[:alert] = "The Perspective you were looking for could not be found."
+      redirect_to perspectives_path
+    end
+    def find_regions
+      @regions = Region.all      
+    end
+    def update_region_styles
+      # should create, update and disown region styles as required
+      params[:regions].each do |rstr, inclusion|
+        region_id = rstr.split("_").last.to_i
+        region = Region.find(region_id)
+        if inclusion == "1"
+          @perspective.update_or_create_region_style :colour        => params[:colour][rstr],
+                                                     :transparency  => params[:transparency][rstr],
+                                                     :label         => params[:label][rstr] == "1",
+                                                     :region        => region
+        else
+          @perspective.disown_region_if_styled region
+        end
+      end
+    end
+
 end

@@ -18,7 +18,7 @@
   <div class="field">
     <%= f.label :description %><br />
     <%= f.text_field :description %>
-  </div>
+  </div
   <div class="field">
     <%= f.label :height %><br />
     <%= f.text_field :height %>
@@ -31,6 +31,32 @@
     <%= f.label :distance %><br />
     <%= f.text_field :distance %>
   </div>
+  
+  <h4> Regions </h4>
+  <table border="1">
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Number of Definitions</th>
+      <th>Include</th>
+      <th>Colour</th>
+      <th>Transparency</th>
+      <th>Labeled</th>
+    </tr>
+  <% @regions.each do |region| %>
+    <tr>
+      <td><%= label :regions, "region_#{region.id}".to_sym, region.name %></td>
+      <td><%= region.description %></td>
+      <td><%= region.region_definitions.size %></td>
+      <% region_style = @perspective.style_for(region) %>
+      <td><%= check_box :regions, "region_#{region.id}".to_sym, :checked => (region_style and not region_style.orphaned) ? true : false %></td>
+      <td><%= text_field :colour, "region_#{region.id}".to_sym, :value => region_style ? region_style.colour : "auto" %></td>
+      <td><%= text_field :transparency, "region_#{region.id}".to_sym, :value =>  region_style ? region_style.transparency : 1.0 %></td>
+      <td><%= check_box :label, "region_#{region.id}".to_sym, :checked =>  region_style ? region_style.label : true %></td>
+    </tr>
+  <% end %>
+  </table>
+  
   <div class="actions">
     <%= f.submit %>
   </div>
