@@ -7,7 +7,7 @@
          next if region_style.orphaned
          @region = region_style.region
          @region.definition_for @shape_set %>
-    <%= render :partial => 'regions/show.json' %><%= "," unless i == @perspective.regions.size-1 %>
+    <%= "," unless i == 0 %><%= render :partial => 'regions/show.json' %>
     <% end %>
   ]
   <% end %>
