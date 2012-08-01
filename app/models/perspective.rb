@@ -8,6 +8,11 @@ class Perspective < ActiveRecord::Base
     has_external_styles? ? style_set.regions : styled_regions
   end
   
+  def active_regions
+    # only returns regions via styles which are included/not-orphaned
+    has_external_styles? ? style_set.regions : own_region_styles.select{|rs| !rs.orphaned}.map{|rs| rs.region}
+  end
+  
   def has_external_styles?
     # does this Perspective have region_styles itself or just point to another Perspective's region_styles?
     style_set.kind_of? Perspective
