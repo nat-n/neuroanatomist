@@ -2,13 +2,11 @@ Jax.getGlobal()['Region'] = Jax.Model.create
   after_initialize: ->
     @name = "" 
     @id   = 0
-    
-        
   
   compose: (region_def) ->
     this.id = region_def.id
     this.name = region_def.name
-    model_data = null
+    model_data = borders: {}, faces: [], vertex_normals: [], vertex_positions: []
     @mesh = new Jax.Mesh
       color: [Math.random(),Math.random(),Math.random(),1]
       material: "scene"
@@ -18,20 +16,19 @@ Jax.getGlobal()['Region'] = Jax.Model.create
           normals.push  datum for datum in model_data["vertex_normals"]
           indices.push  datum for datum in model_data["faces"]
       update: ((updated_model_data) => model_data = updated_model_data; @mesh.rebuild())
-    
+        
     shape_vvs = []
     # construct array of meshes included in this region
     meshes = []
     for more_meshes in ((shape_vvs.push(shape["volume_value"]) and shape["meshes"]) for shape in region_def["shapes"])
       meshes = meshes.concat (mesh for mesh in more_meshes when mesh.included != "no")
-
+    
     # filter out internal meshes
     meshes = (mesh for mesh in meshes when ((mesh,meshes) ->
       fb = mesh["name"].split("-")
       not((fb[0] in shape_vvs) and (fb[1] in shape_vvs)))(mesh,meshes))
     
     # compose mesh and update
-    model_data = window.JAS.meshes[meshes.pop().id] unless meshes.length == 0
     for mesh in meshes
       # find mesh data
       mesh = window.JAS.meshes[mesh.id]
