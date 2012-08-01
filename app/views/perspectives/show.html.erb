@@ -27,7 +27,9 @@
     <th></th>
   </tr>
 
-<% @perspective.regions.each do |region| %>
+<% @perspective.region_styles.each do |region_style|
+     next if region_style.orphaned
+     region = region_style.region %>
   <tr>
     <td><%= region.name %></td>
     <td><%= region.description %></td>
