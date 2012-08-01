@@ -1,35 +1,42 @@
 <p id="notice"><%= notice %></p>
+<p id="alert"><%= alert %></p>
 
-<p>
-  <b>Name:</b>
-  <%= @perspective.name %>
-</p>
+<h2><%= "Perspective: #{@perspective.name}" %></h2>
 
 <p>
   <b>Description:</b>
   <%= @perspective.description %>
 </p>
 
-<p>
-  <b>Height:</b>
-  <%= @perspective.height %>
-</p>
+<p>Height:<%= @perspective.height %></p>
 
-<p>
-  <b>Angle:</b>
-  <%= @perspective.angle %>
-</p>
+<p>Angle: <%= @perspective.angle %></p>
 
-<p>
-  <b>Distance:</b>
-  <%= @perspective.distance %>
-</p>
+<p>Distance: <%= @perspective.distance %></p>
 
-<p>
-  <b>Inherits RegionStyles from:</b>
-  <%= @perspective.has_external_styles? ? @perspective.style_set.name : "none" %>
-</p>
+<p>Inherits RegionStyles from: <%= @perspective.has_external_styles? ? @perspective.style_set.name : "none" %></p>
 
+<h4>Regions:</h4>
 
+<table border="1">
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Number of Definitions</th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @perspective.regions.each do |region| %>
+  <tr>
+    <td><%= region.name %></td>
+    <td><%= region.description %></td>
+    <td><%= region.region_definitions.size %></td>
+    <td><%= link_to 'Show', region %></td>
+    <td><%= link_to 'Edit', edit_region_path(region) %></td>
+  </tr>
+<% end %>
+</table>
+
+<%= link_to 'Back to Perspectives', perspectives_path %>
 <%= link_to 'Edit', edit_perspective_path(@perspective) %> |
-<%= link_to 'Back', perspectives_path %>

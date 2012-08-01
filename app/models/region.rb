@@ -1,10 +1,10 @@
 class Region < ActiveRecord::Base
   belongs_to  :thing
-  has_and_belongs_to_many :region_sets
   has_many :region_definitions
   has_many :shape_sets, :through => :region_definitions
   has_many :region_styles
   has_many :perspectives, :through => :region_styles
+  validates_uniqueness_of :name
   
   alias :definitions :region_definitions
   
@@ -12,12 +12,12 @@ class Region < ActiveRecord::Base
     (definitions = region_definitions.select{ |x| x.shape_set_id == shape_set.id }).empty? ? false : definitions[0]
   end
   
-  def label
-    attributes["label"] or name
+  def name
+    attributes["name"] or label
   end
   
-  def has_label?
-    attributes["label"] ? true : false
+  def has_name?
+    attributes["name"] ? true : false
   end
       
 end

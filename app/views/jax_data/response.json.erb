@@ -6,10 +6,10 @@
        @cascade = @asset[:cascade] %>
   "<%= i %>" : <%= render :partial => 'shape_sets/show.json' %>
   
-   <% when :region_set
-       @region_set = asset[:object] 
+   <% when :perspective
+       @perspective = asset[:object] 
        @cascade = @asset[:cascade] %>
-  "<%= i %>" : <%= render :partial => 'region_sets/show.json'  %>
+  "<%= i %>" : <%= render :partial => 'perspectives/show.json'  %>
   
    <% when :region
        @region = Region.find asset[:object]

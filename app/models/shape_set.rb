@@ -3,7 +3,8 @@ class ShapeSet < ActiveRecord::Base
   has_many    :regions, :through => :region_definitions
   has_many    :shapes, :dependent => :destroy
   has_many    :meshes, :through => :shapes, :source => :low_meshes
-  has_one     :default_region_set_attr, :class_name => 'RegionSet', :foreign_key => 'default_region_set_id'
+#  has_one     :default_region_set_attr, :class_name => 'RegionSet', :foreign_key => 'default_region_set_id'
+  has_one     :default_perspective_attr, :class_name => 'Perspective', :foreign_key => 'default_perspective_id'
   validates   :subject, :presence => true
   validates   :version, :presence => true
   validate    :validate_version
@@ -46,11 +47,11 @@ class ShapeSet < ActiveRecord::Base
     self
   end
   
-  def default_region_set
-    return default_region_set_attr if default_region_set_attr.kind_of? RegionSet rescue nil
-    set_of_all_defined_regions = RegionSet.new :name => "dynamic_default", :is_default => true
-    RegionDefinition.all_definitions_for_shape_set(self).map {|d| d.region}
-    set_of_all_defined_regions.regions = RegionDefinition.all_definitions_for_shape_set(self).map {|d| d.region}
+  def default_perspective
+    # assumed no conflicting regions
+    return default_perspective_attr if default_perspective_attr.kind_of? Perspective rescue nil
+    set_of_all_defined_regions = Perspective.new :name => "dynamic_default", :is_default => true
+    set_of_all_defined_regions.include_regions RegionDefinition.all_definitions_for_shape_set(self).map {|d| d.region}
     set_of_all_defined_regions
   end
   
@@ -96,14 +97,14 @@ class ShapeSet < ActiveRecord::Base
         new_definition.save
       else
         failures ||= "\n--- failures in converting region definitions from: #{older_shape_set.name}\n"
-        failures << " - couldn't match definition of: #{region_definition.region.name}\n"
+        failures << " - couldn't match definition of: #{region_definition.region.label}\n"
       end
     end
     true
     self.notes << failures if defined? failures
   end
   
- def create_shape_based_region_set
+ def create_shape_based_perspective
     shape_regions = []
     shapes.each do |shape|
       # assumes there wouldn't be two regions of the same name!!
@@ -115,9 +116,9 @@ class ShapeSet < ActiveRecord::Base
         shape.region_definitions << new_rd
       end
     end
-    # create region set from shape_regions
-    new_region_set = RegionSet.create :name => "All shapes", :description => "generated to include all shapes as individual regions"
-    shape_regions.each { |r| new_region_set.regions << r }  
+    # create perspective from shape_regions
+    new_perspective = Perspective.create :name => "All shapes", :description => "generated to include all shapes as individual regions"
+    new_perspective.include_regions shape_regions
   end
   
   def validate_and_save shape_data

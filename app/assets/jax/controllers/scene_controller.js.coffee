@@ -12,10 +12,10 @@ Jax.Controller.create "Scene", ApplicationController,
     
     # load a region_set
     params =
-      shape_set: 15
+      shape_set: 17
       requests: [
-        type:"region_set"
-        id: "3"
+        type:"perspective"
+        id: "18"
         cascade:"yes" ]
     @loader.fetch params, (data, textStatus, jqXHR) =>
       for region_def in data[0].regions

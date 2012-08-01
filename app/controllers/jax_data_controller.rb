@@ -24,7 +24,7 @@ class JaxDataController < ApplicationController
         
     ## prepare descriptions of requested assets
     if params[:requests]
-      request_types = ["region_set", "region", "shape", "mesh"] # to request a shape_set: exclude type & id and include cascade
+      request_types = ["perspective", "region", "shape", "mesh"] # to request a shape_set: exclude type & id and include cascade
       required_feilds = ["type", "id"] # optional: "cascade", "included", "excluded"
       
       JSON.parse(params[:requests]).each do |request|
@@ -42,7 +42,7 @@ class JaxDataController < ApplicationController
     else
       # if there are no requests then respond with the default view or the shape_set if specified
       if not shape_set
-        @region_set = @shape_set.default_region_set
+        @perspective = @shape_set.default_perspective
         @cascade = encode_cascade(request["cascade"])
         render :action => "defaults.json"
         return
@@ -61,8 +61,8 @@ class JaxDataController < ApplicationController
       case new_asset[:type]
       #when :shape_set
       #  new_asset[:id] = @shape_set.id
-      when :region_set
-        new_asset[:object] = (RegionSet.find request["id"] rescue @shape_set.default_region_set)
+      when :perspective
+        new_asset[:object] = (Perspective.find request["id"] rescue @shape_set.default_perspective)
       when :region
         new_asset[:object] = Region.find request["id"] rescue return { :type => :error, :message => "Region not found with id: #{request["id"]}" }
       when :shape

@@ -2,7 +2,11 @@ class Perspective < ActiveRecord::Base
   belongs_to  :style_set, :class_name => 'Perspective'
   has_many    :points_of_view, :class_name => 'Perspective', :foreign_key => 'style_set_id', :dependent => :destroy
   has_many    :own_region_styles, :class_name => 'RegionStyle', :foreign_key => 'perspective_id', :dependent => :destroy
-  has_many    :regions, :through => :own_region_styles
+  has_many    :styled_regions, :through => :own_region_styles, :source => :region
+  
+  def regions
+    has_external_styles? ? style_set.regions : styled_regions
+  end
   
   def has_external_styles?
     # does this Perspective have region_styles itself or just point to another Perspective's region_styles?
@@ -31,12 +35,15 @@ class Perspective < ActiveRecord::Base
     end
   end
   
+  def include_regions new_regions
+    [*new_regions].each { |nr| update_or_create_region_style :region => nr }
+  end
+  
   def update_or_create_region_style params
     if rs = style_for(params[:region])
-      rs.update_attributes :colour         => params[:colour],
-                           :transparency   => params[:transparency],
-                           :label          => params[:label],
-                           :orphaned       => false
+      params.select! { |k,_| [:colour,:transparency,:label].include? k }
+      params[:orphaned] = false
+      rs.update_attributes params
     else
       region_styles << RegionStyle.create( :colour         => params[:colour],
                                            :transparency   => params[:transparency],

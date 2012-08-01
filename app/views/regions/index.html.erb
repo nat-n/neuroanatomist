@@ -13,8 +13,8 @@
 
 <% @regions.each do |region| %>
   <tr>
-    <td><%= region.name %></td>
-    <td><%= region.has_label? ? region.label : "" %></td>
+    <td><%= region.has_name? ? region.name : "" %></td>
+    <td><%= region.label %></td>
     <td><%= region.description %></td>
     <td><%= region.region_definitions.size %></td>
     <td><%= link_to 'Show', region %></td>

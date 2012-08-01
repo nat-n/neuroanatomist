@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120731133516) do
+ActiveRecord::Schema.define(:version => 20120801123353) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -63,6 +63,7 @@ ActiveRecord::Schema.define(:version => 20120731133516) do
     t.string   "name"
     t.string   "description"
     t.integer  "style_set_id"
+    t.boolean  "is_default",    :default => false
   end
 
   create_table "ratings", :force => true do |t|
@@ -87,19 +88,6 @@ ActiveRecord::Schema.define(:version => 20120731133516) do
   create_table "region_definitions_shapes", :id => false, :force => true do |t|
     t.integer "region_definition_id"
     t.integer "shape_id"
-  end
-
-  create_table "region_sets", :force => true do |t|
-    t.string   "name"
-    t.string   "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "is_default",  :default => false
-  end
-
-  create_table "region_sets_regions", :id => false, :force => true do |t|
-    t.integer "region_set_id"
-    t.integer "region_id"
   end
 
   create_table "region_styles", :force => true do |t|
@@ -180,8 +168,8 @@ ActiveRecord::Schema.define(:version => 20120731133516) do
     t.string   "data_created_at"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "is_default",            :default => false
-    t.integer  "default_region_set_id"
+    t.boolean  "is_default",             :default => false
+    t.integer  "default_perspective_id"
   end
 
   create_table "shapes", :force => true do |t|

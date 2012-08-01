@@ -1,0 +1,12 @@
+{ 
+  "id":<%= @perspective.id or "null" %>,
+  "name":"<%= @perspective.name %>"
+  <% if [:yes,:partial].include? @cascade %>,
+  "regions":[
+    <% @perspective.regions.each_with_index do |region, i| @region = region 
+      @region.definition_for @shape_set%>
+    <%= render :partial => 'regions/show.json' %><%= "," unless i == @perspective.regions.size-1 %>
+    <% end %>
+  ]
+  <% end %>
+}
