@@ -3,10 +3,9 @@
   "name":"<%= @perspective.name %>"
   <% if [:yes,:partial].include? @cascade %>,
   "regions":[
-    <% @perspective.region_styles.each_with_index do |region_style, i|
-         next if region_style.orphaned
-         @region = region_style.region
-         @region.definition_for @shape_set %>
+    <% @perspective.active_regions.each_with_index do |region, i|
+         @region = region
+         # why is this here? #@region.definition_for @shape_set %>
     <%= "," unless i == 0 %><%= render :partial => 'regions/show.json' %>
     <% end %>
   ]
