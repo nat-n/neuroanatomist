@@ -1,8 +1,8 @@
 class Region < ActiveRecord::Base
   belongs_to  :thing
-  has_many :region_definitions
+  has_many :region_definitions, :dependent => :destroy
   has_many :shape_sets, :through => :region_definitions
-  has_many :region_styles
+  has_many :region_styles, :dependent => :destroy
   has_many :perspectives, :through => :region_styles
   validates_uniqueness_of :name
   
