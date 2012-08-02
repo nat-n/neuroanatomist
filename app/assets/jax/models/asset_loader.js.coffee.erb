@@ -27,15 +27,22 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       regions.push new_region
     ((meshes[mesh_id] for mesh_id in region) for region in regions)
   
-  fetch_default_perspective: (callback, excludes) ->
-    params = 
-      excludes: excludes
-      requests: [
-        type:"perspective"
-        id:"default"
-        cascade:"yes"
-      ]
-    this.fetch params, (data, textStatus, jqXHR) -> callback(data[0], textStatus, jqXHR)
+  fetch_defaults: (callback) ->
+    $.ajax
+      url: @jax_data_path
+      dataType: 'json'
+      error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: " + textStatus
+      success: (data, textStatus, jqXHR) -> callback(data, textStatus, jqXHR)
+  
+  #fetch_default_perspective: (callback, excludes) ->
+  #  params = 
+  #    excludes: excludes
+  #    requests: [
+  #      type:"perspective"
+  #      id:"default"
+  #      cascade:"yes"
+  #    ]
+  #  this.fetch params, (data, textStatus, jqXHR) -> callback(data[0], textStatus, jqXHR)
       
   test_fetch: () ->
     test_fetch_params = 0#{shape_set:4, exclude:[13,14], requests: [{type:"shape",id:1,cascade:"yes"}]}

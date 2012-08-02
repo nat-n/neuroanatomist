@@ -10,16 +10,16 @@ Jax.Controller.create "Scene", ApplicationController,
     
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
-    # load a region_set
-    params =
-      shape_set: 17
-      requests: [
-        type:"perspective"
-        id: "18"
-        cascade:"yes" ]
-    @loader.fetch params, (data, textStatus, jqXHR) =>
-      for region_def in data[0].regions
-        this.show_region @scene.new_region(region_def)
+    @loader.fetch_defaults (data, textStatus, jqXHR) =>
+      params =
+        shape_set: data.default_shape_set.id
+        requests: [
+          type:"perspective"
+          id: data.default_perspective.id
+          cascade:"yes" ]
+      @loader.fetch params, (data, textStatus, jqXHR) =>
+        for region_def in data[0].regions
+          this.show_region @scene.new_region(region_def)
     
     this.patch_world()
     
