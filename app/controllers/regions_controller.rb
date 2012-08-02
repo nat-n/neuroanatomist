@@ -38,7 +38,6 @@ class RegionsController < ApplicationController
   end
   
   def destroy
-    Region.region_definitions.each { |definition| definition.update_attribute :orphaned, true }
     Region.find(params[:id]).destroy
     flash[:notice] = "Region has been deleted."
     redirect_to regions_path
