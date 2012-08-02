@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120802151305) do
+ActiveRecord::Schema.define(:version => 20120802210157) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -183,6 +183,9 @@ ActiveRecord::Schema.define(:version => 20120802151305) do
     t.datetime "updated_at"
     t.boolean  "is_default",             :default => false
     t.integer  "default_perspective_id"
+    t.string   "bounding_box"
+    t.float    "radius"
+    t.string   "center_point"
   end
 
   create_table "shapes", :force => true do |t|
