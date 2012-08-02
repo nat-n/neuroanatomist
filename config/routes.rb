@@ -1,4 +1,6 @@
 Neuroanatomist::Application.routes.draw do
+  resources :decompositions
+  
   resources :resource_types
 
   resources :nodes

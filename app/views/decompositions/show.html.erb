@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+<p id="alert"><%= alert %></p>
+
+<h2>Decomposition</h2>
+
+<p>
+  <b>Description:</b>
+  <%= @decomposition.description %>
+</p>
+<p>
+  <b>Super-Region:</b> <%= @decomposition.super_region.name %>
+</p>
+<br>
+
+<h4>Sub-Regions:</h4>
+<%= "empty" if @decomposition.sub_regions.empty? %>
+<ul>
+	<% @decomposition.sub_regions.each do |sub_region| %>
+	<li><%= sub_region.name %></li>
+	<% end %>
+</ul>
+
+<br />
+<%= link_to 'Back to Decompositions', decompositions_path %> | 
+<%= link_to 'Edit', edit_decomposition_path(@decomposition) %>

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120802145250) do
+ActiveRecord::Schema.define(:version => 20120802151305) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -26,6 +26,19 @@ ActiveRecord::Schema.define(:version => 20120802145250) do
   create_table "bibliographies_resources", :id => false, :force => true do |t|
     t.integer "bibliography_id"
     t.integer "resource_id"
+  end
+
+  create_table "decompositions", :force => true do |t|
+    t.string   "description"
+    t.integer  "rank"
+    t.integer  "region_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "decompositions_regions", :id => false, :force => true do |t|
+    t.integer "decomposition_id"
+    t.integer "region_id"
   end
 
   create_table "facts", :force => true do |t|

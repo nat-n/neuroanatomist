@@ -1,6 +1,5 @@
 class PerspectivesController < ApplicationController
   before_filter :find_perspective, :only => [:show, :edit, :update, :destroy]
-  #before_filter :update_region_styles, :only => [:create, :update]
   before_filter :find_regions, :only => [:new, :edit]
 
   def index

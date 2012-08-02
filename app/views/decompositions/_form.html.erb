@@ -1,0 +1,50 @@
+<%= form_for(@decomposition) do |f| %>
+  <% if @decomposition.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@decomposition.errors.count, "error") %> prohibited this region from being saved:</h2>
+
+      <ul>
+      <% @decomposition.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  
+  <div class="field">
+    <%= f.label :description %><br />
+    <%= f.text_area :description, :size => "33x6" %>
+  </div>
+  <div class="field">
+    <%= f.label :super_region %>: 
+    <%= f.select :super_region, Region.all.map(&:name), 
+		{:selected => (!@decomposition.new_record? and @decomposition.super_region.name)}, 
+		{:disabled => !@decomposition.new_record?} %>
+  </div>
+  
+  <h3>Sub-Regions</h3>
+  
+  <table class="backend_data">
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>#Definitions</th>
+      <th>Include</th>
+      <th></th>
+    </tr>
+
+  <% Region.all.each do |region| %>
+    <tr>
+      <td><%= label "sub_regions_#{region.id}".to_sym, region.name %></td>
+      <td><%= region.description %></td>
+      <td><%= region.region_definitions.size %></td>
+      <td><%= check_box :sub_regions, "#{region.id}_#{region.name}".to_sym, :checked => @decomposition.sub_regions.include?(region) %></td>
+    </tr>
+  <% end %>
+  </table>
+  
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+  
+<% end %>
