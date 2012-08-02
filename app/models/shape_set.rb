@@ -3,8 +3,7 @@ class ShapeSet < ActiveRecord::Base
   has_many    :regions, :through => :region_definitions
   has_many    :shapes, :dependent => :destroy
   has_many    :meshes, :through => :shapes, :source => :low_meshes
-#  has_one     :default_region_set_attr, :class_name => 'RegionSet', :foreign_key => 'default_region_set_id'
-  has_one     :default_perspective_attr, :class_name => 'Perspective', :foreign_key => 'default_perspective_id'
+  has_one     :default_perspective_attr, :class_name => 'Perspective', :foreign_key => 'default_for_shape_set_id'
   validates   :subject, :presence => true
   validates   :version, :presence => true
   validate    :validate_version

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120801123353) do
+ActiveRecord::Schema.define(:version => 20120802145250) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -63,7 +63,7 @@ ActiveRecord::Schema.define(:version => 20120801123353) do
     t.string   "name"
     t.string   "description"
     t.integer  "style_set_id"
-    t.boolean  "is_default",    :default => false
+    t.integer  "default_for_shape_set_id"
   end
 
   create_table "ratings", :force => true do |t|

@@ -1,4 +1,5 @@
 class Perspective < ActiveRecord::Base
+  belongs_to  :default_for_shape_set, :class_name => 'ShapeSet', :foreign_key => 'default_for_shape_set_id'
   belongs_to  :style_set, :class_name => 'Perspective'
   has_many    :points_of_view, :class_name => 'Perspective', :foreign_key => 'style_set_id', :dependent => :destroy
   has_many    :own_region_styles, :class_name => 'RegionStyle', :foreign_key => 'perspective_id', :dependent => :destroy
@@ -6,6 +7,10 @@ class Perspective < ActiveRecord::Base
   
   def regions
     has_external_styles? ? style_set.regions : styled_regions
+  end
+  
+  def make_default_for shape_set
+    shape_set.default_perspective_attr = self
   end
   
   def active_regions
