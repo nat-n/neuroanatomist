@@ -19,6 +19,14 @@
     render :partial => 'region_definitions/index' %>
 
 <br>
+<h4>Decompositions:</h4>
+<%= "none" if @region.decompositions.empty? %>
+<ul>
+	<% @region.decompositions.each do |d| %>
+	<li><%= link_to "  #{d.rank}. #{d.description}", d %></li>
+	<% end%>
+</ul>
+<br>
 <div>
   <%= form_tag(new_region_definition_path, :method => "get") do  %>
   <%= hidden_field_tag(:region, @region.id) %>

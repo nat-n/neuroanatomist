@@ -7,6 +7,7 @@
     <th>Label</th>
     <th>Description</th>
     <th>Number of Definitions</th>
+    <th>Number of Decompositions</th>
     <th></th>
     <th></th>
     <th></th>
@@ -19,6 +20,7 @@
     <td><%= region.label %></td>
     <td><%= region.description %></td>
     <td><%= region.region_definitions.size %></td>
+    <td><%= region.decompositions.size %></td>
     <td><%= link_to 'Show', region %></td>
     <td><%= link_to 'Edit', edit_region_path(region) %></td>
     <td><%= link_to 'Destroy', region, confirm: 'Are you sure?', method: :delete %></td>

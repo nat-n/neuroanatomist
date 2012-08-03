@@ -1,0 +1,6 @@
+{
+    "id":<%= @decomposition.id %>,
+    "super_region":<%= @decomposition.super_region.id %>,
+    "description":"<%= @decomposition.description %>",
+    "sub_regions":[<% @decomposition.sub_regions.each_with_index do |sr,i| %><%= sr.id %><%= "," unless i == @decomposition.sub_regions.size-1  %><% end %>]
+  }
