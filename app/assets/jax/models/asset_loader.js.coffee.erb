@@ -43,7 +43,23 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   #      cascade:"yes"
   #    ]
   #  this.fetch params, (data, textStatus, jqXHR) -> callback(data[0], textStatus, jqXHR)
-        
+  
+  fetch_regions: (shape_set_id, region_ids, callback) ->
+	  # should compose the params to fetch the requested regions, excluding already aquired meshes
+    params =
+      shape_set: shape_set_id
+      requests: []
+    for rid in region_ids
+      params.requests.push
+        type:"region"
+        id: rid
+        cascade:"yes"
+    if window.JAS.meshes.length
+      params.exclude = []
+      params.exclude.push mesh_id for mesh_id of window.JAS.meshes
+    this.fetch params, callback
+	  
+  
   fetch: (params, callback) ->
     # params = {shape_set: #, include:[], exclude:[], cascade:flag, requests: {}}
     url = @jax_data_path
