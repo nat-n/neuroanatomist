@@ -10,6 +10,7 @@ Jax.Controller.create "Scene", ApplicationController,
     
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
+	# fetch default visualisation data
     @loader.fetch_defaults (data, textStatus, jqXHR) =>
       params =
         shape_set: data.default_shape_set.id
