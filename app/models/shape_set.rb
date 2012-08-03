@@ -7,7 +7,6 @@ class ShapeSet < ActiveRecord::Base
   validates   :subject, :presence => true
   validates   :version, :presence => true
   validate    :validate_version
-
   
   def self.versions_of subject
     ShapeSet.where "subject = ?", subject
@@ -61,6 +60,18 @@ class ShapeSet < ActiveRecord::Base
   def data_path
     # should sanitise subject to make sure they're path friendly !!! ***
     "#{Rails.root}/shape_sets/#{self.subject}/#{self.version}"
+  end
+  
+  def bounding_box
+    bb = ShapeSet.last.attributes["bounding_box"]
+    return JSON.load bb if bb
+    nil
+  end
+  
+  def center_point
+    cp = ShapeSet.last.attributes["center_point"]
+    return JSON.load(cp).map{|x| x.round(4)} if cp
+    nil
   end
       
   def mesh_ids
@@ -193,7 +204,6 @@ class ShapeSet < ActiveRecord::Base
       break if broken
     end
     
-        
     new_params = { data_created_at: @shape_data["timestamp"],
                    shape_count: @shape_data["labels"].size,
                    mesh_count: @shape_data["meshes"].size,
@@ -216,6 +226,31 @@ class ShapeSet < ActiveRecord::Base
       new_mesh = Mesh.new
       new_mesh.validate_and_save mesh_data, self
     end
+  end
+  
+  def generate_geometric_descriptions
+    # calculates and stores the orthoganal bounding box, radius and center point of the shape_set
+    big_number = 10^10
+    ortho_bb = {xmin:big_number,xmax:-big_number,ymin:big_number,ymax:-big_number,zmin:big_number,zmax:-big_number}
+    
+    meshes.each do |mesh|
+      mesh.vertices(:data).each_slice(3) do |x,y,z|
+        if x < ortho_bb[:xmin] then ortho_bb[:xmin] = x
+        elsif x > ortho_bb[:xmax] then ortho_bb[:xmax] = x end
+        if y < ortho_bb[:ymin] then ortho_bb[:ymin] = y
+        elsif y > ortho_bb[:ymax] then ortho_bb[:ymax] = y end
+        if z < ortho_bb[:zmin] then ortho_bb[:zmin] = z
+        elsif z > ortho_bb[:zmax] then ortho_bb[:zmax] = z end
+      end
+    end
+    
+    half_ranges = [(ortho_bb[:xmax]-ortho_bb[:xmin])/2, (ortho_bb[:ymax]-ortho_bb[:ymin])/2, (ortho_bb[:zmax]-ortho_bb[:zmin])/2]
+
+    self.update_attribute :bounding_box, "#{JSON.dump(ortho_bb)}"
+    self.update_attribute :radius, half_ranges.max.to_f.round(4)
+    self.update_attribute :center_point, "#{JSON.dump([(ortho_bb[:xmin]+half_ranges[0]).round(4),
+                                                       (ortho_bb[:xmin]+half_ranges[1]).round(4),
+                                                       (ortho_bb[:xmin]+half_ranges[2]).round(4) ])}"
   end
   
   private

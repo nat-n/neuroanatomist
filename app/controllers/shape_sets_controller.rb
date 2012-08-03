@@ -1,5 +1,6 @@
 class ShapeSetsController < ApplicationController
   before_filter :find_shape_set, :only => [:show, :edit, :update, :destroy]
+  before_filter :update_descriptors, :only => [:update]
   
   def index
     @shape_sets = ShapeSet.all
@@ -15,6 +16,7 @@ class ShapeSetsController < ApplicationController
     
     if @shape_set.validate_and_save @shape_data
       @shape_set.save_shape_data
+      @shape_set.generate_geometric_descriptions
       @shape_set.copy_region_definitons_from @shape_set.previous_version rescue nil
       flash[:notice] = "Shape Set has been created."
       redirect_to @shape_set
@@ -63,6 +65,11 @@ class ShapeSetsController < ApplicationController
       rescue ActiveRecord::RecordNotFound
       flash[:alert] = "The shape set you were looking for could not be found."
       redirect_to shape_sets_path
+    end
+    def update_descriptors
+      # updates radius center_point
+      @shape_set.update_attribute :radius, params[:shape_set][:radius].to_f
+      @shape_set.update_attribute :center_point, JSON.dump([params[:center_point][:x].to_f,params[:center_point][:y].to_f,params[:center_point][:z].to_f])
     end
     
 end

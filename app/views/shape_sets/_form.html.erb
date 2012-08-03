@@ -10,25 +10,34 @@
       </ul>
     </div>
   <% end %>
-  <% disable_some = params["action"]=="edit" %>
+  <% editing = params["action"]=="edit" %>
 
   <div class="field">
     <%= f.label :subject %><br />
-    <%= f.text_field :subject, :disabled=>disable_some %>
+    <%= f.text_field :subject, :disabled=>editing %>
   </div>
   <div class="field">
     <%= f.label :version %><br />
-    <%= f.text_field :version, :disabled=>disable_some %>
+    <%= f.text_field :version, :disabled=>editing %>
   </div>
   <div class="field">
     <%= f.label :change_log %><br />
-    <%= f.text_area :change_log, :size => "33x6", :disabled=>disable_some %>
+    <%= f.text_area :change_log, :size => "33x6", :disabled=>editing %>
   </div>
   <div class="field">
     <%= f.label :notes %><br />
     <%= f.text_area :notes, :size => "33x6" %>
   </div>
-  <% unless disable_some %>
+  <% if editing %>
+   <div class="field">
+     <%= f.label :radius %><br />
+     <%= f.number_field :radius, {:min => 1, :step => 0.0001}%>
+   </div>
+   <div class="field">
+     <%= label :center_point, "Center Point" %><br />
+     x: <%= number_field :center_point, :x, :value => @shape_set.center_point[0], :step => 0.0001 %>  y: <%= number_field :center_point, :y, :value => @shape_set.center_point[1], :step => 0.0001 %>  z: <%= number_field :center_point, :z, :value => @shape_set.center_point[2], :step => 0.0001 %> 
+   </div>
+  <% else %>
   <div class="field">
     <%= f.label :shape_data_file, "Upload a shape set" %>
 	  <%= f.file_field :shape_data_file %>

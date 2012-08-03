@@ -43,12 +43,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   #      cascade:"yes"
   #    ]
   #  this.fetch params, (data, textStatus, jqXHR) -> callback(data[0], textStatus, jqXHR)
-      
-  test_fetch: () ->
-    test_fetch_params = 0#{shape_set:4, exclude:[13,14], requests: [{type:"shape",id:1,cascade:"yes"}]}
-    this.fetch test_fetch_params,
-      (data, textStatus, jqXHR) -> console.log (data)
-      
+        
   fetch: (params, callback) ->
     # params = {shape_set: #, include:[], exclude:[], cascade:flag, requests: {}}
     url = @jax_data_path
