@@ -1,10 +1,14 @@
 Jax.getGlobal()['Region'] = Jax.Model.create
   after_initialize: ->
     @id = @__unique_id
-  
-  compose: (region_def) ->
-    @region_id = region_def.id
+      
+    
+  compose: (shape_set_id, region_id) ->
+    @shape_set_id = shape_set_id
+    @region_id = region_id
+    region_def = window.JAS[@shape_set_id].regions[@region_id]
     @name = region_def.name
+    @decompositions = region_def.decompositions
     model_data = borders: {}, faces: [], vertex_normals: [], vertex_positions: []
     @mesh = new Jax.Mesh
       color: [Math.random(),Math.random(),Math.random(),1]
@@ -19,8 +23,9 @@ Jax.getGlobal()['Region'] = Jax.Model.create
     shape_vvs = []
     # construct array of meshes included in this region
     meshes = []
-    for more_meshes in ((shape_vvs.push(shape["volume_value"]) and shape["meshes"]) for shape in region_def["shapes"])
-      meshes = meshes.concat (mesh for mesh in more_meshes when mesh.included != "no")
+    for shape in (window.JAS[@shape_set_id].shapes[shape_id] for shape_id in region_def["shapes"])
+      shape_vvs.push(shape["volume_value"])
+      meshes.push mesh for mesh in (window.JAS[@shape_set_id].meshes[mesh_id] for mesh_id in shape.meshes)
     
     # filter out internal meshes
     meshes = (mesh for mesh in meshes when ((mesh,meshes) ->
@@ -30,7 +35,7 @@ Jax.getGlobal()['Region'] = Jax.Model.create
     # compose mesh and update
     for mesh in meshes
       # find mesh data
-      mesh = window.JAS.meshes[mesh.id]
+      mesh = window.JAS[@shape_set_id].meshes[mesh.id]
       # ensure normals face outwards
       if mesh["name"].split("-")[0] in shape_vvs
         mesh["vertex_normals"] = (-vn for vn in mesh["vertex_normals"])
@@ -38,7 +43,6 @@ Jax.getGlobal()['Region'] = Jax.Model.create
     
     @mesh.update model_data
     return this
-  
   
   stitch: (model_data, mesh) ->
     # determine shared borders

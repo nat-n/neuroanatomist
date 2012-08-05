@@ -7,9 +7,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     
     # create jax asset store
     # all meshes are stripped out of the loaded asset and stored here by id, where region can find them later
-    window.JAS =
-      meshes: {}
-    console.log window.JAS
+    window.JAS = {}
   
   perspective2region_descs: (json_data) ->
     regions = []
@@ -54,7 +52,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         type:"region"
         id: rid
         cascade:"yes"
-    if window.JAS.meshes.length
+    if window.JAS[shape_set_id].meshes.length
       params.exclude = []
       params.exclude.push mesh_id for mesh_id of window.JAS.meshes
     this.fetch params, callback
@@ -62,6 +60,11 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   
   fetch: (params, callback) ->
     # params = {shape_set: #, include:[], exclude:[], cascade:flag, requests: {}}
+    window.JAS[params.shape_set] ?= {}
+    window.JAS[params.shape_set].perspectives ?= {}
+    window.JAS[params.shape_set].meshes ?= {}
+    window.JAS[params.shape_set].shapes ?= {}
+    window.JAS[params.shape_set].regions ?= {}
     url = @jax_data_path
     url += "/" + params.shape_set if params.shape_set
     url += "?" if params.include or params.exclude or params.requests or params.cascade
@@ -78,32 +81,70 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       url: url
       dataType: 'json'
       error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: " + textStatus
-      success: (data, textStatus, jqXHR) -> 
+      success: (data, textStatus, jqXHR) ->
+        perspective_proc = (shape_set_id, perspective, region_proc, shape_proc, mesh_proc) ->
+          perspective_def = 
+            id: perspective.id
+            name: perspective.name
+            style_set: perspective.style_set
+            height: perspective.height
+            angle: perspective.angle
+            distance: perspective.distance
+            regions: []
+          
+          if "regions" of perspective
+            for region in perspective.regions
+              perspective_def.regions.push region.id
+              region_proc(shape_set_id, region, shape_proc, mesh_proc)
+          window.JAS[shape_set_id].perspectives[perspective.id] = perspective_def 
+        
+        region_proc = (shape_set_id, region, shape_proc, mesh_proc) ->
+          region_def = 
+            id: region.id
+            name: region.name
+            decompositions: region.decompositions
+            shapes: []
+          if "shapes" of region
+            for shape in region.shapes
+              region_def.shapes.push shape.id
+              shape_proc(shape_set_id, shape, mesh_proc)
+          window.JAS[shape_set_id].regions[region.id] = region_def 
+        
+        shape_proc = (shape_set_id, shape, mesh_proc) ->
+          shape_def =
+            id: shape.id
+            volume_value: shape.volume_value
+            name: shape.name
+            meshes: []
+          if "meshes" of shape
+            for mesh in shape["meshes"]
+              if mesh.included == "yes" or mesh.included == "elsewhere" # not entirely sure why this is neccessary ?
+                shape_def.meshes.push mesh.id
+              if mesh.included == "yes"
+                mesh_proc(shape_set_id, mesh)
+          window.JAS[shape_set_id].shapes[shape.id] = shape_def
+        
+        mesh_proc = (shape_set_id, mesh) ->
+          window.JAS[shape_set_id].meshes[mesh.id] =
+            id: mesh.id
+            name: mesh.name
+            vertex_positions: mesh.vertex_positions
+            vertex_normals: mesh.vertex_normals
+            faces: mesh.faces
+            borders: mesh.borders
+        
         unless "default_shape_set" of data
           for ri of data
             if "type" of params.requests[ri]
               switch params.requests[ri].type
                 when "perspective"                  
-                  for region in data[ri].regions
-                    if "shapes" of region
-                      for shape in region.shapes
-                        if "meshes" of shape
-                          new_meshes_index = []
-                          until shape.meshes.length == 0
-                            mesh = shape.meshes.shift()
-                            new_meshes_index.push
-                              id: mesh.id
-                              name: mesh.name
-                              included: mesh.included
-                            if mesh.included == "yes"
-                              window.JAS.meshes[mesh.id] = mesh
-                          shape.meshes = new_meshes_index
+                  perspective_proc(params.shape_set, data[ri], region_proc, shape_proc, mesh_proc)
                 when "region"
-                  0
+                  region_proc(params.shape_set, data[ri], shape_proc, mesh_proc)
                 when "shape"
-                  0
+                  shape_proc(params.shape_set, data[ri], shape_proc, mesh_proc)
                 when "mesh"
-                  0
+                  mesh_proc(params.shape_set, data[ri])
             else
               null # it's a shape_set
         callback(data, textStatus, jqXHR)

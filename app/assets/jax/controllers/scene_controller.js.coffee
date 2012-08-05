@@ -1,6 +1,7 @@
 
 Jax.Controller.create "Scene", ApplicationController,
   index: ->
+    @active_shape_set = false
     @context.gl.clearColor(0.0, 0.0, 0.0, 0.0)
     @loader = AssetLoader.find "standard"
     @scene = Scene.find "primary"
@@ -12,20 +13,44 @@ Jax.Controller.create "Scene", ApplicationController,
     
 	# fetch default visualisation data
     @loader.fetch_defaults (data, textStatus, jqXHR) =>
+      @active_shape_set = data.default_shape_set.id
       params =
         shape_set: data.default_shape_set.id
         requests: [
           type:"perspective"
           id: data.default_perspective.id
           cascade:"yes" ]
-      @loader.fetch params, (data, textStatus, jqXHR) =>
-        for region_def in data[0].regions
-          this.show_region @scene.new_region(region_def)
+      @loader.fetch params, (data, textStatus, jqXHR) => this.load_perspective(data[0].id)
     
     this.patch_world()
     
   helpers: -> [ CameraHelper, CanvasEventRoutingHelper ]
   
+  activate_shape_set: () ->
+    # should do this
+  
+  load_perspective: (perspective_id) ->
+    # loads the referenced perspective from the asset store
+    perspective = window.JAS[@active_shape_set].perspectives[perspective_id]
+    cp = this.camera_position()
+    this.camera_position(
+      perspective.angle or cp.a,
+      perspective.height or cp.h,
+      perspective.distance or cp.d
+    )
+    for region_id in perspective.regions
+      this.show_region @scene.new_region(@active_shape_set, region_id)
+  
+  save_perspective: () ->
+    # saves a description of which regions are visible and the camera position
+  
+  decompose: (region_uid) ->
+    d = @world.objects[region_uid].decompositions[0]
+    return false unless d
+    @loader.fetch_regions @active_shape_set, d.sub_regions, (data) =>
+      this.hide_region (region_uid)
+      for item of data
+        this.show_region @scene.new_region(@active_shape_set, data[item].id)
   
   show_region: (id) ->
     @world.addObject(@scene.activate_region(id)).id

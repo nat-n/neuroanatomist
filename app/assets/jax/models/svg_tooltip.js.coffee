@@ -40,6 +40,9 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
         window.context.current_controller.tooltip.paper.canvas.style["pointer-events"] = "none"
         window.context.current_controller.hide_region(window.context.current_controller.tooltip.hovered_region.id)
         window.context.current_controller.tooltip.clear()
+      "Show Parts": () ->
+        window.context.current_controller.decompose(window.context.current_controller.tooltip.hovered_region.id)
+        window.context.current_controller.tooltip.clear()
       About: () -> alert "you want to know more?"
     
     @box.set = @paper.set @paper.path(@box.path(@label.h)).attr(@box.style),
@@ -98,6 +101,7 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
       
       @menu.set = @paper.set()
       for link_text of @menu.items
+        continue if link_text == "Show Parts" and not @hovered_region.decompositions.length
         @menu.set.push(
           @paper.rect( @menu.button.offset.x+@menu.button.margin,
                         bg_offset+=@menu.button.h, 

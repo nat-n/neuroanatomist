@@ -1,8 +1,10 @@
 { 
   "id":<%= @perspective.id or "null" %>,
   "name":"<%= @perspective.name %>",
-  "style_set":"<%= @perspective.has_external_styles? ? @perspective.style_set.id : false %>"
-  <% if [:yes,:partial].include? @cascade %>,
+  "style_set":"<%= @perspective.has_external_styles? ? @perspective.style_set.id : false %>",
+  "height":"<%= @perspective.height %>",
+  "angle":"<%= @perspective.angle %>",
+  "distance":"<%= @perspective.distance %>"<% if [:yes,:partial].include? @cascade %>,
   "regions":[
     <% @perspective.active_regions.each_with_index do |region, i|
          @region = region %>
