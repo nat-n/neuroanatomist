@@ -25,7 +25,11 @@ Jax.getGlobal().CameraHelper = Jax.Helper.create
       h = halfpi  if h > halfpi
       h = -halfpi if h < -halfpi
       @scene.highlight()
-        
+  
+  configure_camera: (center_point, radius) ->
+    c = center_point
+    d_min = radius
+    
   camera_position: (ca,ch,cd) -> # expects arguments scaled to 1
     if ca or ca==0
       a = twopi*(ca-Math.floor(ca))

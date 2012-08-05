@@ -30,17 +30,14 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       url: @jax_data_path
       dataType: 'json'
       error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: " + textStatus
-      success: (data, textStatus, jqXHR) -> callback(data, textStatus, jqXHR)
-  
-  #fetch_default_perspective: (callback, excludes) ->
-  #  params = 
-  #    excludes: excludes
-  #    requests: [
-  #      type:"perspective"
-  #      id:"default"
-  #      cascade:"yes"
-  #    ]
-  #  this.fetch params, (data, textStatus, jqXHR) -> callback(data[0], textStatus, jqXHR)
+      success: (data, textStatus, jqXHR) ->
+        shape_set = data.default_shape_set        
+        window.JAS[shape_set.id] ?= {}
+        window.JAS[shape_set.id].id ?= shape_set.id
+        window.JAS[shape_set.id].name ?= shape_set.name
+        window.JAS[shape_set.id].radius ?= shape_set.radius
+        window.JAS[shape_set.id].center_point ?= shape_set.center_point
+        callback(data, textStatus, jqXHR)
   
   fetch_regions: (shape_set_id, region_ids, callback) ->
 	  # should compose the params to fetch the requested regions, excluding already aquired meshes
@@ -56,8 +53,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       params.exclude = []
       params.exclude.push mesh_id for mesh_id of window.JAS.meshes
     this.fetch params, callback
-	  
-  
+	
   fetch: (params, callback) ->
     # params = {shape_set: #, include:[], exclude:[], cascade:flag, requests: {}}
     window.JAS[params.shape_set] ?= {}
@@ -133,7 +129,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
             faces: mesh.faces
             borders: mesh.borders
         
-        unless "default_shape_set" of data
+        unless "default_shape_set" of data # not sure if this is necccessary
           for ri of data
             if "type" of params.requests[ri]
               switch params.requests[ri].type

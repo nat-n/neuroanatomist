@@ -13,7 +13,7 @@ Jax.Controller.create "Scene", ApplicationController,
     
 	# fetch default visualisation data
     @loader.fetch_defaults (data, textStatus, jqXHR) =>
-      @active_shape_set = data.default_shape_set.id
+      this.activate_shape_set(data.default_shape_set.id)
       params =
         shape_set: data.default_shape_set.id
         requests: [
@@ -26,8 +26,9 @@ Jax.Controller.create "Scene", ApplicationController,
     
   helpers: -> [ CameraHelper, CanvasEventRoutingHelper ]
   
-  activate_shape_set: () ->
-    # should do this
+  activate_shape_set: (shape_set) ->
+    @active_shape_set = shape_set
+    this.configure_camera(window.JAS[@active_shape_set].center_point, window.JAS[@active_shape_set].radius)
   
   load_perspective: (perspective_id) ->
     # loads the referenced perspective from the asset store
