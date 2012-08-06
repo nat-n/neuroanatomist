@@ -7,7 +7,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     
     # create jax asset store
     # all meshes are stripped out of the loaded asset and stored here by id, where region can find them later
-    window.JAS = {}
+    window.context.s3 = {}
   
   perspective2region_descs: (json_data) ->
     regions = []
@@ -32,11 +32,11 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: " + textStatus
       success: (data, textStatus, jqXHR) ->
         shape_set = data.default_shape_set        
-        window.JAS[shape_set.id] ?= {}
-        window.JAS[shape_set.id].id ?= shape_set.id
-        window.JAS[shape_set.id].name ?= shape_set.name
-        window.JAS[shape_set.id].radius ?= shape_set.radius
-        window.JAS[shape_set.id].center_point ?= shape_set.center_point
+        window.context.s3[shape_set.id] ?= {}
+        window.context.s3[shape_set.id].id ?= shape_set.id
+        window.context.s3[shape_set.id].name ?= shape_set.name
+        window.context.s3[shape_set.id].radius ?= shape_set.radius
+        window.context.s3[shape_set.id].center_point ?= shape_set.center_point
         callback(data, textStatus, jqXHR)
   
   fetch_regions: (shape_set_id, region_ids, callback) ->
@@ -49,18 +49,18 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         type:"region"
         id: rid
         cascade:"yes"
-    if window.JAS[shape_set_id].meshes.length
+    if window.context.s3[shape_set_id].meshes.length
       params.exclude = []
-      params.exclude.push mesh_id for mesh_id of window.JAS.meshes
+      params.exclude.push mesh_id for mesh_id of window.context.s3.meshes
     this.fetch params, callback
 	
   fetch: (params, callback) ->
     # params = {shape_set: #, include:[], exclude:[], cascade:flag, requests: {}}
-    window.JAS[params.shape_set] ?= {}
-    window.JAS[params.shape_set].perspectives ?= {}
-    window.JAS[params.shape_set].meshes ?= {}
-    window.JAS[params.shape_set].shapes ?= {}
-    window.JAS[params.shape_set].regions ?= {}
+    window.context.s3[params.shape_set] ?= {}
+    window.context.s3[params.shape_set].perspectives ?= {}
+    window.context.s3[params.shape_set].meshes ?= {}
+    window.context.s3[params.shape_set].shapes ?= {}
+    window.context.s3[params.shape_set].regions ?= {}
     url = @jax_data_path
     url += "/" + params.shape_set if params.shape_set
     url += "?" if params.include or params.exclude or params.requests or params.cascade
@@ -92,7 +92,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
             for region in perspective.regions
               perspective_def.regions.push region.id
               region_proc(shape_set_id, region, shape_proc, mesh_proc)
-          window.JAS[shape_set_id].perspectives[perspective.id] = perspective_def 
+          window.context.s3[shape_set_id].perspectives[perspective.id] = perspective_def 
         
         region_proc = (shape_set_id, region, shape_proc, mesh_proc) ->
           region_def = 
@@ -104,7 +104,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
             for shape in region.shapes
               region_def.shapes.push shape.id
               shape_proc(shape_set_id, shape, mesh_proc)
-          window.JAS[shape_set_id].regions[region.id] = region_def 
+          window.context.s3[shape_set_id].regions[region.id] = region_def 
         
         shape_proc = (shape_set_id, shape, mesh_proc) ->
           shape_def =
@@ -118,10 +118,10 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
                 shape_def.meshes.push mesh.id
               if mesh.included == "yes"
                 mesh_proc(shape_set_id, mesh)
-          window.JAS[shape_set_id].shapes[shape.id] = shape_def
+          window.context.s3[shape_set_id].shapes[shape.id] = shape_def
         
         mesh_proc = (shape_set_id, mesh) ->
-          window.JAS[shape_set_id].meshes[mesh.id] =
+          window.context.s3[shape_set_id].meshes[mesh.id] =
             id: mesh.id
             name: mesh.name
             vertex_positions: mesh.vertex_positions

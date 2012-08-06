@@ -8,6 +8,7 @@ Jax.Controller.create "Scene", ApplicationController,
     @tooltip_ = SVGTooltip.find "region_dark"
     @labeler_ = SVGLabeler.find "regions_light"
     this.activate_tooltip()
+    @history = window.context.history = {}
     
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
@@ -24,26 +25,12 @@ Jax.Controller.create "Scene", ApplicationController,
     
     this.patch_world()
     
-  helpers: -> [ CameraHelper, CanvasEventRoutingHelper ]
+  helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper ]
   
   activate_shape_set: (shape_set) ->
     @active_shape_set = shape_set
-    this.configure_camera(window.JAS[@active_shape_set].center_point, window.JAS[@active_shape_set].radius)
+    this.configure_camera(window.context.s3[@active_shape_set].center_point, window.context.s3[@active_shape_set].radius)
   
-  load_perspective: (perspective_id) ->
-    # loads the referenced perspective from the asset store
-    perspective = window.JAS[@active_shape_set].perspectives[perspective_id]
-    cp = this.camera_position()
-    this.camera_position(
-      perspective.angle or cp.a,
-      perspective.height or cp.h,
-      perspective.distance or cp.d
-    )
-    for region_id in perspective.regions
-      this.show_region @scene.new_region(@active_shape_set, region_id)
-  
-  save_perspective: () ->
-    # saves a description of which regions are visible and the camera position
   
   decompose: (region_uid) ->
     d = @world.objects[region_uid].decompositions[0]
@@ -58,6 +45,9 @@ Jax.Controller.create "Scene", ApplicationController,
     
   hide_region: (id) ->
     @world.removeObject @scene.deactivate_region(id)
+  
+  clear_regions: () ->
+    this.hide_region(r) for r of @world.objects
   
   activate_tooltip: () ->
     if @labeler

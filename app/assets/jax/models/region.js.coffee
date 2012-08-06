@@ -6,7 +6,7 @@ Jax.getGlobal()['Region'] = Jax.Model.create
   compose: (shape_set_id, region_id) ->
     @shape_set_id = shape_set_id
     @region_id = region_id
-    region_def = window.JAS[@shape_set_id].regions[@region_id]
+    region_def = window.context.s3[@shape_set_id].regions[@region_id]
     @name = region_def.name
     @decompositions = region_def.decompositions
     model_data = borders: {}, faces: [], vertex_normals: [], vertex_positions: []
@@ -23,9 +23,9 @@ Jax.getGlobal()['Region'] = Jax.Model.create
     model_data.shapes = []
     # construct array of meshes included in this region
     meshes = []
-    for shape in (window.JAS[@shape_set_id].shapes[shape_id] for shape_id in region_def["shapes"])
+    for shape in (window.context.s3[@shape_set_id].shapes[shape_id] for shape_id in region_def["shapes"])
       model_data.shapes.push(shape["volume_value"])
-      meshes.push mesh for mesh in (window.JAS[@shape_set_id].meshes[mesh_id] for mesh_id in shape.meshes)
+      meshes.push mesh for mesh in (window.context.s3[@shape_set_id].meshes[mesh_id] for mesh_id in shape.meshes)
     
     # filter out internal meshes
     meshes = (mesh for mesh in meshes when ((mesh,meshes) ->
@@ -33,7 +33,7 @@ Jax.getGlobal()['Region'] = Jax.Model.create
       not((fb[0] in model_data.shapes) and (fb[1] in model_data.shapes)))(mesh,meshes))
     
     # compose mesh and update
-    model_data = this.stitch(model_data, window.JAS[@shape_set_id].meshes[mesh.id]) for mesh in meshes
+    model_data = this.stitch(model_data, window.context.s3[@shape_set_id].meshes[mesh.id]) for mesh in meshes
     
     @mesh.update model_data
     return this
