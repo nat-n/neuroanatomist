@@ -21,11 +21,12 @@ Jax.getGlobal().CanvasEventRoutingHelper = Jax.Helper.create
       @tooltip.mouse_dragged event.pageX, event.pageY, @picked
   
   mouse_pressed: (event) ->
+    this.camera_press(event)
     if @labeler
       @labeler.mouse_pressed event
-    
 
   mouse_released: (event) ->
+    this.camera_release(event)
     if @tooltip
       @tooltip.mouse_released event.pageX, event.pageY, @world.pick(event.x, event.y)
     if @labeler

@@ -9,6 +9,7 @@ halfpi  = Math.PI/2
 twopi   = Math.PI*2
 anim    = false
 
+
 Jax.getGlobal().CameraHelper = Jax.Helper.create
   depth_key: (event) ->
     unless anim
@@ -26,6 +27,12 @@ Jax.getGlobal().CameraHelper = Jax.Helper.create
       h = -halfpi if h < -halfpi
       @scene.highlight()
   
+  camera_press: () -> 
+    @press_position = {a:a, h:h, d:d}
+  
+  camera_release: () ->
+    this.camera_moved() if a != @press_position.a or d != @press_position.d or h != @press_position.h
+    
   configure_camera: (center_point, radius) ->
     c = center_point
     d_min = radius

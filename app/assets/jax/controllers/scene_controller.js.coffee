@@ -8,7 +8,8 @@ Jax.Controller.create "Scene", ApplicationController,
     @tooltip_ = SVGTooltip.find "region_dark"
     @labeler_ = SVGLabeler.find "regions_light"
     this.activate_tooltip()
-    @history = window.context.history = {}
+    @history = window.context.history ?= { log: [], back: [], forward: [] }
+    @s3 = window.context.s3 ?= {}
     
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
@@ -21,34 +22,40 @@ Jax.Controller.create "Scene", ApplicationController,
           type:"perspective"
           id: data.default_perspective.id
           cascade:"yes" ]
-      @loader.fetch params, (data, textStatus, jqXHR) => this.load_perspective(data[0].id)
-    
+      @loader.fetch params, (data, textStatus, jqXHR) => 
+        this.load_perspective(data[0].id, false)
+        this.update_history()
+      
     this.patch_world()
     
-  helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper ]
+  helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper ]
   
   activate_shape_set: (shape_set) ->
     @active_shape_set = shape_set
-    this.configure_camera(window.context.s3[@active_shape_set].center_point, window.context.s3[@active_shape_set].radius)
+    this.configure_camera(@s3[@active_shape_set].center_point, @s3[@active_shape_set].radius)
   
   
-  decompose: (region_uid) ->
+  decompose: (region_uid, fire=true) ->
     d = @world.objects[region_uid].decompositions[0]
     return false unless d
     @loader.fetch_regions @active_shape_set, d.sub_regions, (data) =>
-      this.hide_region (region_uid)
+      this.hide_region(region_uid, false)
       for item of data
-        this.show_region @scene.new_region(@active_shape_set, data[item].id)
+        this.show_region(@scene.new_region(@active_shape_set, data[item].id), false)
+    this.regions_changed() if fire
   
-  show_region: (id) ->
+  show_region: (id, fire=true) ->
     @world.addObject(@scene.activate_region(id)).id
+    this.regions_changed() if fire
     
-  hide_region: (id) ->
+  hide_region: (id, fire=true) ->
     @world.removeObject @scene.deactivate_region(id)
+    this.regions_changed() if fire
   
-  clear_regions: () ->
-    this.hide_region(r) for r of @world.objects
-  
+  clear_regions: (fire=true) ->
+    this.hide_region(r, fire) for r of @world.objects
+    this.regions_changed() if fire
+	
   activate_tooltip: () ->
     if @labeler
       @labeler.clear()
