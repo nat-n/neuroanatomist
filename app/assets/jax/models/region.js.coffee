@@ -7,6 +7,8 @@ Jax.getGlobal()['Region'] = Jax.Model.create
     @shape_set_id = shape_set_id
     @region_id = region_id
     region_def = @s3[@shape_set_id].regions[@region_id]
+    if region_def.object then return region_def.object
+    else region_def.object = this
     @name = region_def.name
     @decompositions = region_def.decompositions
     model_data = borders: {}, faces: [], vertex_normals: [], vertex_positions: []

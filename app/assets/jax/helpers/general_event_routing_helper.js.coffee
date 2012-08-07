@@ -4,6 +4,3 @@ Jax.getGlobal().GeneralEventRoutingHelper = Jax.Helper.create
 	  
   regions_changed: () ->
     this.update_history()
-    
-    
-  

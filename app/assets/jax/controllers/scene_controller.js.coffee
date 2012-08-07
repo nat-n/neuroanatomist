@@ -8,7 +8,7 @@ Jax.Controller.create "Scene", ApplicationController,
     @tooltip_ = SVGTooltip.find "region_dark"
     @labeler_ = SVGLabeler.find "regions_light"
     this.activate_tooltip()
-    @history = window.context.history ?= { log: [], back: [], forward: [] }
+    @history = window.context.history ?= { log: [], back: [], forward: [], recent_regions: {} }
     @s3 = window.context.s3 ?= {}
     
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
@@ -50,6 +50,7 @@ Jax.Controller.create "Scene", ApplicationController,
     
   hide_region: (id, fire=true) ->
     @world.removeObject @scene.deactivate_region(id)
+    #@history.recent_regions[@world.objects[id].region_id] = @world.objects[id]
     this.regions_changed() if fire
   
   clear_regions: (fire=true) ->
