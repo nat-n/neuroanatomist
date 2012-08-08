@@ -13,7 +13,7 @@
 
   <div class="field">
     <%= f.label :type %><br />
-    <%= f.select :type, Type.all.map(&:name), :selected => (@thing.type and @thing.type.name) %>
+    <%= f.select :type, Type.all.map(&:name), :selected => ((@thing.type and @thing.type.name) or params[:type])%>
   </div>
   <div class="field">
     <%= f.label :name %><br />

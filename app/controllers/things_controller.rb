@@ -78,7 +78,7 @@ class ThingsController < ApplicationController
       params[:thing][:type_id] = Type.where(:name => params[:thing].delete(:type)).first.id
     end
     def find_or_create_node
-      if params[:thing][:node] = "auto-assign"
+      if !params[:thing][:node] or params[:thing][:node] = "auto-assign"
         params[:thing][:node] = Node.find_or_create params[:thing][:name]
       else
         params[:thing][:node] = Node.find_by_name params[:thing][:node]

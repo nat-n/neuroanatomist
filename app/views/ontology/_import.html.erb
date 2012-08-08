@@ -1,0 +1,6 @@
+<div id="import_ontology_data">
+  <%= form_tag({:action => :create}, :multipart => true)  do %> 
+  <b><%= label :ontology_data_file, "Upload an Ontology data file:" %></b>
+	<%= file_field_tag :ontology_data_file %><%= submit_tag :Upload, :confirm => "WARNING: this will overwrite any existing ontology records, are you sure?" %>
+  <% end %>  
+</div>
