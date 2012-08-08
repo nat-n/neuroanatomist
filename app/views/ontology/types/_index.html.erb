@@ -1,5 +1,5 @@
 <div >
-	<b><%= link_to @type.name, @type %></b><br /><%= (@type.description.strip.empty? ? "-" : @type.description) %><br />
+	<b><%= link_to @type.name, @type %></b><br /><%= @type.description.strip.empty?  ? "-" : @type.description%><br />
   
 	<% if @type.things.size >= 1 %><b>Instances:</b>
 	<%= render :partial => 'ontology/things/index' %>

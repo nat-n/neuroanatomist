@@ -38,8 +38,7 @@ class OntologyController < ApplicationController
       for thing in type_data["instances"] do
         existing_thing = Thing.where("name = ?",thing["name"]).first
         tag = Tag.where("name = ?",thing["name"]).first or Tag.create(:name=>thing["name"])
-        node = Node.where("name = ?",thing["name"]).first or Node.create(:name => thing["name"], :tag => tag)
-        regions = thing["regions"].map {|rn| Region.where("name = ?", rn).first }.compact
+        node = Node.where("name = ?",thing["name"]).first or Node.create(:name => "thing[]", :tag => tag)
         if existing_thing
           existing_thing.update_attributes(:description       => thing["description"],
                                            :synonyms          => thing["synonyms"],
@@ -47,7 +46,6 @@ class OntologyController < ApplicationController
                                            :dbpedia_resource  => thing["dbpedia_resource"],
                                            :wikipedia_title   => thing["wikipedia_title"],
                                            :type_id           => existing_type.id)
-          existing_thing.regions = regions
         else
           new_thing = Thing.create(:name              => thing["name"],
                                    :description       => thing["description"],
@@ -56,7 +54,6 @@ class OntologyController < ApplicationController
                                    :dbpedia_resource  => thing["dbpedia_resource"],
                                    :wikipedia_title   => thing["wikipedia_title"],
                                    :type_id           => existing_type.id)
-          new_thing.regions = regions
           node.update_attribute :thing_id, new_thing.id
         end
       end
