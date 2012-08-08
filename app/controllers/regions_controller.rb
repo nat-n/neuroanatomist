@@ -1,5 +1,6 @@
 class RegionsController < ApplicationController
   before_filter :find_region, :only => [:show, :edit, :update, :destroy]
+  before_filter :find_thing, :only => [:update, :create]
   
   def index
     @regions = Region.all
@@ -50,6 +51,9 @@ class RegionsController < ApplicationController
       rescue ActiveRecord::RecordNotFound
       flash[:alert] = "The Region you were looking for could not be found."
       redirect_to regions_path
+    end
+    def find_thing
+      params[:region][:thing] = Thing.where("name = ?",params[:region][:thing]).first
     end
   
 end

@@ -24,6 +24,11 @@
     <%= f.text_area :description, :size => "33x6" %>
   </div>
 
+  <div class="field">
+    <%= f.label :thing %><br />
+    <%= f.select :thing, ["none"]+Thing.all.map(&:name), :selected => (@region.thing ? @region.thing.name : @region.name) %>
+  </div>
+
   <div class="actions">
     <%= f.submit %>
   </div>
