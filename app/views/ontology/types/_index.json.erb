@@ -1,0 +1,9 @@
+{
+  "name": "<%= @type.name%>",
+  "description": "<%= @type.description.strip.empty?  ? "null" : @type.description %>",
+  "instances": [<% @type.things.each_with_index do |thing, i| @thing = thing %>
+  <%= render :partial => 'ontology/things/show.json' %><%= "," unless i+1 == @type.things.size %><% end %>],
+  "subtypes": [<% n = @type.subtypes.size; @type.subtypes.each_with_index do |subtype, i| next if subtype == @root_type ; @type = subtype %>
+  <%= render :partial => 'ontology/types/index.json' %><%= "," unless i+1 == n %>
+  <% end %>]
+}

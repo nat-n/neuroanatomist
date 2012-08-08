@@ -1,0 +1,17 @@
+<div >
+	<b><%= link_to @type.name, @type %></b><br /><%= @type.description.strip.empty?  ? "-" : @type.description%><br />
+  
+	<% if @type.things.size >= 1 %><b>Instances:</b>
+	<%= render :partial => 'ontology/things/index' %>
+	<% end %><br>
+  
+	<% if @type.subtypes.size >= 1 %><b>Subtypes:</b><br><br>
+	<ol class="types"><% @type.subtypes.each do |subtype|
+    next if subtype == @root_type 
+    @type = subtype %>
+	<li style="border: 1px dotted #000; text-indent: 0; padding: 3px; margin: 0;">
+    <%= render :partial => 'ontology/types/index' %>
+	</li><br>
+	<% end %></ol>
+  <% end %>
+</div>

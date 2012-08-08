@@ -1,0 +1,12 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Ontology Overview</h1>
+
+
+<ol class"types"><% @root_types.each do |root_type| @type = @root_type = root_type %>
+<li>
+<%= render :partial => 'ontology/types/index' %>
+</li>
+<% end %></ol>
+
+<%= link_to "Export Ontology", "ontology.json" %>

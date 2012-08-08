@@ -84,7 +84,7 @@ class RelationsController < ApplicationController
   private
     def render(*args)
       options = args.extract_options!
-      options[:template] = "/ontology/types/#{params[:action]}"
+      options[:template] = "/ontology/relations/#{params[:action]}"
       super(*(args << options))
     end
 end

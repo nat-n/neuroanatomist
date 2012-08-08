@@ -84,7 +84,7 @@ class FactsController < ApplicationController
   private
     def render(*args)
       options = args.extract_options!
-      options[:template] = "/ontology/types/#{params[:action]}"
+      options[:template] = "/ontology/facts/#{params[:action]}"
       super(*(args << options))
     end
 end

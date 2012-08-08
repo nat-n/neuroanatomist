@@ -8,4 +8,8 @@ class Thing < ActiveRecord::Base
   validates_uniqueness_of :name
   validates_presence_of :name, :type
   
+  def facts
+    subject_facts + object_facts
+  end
+  
 end

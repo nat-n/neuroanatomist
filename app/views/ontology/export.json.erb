@@ -1,0 +1,7 @@
+<% @type = @root_type = @root_types.first%>
+{
+  "type": "ontology",
+  "version": 0.1,
+  "timestamp": "<%= Time.now %>",
+  "root_type": <%= render :partial => 'ontology/types/index.json' %>
+}

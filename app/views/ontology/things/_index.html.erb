@@ -1,0 +1,13 @@
+<table class="thing backend_data">
+<tr>
+	<th>name</th>
+	<th>description</th>
+	<th>facts</th>
+	<th></th>
+</tr>	
+<% @type.things.each do |thing|  %><tr>
+  <td><%= link_to thing.name, thing %></td>
+  <td><%= thing.description %></td>
+  <td><%= thing.facts %></td>
+  <td><%= link_to 'Edit', edit_thing_path(@type) %></td>
+</tr><% end %></table>

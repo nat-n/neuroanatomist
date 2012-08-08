@@ -37,7 +37,7 @@
 
 <p>
   <b>Node:</b>
-  <%= link_to @thing.node.name, @thing.node %>
+  <%= @thing.node ? link_to(@thing.node.name, @thing.node) : "none" %>
 </p>
 
 
