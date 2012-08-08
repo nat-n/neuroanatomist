@@ -1,6 +1,7 @@
 {
   "id":<%= @region.id %>,
   "name":"<%= @region.name %>",
+  "thing": <%=  @region.thing ? @region.thing.id : "null" %>,
   "decompositions": [ <% @region.decompositions.each_with_index do |d,i| @decomposition = d %>
   	<%= render :partial => 'decompositions/show.json' %><%= "," unless i == @region.decompositions.size-1 %>
   <% end %>]

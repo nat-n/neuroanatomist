@@ -1,10 +1,15 @@
 class NodesController < ApplicationController
-  before_filter :find_or_create_tag, :only => [:create]
+  before_filter :find_or_create_tag, :only => [:create, :update]
   before_filter :find_node, :only => [:show, :edit, :update, :destroy]
 
   def index
+    # can request nodes by Thing with this action
+    if params["thing"].to_i > 0
+      params[:id] = Thing.find(params["thing"].to_i).node.id
+      find_node
+      return render :action => :show, :layout => "embedded"
+    end
     @nodes = Node.all
-
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @nodes }

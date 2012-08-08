@@ -11,6 +11,7 @@ Jax.getGlobal()['Region'] = Jax.Model.create
     else region_def.object = this
     @name = region_def.name
     @decompositions = region_def.decompositions
+    @thing = region_def.thing
     model_data = borders: {}, faces: [], vertex_normals: [], vertex_positions: []
     @mesh = new Jax.Mesh
       color: [Math.random(),Math.random(),Math.random(),1]

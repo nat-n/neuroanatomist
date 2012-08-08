@@ -43,7 +43,7 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
       "Show Parts": () ->
         window.context.current_controller.decompose(window.context.current_controller.tooltip.hovered_region.id)
         window.context.current_controller.tooltip.clear()
-      About: () -> alert "you want to know more?"
+      About: () -> $("#sup_content iframe").attr("src", "/nodes?thing="+window.context.current_controller.tooltip.hovered_region.thing)
     
     @box.set = @paper.set @paper.path(@box.path(@label.h)).attr(@box.style),
       @label.el = @paper.text(@box.offset.x+@box.w/2,@label.h/2,"").attr(@label.text.style)
@@ -101,7 +101,8 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
       
       @menu.set = @paper.set()
       for link_text of @menu.items
-        continue if link_text == "Show Parts" and not @hovered_region.decompositions.length
+        continue if link_text == "Show Parts" and not @hovered_region.decompositions.length or
+          link_text == "About" and not @hovered_region.thing
         @menu.set.push(
           @paper.rect( @menu.button.offset.x+@menu.button.margin,
                         bg_offset+=@menu.button.h, 

@@ -99,6 +99,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
             id: region.id
             name: region.name
             decompositions: region.decompositions
+            thing: region.thing
             shapes: []
           if "shapes" of region
             for shape in region.shapes
@@ -144,7 +145,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
             else
               null # it's a shape_set
         callback(data, textStatus, jqXHR)
-
+        
 
 
 
