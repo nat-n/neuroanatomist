@@ -17,15 +17,13 @@ Neuroanatomist::Application.routes.draw do
 
   resources :perspectives
 
-  resources :facts
-
-  resources :relations
-
-  resources :things
-
   resources :tags
-
-  resources :types
+  
+  resources :types, :path => "/ontology/types"
+  resources :things, :path => "/ontology/things"
+  resources :relations, :path => "/ontology/relations"
+  resources :facts, :path => "/ontology/facts"
+  resources :ontology
 
   root :to => 'home#index'
   

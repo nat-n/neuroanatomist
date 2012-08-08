@@ -74,5 +74,9 @@ class TypesController < ApplicationController
     def find_supertype
       params[:type][:supertype] = Type.where(:name => params[:type].delete(:supertype)).first
     end
-    
+    def render(*args)
+      options = args.extract_options!
+      options[:template] = "/ontology/types/#{params[:action]}"
+      super(*(args << options))
+    end
 end

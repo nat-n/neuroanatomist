@@ -84,4 +84,9 @@ class ThingsController < ApplicationController
         params[:thing][:node] = Node.find_by_name params[:thing][:node]
       end
     end
+    def render(*args)
+      options = args.extract_options!
+      options[:template] = "/ontology/types/#{params[:action]}"
+      super(*(args << options))
+    end
 end

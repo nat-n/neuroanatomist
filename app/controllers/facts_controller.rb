@@ -80,4 +80,11 @@ class FactsController < ApplicationController
       format.json { head :ok }
     end
   end
+  
+  private
+    def render(*args)
+      options = args.extract_options!
+      options[:template] = "/ontology/types/#{params[:action]}"
+      super(*(args << options))
+    end
 end
