@@ -2,6 +2,7 @@ box:
   offset:
     x: 20
     y: 35
+  minw: 160
   w: 160
   h: 120
   r: 13

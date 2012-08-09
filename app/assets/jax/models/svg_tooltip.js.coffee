@@ -7,17 +7,17 @@ gradient = (h) ->
 Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
   after_initialize: ->
     @box.style.fill = gradient(@label.h)
-    @box.path = (h) =>        
+    @box.path = (h,w=@box.w) =>        
         h = 23 if h < 23
         r = if h > 2 * @box.r then @box.r else h/2
         return [["M",0,@box.offset.y],
                 ["l",@box.offset.x,-@box.offset.y+r],
                 ["c",0,-r,r,-r,r,-r],
-                ["l",@box.w-2*r,0],
+                ["l",w-2*r,0],
                 ["c",r,0,r,r,r,r],
                 ["l",0,h-2*@box.r],
                 ["c",0,r,-r,r,-r,r],
-                ["l",2*r-@box.w,0],
+                ["l",2*r-w,0],
                 ["c",-r,0,-r,-r,-r,-r],
                 ["l",0,2*r-h],
                 ["l",10,0],
@@ -81,7 +81,14 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
       this.clear()
     @dragging = false
   
-  update_label: -> @label.el.attr(text: @hovered_region.name)
+  update_label: -> 
+    @label.el.attr(text: @hovered_region.name)
+    @box.w = Math.max(@label.el.getBBox().width+@menu.button.offset.x,@box.minw)
+    @label.el.attr x: @box.offset.x+@box.w/2
+    @box.set[0].attr path: @box.path(@label.h, @box.w)
+    @menu.button.w             = @box.w
+    @menu.button.text.offset.x = @menu.button.offset.x+@menu.button.w/2
+    
 
   clear: ->
     @paper.canvas.style.opacity = 0
