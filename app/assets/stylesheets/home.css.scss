@@ -1,5 +1,5 @@
 #header {
-	background-color: #303030;
+	background: #303030 url(/assets/blackbar.png) repeat-x;
 	height: 3.3em;
 	position: fixed;
 	top: 0;
@@ -16,6 +16,14 @@
 	text-shadow: #b4b3b4 -1px -1px 0;
 	height: auto;
 	text-indent: 10px;
+}
+
+#alpha {
+	font-size: 0.9em;
+	padding-left: 380px;
+	vertical-align: top;
+	color: #fffeff;
+	//text-shadow: #b4b3b4 -1px -1px 0;  
 }
 
 #content {
