@@ -48,7 +48,7 @@ class ShapeSet < ActiveRecord::Base
   def default_perspective
     # assumed no conflicting regions
     return default_perspective_attr if default_perspective_attr.kind_of? Perspective rescue nil
-    set_of_all_defined_regions = Perspective.new :name => "dynamic_default", :is_default => true
+    set_of_all_defined_regions = Perspective.new :name => "dynamic_default", :default_for_shape_set_id => self.id
     set_of_all_defined_regions.include_regions RegionDefinition.all_definitions_for_shape_set(self).map {|d| d.region}
     set_of_all_defined_regions
   end

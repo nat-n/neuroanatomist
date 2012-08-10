@@ -92,7 +92,7 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
   create_table "region_definitions", :force => true do |t|
     t.integer  "region_id"
     t.integer  "shape_set_id"
-    t.boolean  "orphaned"
+    t.boolean  "orphaned",     :default => false
     t.string   "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -151,9 +151,9 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.string   "url"
     t.string   "abstract"
     t.string   "description"
+    t.integer  "resource_type_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "resource_type_id"
   end
 
   create_table "resources_tags", :id => false, :force => true do |t|
