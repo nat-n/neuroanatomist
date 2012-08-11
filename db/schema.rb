@@ -19,8 +19,8 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.boolean  "dynamic"
     t.integer  "referencable_id"
     t.string   "referencable_type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
   end
 
   create_table "bibliographies_resources", :id => false, :force => true do |t|
@@ -32,8 +32,8 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.string   "description"
     t.integer  "rank"
     t.integer  "region_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
   end
 
   create_table "decompositions_regions", :id => false, :force => true do |t|
@@ -45,8 +45,8 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.integer  "relation_id"
     t.integer  "subject_id"
     t.integer  "object_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
   end
 
   create_table "meshes", :force => true do |t|
@@ -54,16 +54,16 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.integer  "back_shape_id"
     t.integer  "front_shape_id"
     t.integer  "datasize"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
   end
 
   create_table "nodes", :force => true do |t|
     t.string   "name"
     t.string   "introduction"
     t.integer  "thing_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
   end
 
   create_table "perspectives", :force => true do |t|
@@ -71,8 +71,8 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.float    "angle"
     t.float    "distance"
     t.integer  "region_set_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
     t.string   "name"
     t.string   "description"
     t.integer  "style_set_id"
@@ -85,8 +85,8 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.integer  "tag_id"
     t.integer  "taggable_id"
     t.string   "taggable_type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
   end
 
   create_table "region_definitions", :force => true do |t|
@@ -94,8 +94,8 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.integer  "shape_set_id"
     t.boolean  "orphaned",     :default => false
     t.string   "notes"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
   end
 
   create_table "region_definitions_shapes", :id => false, :force => true do |t|
@@ -110,15 +110,15 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.boolean  "orphaned"
     t.integer  "perspective_id"
     t.integer  "region_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
   end
 
   create_table "regions", :force => true do |t|
     t.string   "name"
     t.string   "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
     t.integer  "thing_id"
     t.string   "label"
   end
@@ -128,15 +128,15 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.string   "description"
     t.integer  "subject_type_id"
     t.integer  "object_type_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
   create_table "resource_types", :force => true do |t|
     t.string   "name"
     t.string   "required_fields"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
   create_table "resources", :force => true do |t|
@@ -152,8 +152,13 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.string   "abstract"
     t.string   "description"
     t.integer  "resource_type_id"
+<<<<<<< HEAD
     t.datetime "created_at"
     t.datetime "updated_at"
+=======
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+>>>>>>> cleaned up and simplified migrations, added seed for the root type of the ontology, fixed a couple attribute references
   end
 
   create_table "resources_tags", :id => false, :force => true do |t|
@@ -166,8 +171,8 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.string   "content"
     t.integer  "topic_id"
     t.integer  "article_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "shape_sets", :force => true do |t|
@@ -179,8 +184,8 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.integer  "shape_count"
     t.integer  "datasize"
     t.string   "data_created_at"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
     t.boolean  "is_default",             :default => false
     t.integer  "default_perspective_id"
     t.string   "bounding_box"
@@ -192,15 +197,15 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.integer  "volume_value"
     t.string   "label"
     t.integer  "shape_set_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
   end
 
   create_table "tags", :force => true do |t|
     t.string   "name"
     t.string   "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
     t.integer  "node_id"
   end
 
@@ -215,16 +220,16 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.string   "wikipedia_title"
     t.integer  "type_id"
     t.integer  "node_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
   end
 
   create_table "types", :force => true do |t|
     t.string   "name"
     t.string   "description"
     t.integer  "supertype_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
   end
 
 end
