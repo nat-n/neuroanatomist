@@ -48,6 +48,7 @@ class ShapeSet < ActiveRecord::Base
   def default_perspective
     # assumed no conflicting regions
     return default_perspective_attr if default_perspective_attr.kind_of? Perspective rescue nil
+    # this is useless...
     set_of_all_defined_regions = Perspective.new :name => "dynamic_default", :default_for_shape_set_id => self.id
     set_of_all_defined_regions.include_regions RegionDefinition.all_definitions_for_shape_set(self).map {|d| d.region}
     set_of_all_defined_regions
@@ -59,7 +60,8 @@ class ShapeSet < ActiveRecord::Base
   
   def data_path
     # should sanitise subject to make sure they're path friendly !!! ***
-    "#{Rails.root}/shape_sets/#{self.subject}/#{self.version}"
+    #"#{Rails.root}/shape_sets/#{self.subject}/#{self.version}"
+    "#{self.subject}/#{self.version}"
   end
   
   def bounding_box
@@ -214,7 +216,7 @@ class ShapeSet < ActiveRecord::Base
   end
   
   def save_shape_data    
-    FileUtils.mkdir_p data_path unless File.directory? data_path
+    #FileUtils.mkdir_p data_path unless File.directory? data_path
     
     ## create some shapes
     @shape_data["labels"].each do |volume_value, label|

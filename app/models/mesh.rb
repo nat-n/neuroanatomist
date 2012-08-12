@@ -3,6 +3,8 @@ class Mesh < ActiveRecord::Base
   belongs_to  :back_shape, :class_name => "Shape", :foreign_key => 'front_shape_id'
   after_save  :save_mesh_data
     
+  include S3Helper
+  
   def data_path
     "#{shapes.first.shape_set.data_path}/#{mesh_data_id}"
   end
@@ -18,36 +20,44 @@ class Mesh < ActiveRecord::Base
   def vertices form=:json
     case form
     when :json  
-      "[#{File.open("#{data_path}/vertex_positions", "r").read}]"
+      #"[#{File.open("#{data_path}/vertex_positions", "r").read}]"
+      "[#{S3Helper.read_from_object("#{data_path}/vertex_positions")}]"
     when :data
-      File.open("#{data_path}/vertex_positions", "r").read.split(/,\s*/).map{|x|x.to_f}
+      #File.open("#{data_path}/vertex_positions", "r").read.split(/,\s*/).map{|x|x.to_f}
+      S3Helper.read_from_object("#{data_path}/vertex_positions").split(/,\s*/).map{|x|x.to_f}
     end
   end
   
   def normals form=:json
     case form
     when :json  
-      "[#{File.open("#{data_path}/vertex_normals", "r").read}]"
+      #"[#{File.open("#{data_path}/vertex_normals", "r").read}]"
+      "[#{S3Helper.read_from_object("#{data_path}/vertex_normals")}]"
     when :data
-      File.open("#{data_path}/vertex_normals", "r").read.split(/,\s*/).map{|x|x.to_f}
+      #File.open("#{data_path}/vertex_normals", "r").read.split(/,\s*/).map{|x|x.to_f}
+      S3Helper.read_from_object("#{data_path}/vertex_normals").split(/,\s*/).map{|x|x.to_f}
     end
   end
   
   def faces form=:json
     case form
     when :json  
-      "[#{File.open("#{data_path}/faces", "r").read}]"
+      #"[#{File.open("#{data_path}/faces", "r").read}]"
+      "[#{S3Helper.read_from_object("#{data_path}/faces")}]"
     when :data
-      File.open("#{data_path}/faces", "r").read.split(/,\s*/).map{|x|x.to_i}
+      #File.open("#{data_path}/faces", "r").read.split(/,\s*/).map{|x|x.to_i}
+      S3Helper.read_from_object("#{data_path}/faces").split(/,\s*/).map{|x|x.to_i}
     end
   end
   
   def borders form=:json
     case form
     when :json
-      File.open("#{data_path}/borders", "r").read
+      #File.open("#{data_path}/borders", "r").read
+      S3Helper.read_from_object "#{data_path}/borders"
     when :data
-      ActiveSupport::JSON.decode File.open("#{data_path}/borders", "r").read
+      #JSON.decode File.open("#{data_path}/borders", "r").read
+      JSON.decode S3Helper.read_from_object("#{data_path}/vertex_positions")
     end
   end
   
@@ -80,8 +90,8 @@ class Mesh < ActiveRecord::Base
     shape_ids = @mesh_data["name"].split("-").map { |x| x.to_i }
     @new_params[:front_shape_id] = Shape.where("shape_set_id = #{@shape_set.id} and volume_value = #{shape_ids[0]}").first.id unless shape_ids[0] == 0
     @new_params[:back_shape_id] = Shape.where("shape_set_id = #{@shape_set.id} and volume_value = #{shape_ids[1]}").first.id
-     
-    mesh_data = {}    
+    
+    mesh_data = {}
     mesh_data[:vertex_positions] = @mesh_data["vertex_positions"].join(",")
     mesh_data[:vertex_normals]   = @mesh_data["vertex_normals"].join(",")
     mesh_data[:faces]            = @mesh_data["faces"].join(",")
@@ -99,8 +109,9 @@ class Mesh < ActiveRecord::Base
     @mesh_data.each do |feild, data|
       mesh_dir = "#{@shape_set.data_path}/#{self.mesh_data_id}"
       data_file = "#{mesh_dir}/#{feild.to_s}"
-      FileUtils.mkdir mesh_dir unless File.directory? mesh_dir
-      File.open(data_file, 'w').write data
+      #FileUtils.mkdir mesh_dir unless File.directory? mesh_dir
+      #File.open(data_file, 'w').write data
+      S3Helper.write_to_object data_file, data
     end
   end
   
