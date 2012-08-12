@@ -1,18 +1,19 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.1.4'
+gem 'rails', '3.2.7'
 
 # Bundle edge Rails instead:
 # gem 'rails',     :git => 'git://github.com/rails/rails.git'
 
-gem 'sqlite3'
-
+gem 'pg'
+gem 'thin'
+gem 'aws-sdk'
 
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
-  gem 'sass-rails',   '~> 3.1.5'
-  gem 'coffee-rails', '~> 3.1.1'
+  gem 'sass-rails',   '~> 3.2.3'
+  gem 'coffee-rails', '~> 3.2.1'
   gem 'dynamic_form'
 
   # See https://github.com/sstephenson/execjs#readme for more supported runtimes
@@ -23,6 +24,8 @@ end
 
 group :test, :development do
   gem 'rspec-rails', '~> 2.5'
+  gem 'sqlite3'
+  gem 'jax'
 end
 
 group :test do
@@ -42,7 +45,6 @@ gem 'searcher'
 
 gem 'versionomy'
 
-gem 'jax', '~> 2.0.10'
 gem 'jquery-rails', '>= 1.0.12'
 
 # To use ActiveModel has_secure_password

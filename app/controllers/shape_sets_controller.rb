@@ -2,6 +2,8 @@ class ShapeSetsController < ApplicationController
   before_filter :find_shape_set, :only => [:show, :edit, :update, :destroy]
   before_filter :update_descriptors, :only => [:update]
   
+  include S3Helper
+  
   def index
     @shape_sets = ShapeSet.all
   end
@@ -47,12 +49,13 @@ class ShapeSetsController < ApplicationController
   
   def destroy
     # delete mesh data from filesystem and the subject folder if this is the only version of this subject
-    if ShapeSet.where("subject == '#{@shape_set.subject}'").length == 1
-      FileUtils.rm_rf @shape_set.data_path[0...-@shape_set.subject.size]
-    else
-      FileUtils.rm_rf @shape_set.data_path
-    end  
-      
+    #if ShapeSet.where("subject == '#{@shape_set.subject}'").length == 1
+    #  FileUtils.rm_rf @shape_set.data_path[0...-@shape_set.subject.size]
+    #else
+    #  FileUtils.rm_rf @shape_set.data_path
+    #end
+    S3Helper.destroy_dir @shape_set.data_path
+    
     @shape_set.destroy
     
     flash[:notice] = "Shape Set has been deleted."
