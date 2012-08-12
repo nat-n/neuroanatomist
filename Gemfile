@@ -40,7 +40,6 @@ end
 
 gem 'cancan'
 
-gem 'paperclip'
 gem 'searcher'
 
 gem 'versionomy'
