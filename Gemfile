@@ -9,6 +9,9 @@ gem 'pg'
 gem 'thin'
 gem 'aws-sdk'
 
+gem 'jax'
+gem 'jquery-rails', '>= 1.0.12'
+
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
@@ -25,7 +28,6 @@ end
 group :test, :development do
   gem 'rspec-rails', '~> 2.5'
   gem 'sqlite3'
-  gem 'jax'
 end
 
 group :test do
@@ -43,8 +45,6 @@ gem 'cancan'
 gem 'searcher'
 
 gem 'versionomy'
-
-gem 'jquery-rails', '>= 1.0.12'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
