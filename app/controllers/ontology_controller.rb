@@ -27,6 +27,11 @@ class OntologyController < ApplicationController
     
     def import_type type_data, super_type=nil
       existing_type = Type.where("name = ?",type_data["name"]).first
+      #if not existing_type
+      #  existing_type = Type.new(:name=>"Thing", :description=>"The root type of all things.", :supertype_id=>1).save(:validate => false)
+      #  existing_type.save :validate => false
+      #  # should make sure this was done right!!!
+      #end
       if !super_type
         @root_types.each { |rt| rt.update_attribute(:description,type_data["description"]) unless rt.description == type_data["description"] }
       elsif existing_type
@@ -38,8 +43,8 @@ class OntologyController < ApplicationController
       
       for thing in type_data["instances"] do
         existing_thing = Thing.where("name = ?",thing["name"]).first
-        tag = Tag.where("name = ?",thing["name"]).first or Tag.create(:name=>thing["name"])
-        node = Node.where("name = ?",thing["name"]).first or Node.create(:name => thing["name"], :tag => tag)
+        tag = (Tag.where("name = ?",thing["name"]).first or Tag.create(:name=>thing["name"]))
+        node = (Node.where("name = ?",thing["name"]).first or Node.create(:name => thing["name"], :tag => tag))
         regions = thing["regions"].map {|rn| Region.where("name = ?", rn).first or Region.create(:name => rn) }.compact
         if existing_thing
           existing_thing.update_attributes(:description       => thing["description"],

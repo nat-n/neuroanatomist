@@ -5,3 +5,8 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+# seed the ontology with a root type
+root_type = Type.new name: 'Thing', description: 'The root type of all things.'
+root_type.supertype = root_type
+root_type.save :validate => false
