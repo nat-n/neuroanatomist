@@ -19,7 +19,7 @@ class PerspectivesController < ApplicationController
   end
   
   def export
-    send_data render_to_string("export.json")
+    send_data render_to_string("export.json"), :filename => "perspective_#{@perspective.name}.json"
   end
   
   def new
