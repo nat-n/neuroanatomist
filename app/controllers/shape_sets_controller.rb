@@ -17,6 +17,7 @@ class ShapeSetsController < ApplicationController
     @shape_set = ShapeSet.new(params[:shape_set])
     
     if @shape_set.validate_and_save @shape_data
+      update_default_perspective
       @shape_set.save_shape_data
       @shape_set.generate_geometric_descriptions
       @shape_set.copy_region_definitons_from @shape_set.previous_version rescue nil
@@ -37,8 +38,8 @@ class ShapeSetsController < ApplicationController
     
   def update
     notes = params[:shape_set][:notes]
-    
     if notes and @shape_set.update_attribute :notes, notes
+      update_default_perspective
       flash[:notice] = "Shape Set has been updated."
       redirect_to @shape_set
     else
@@ -69,6 +70,15 @@ class ShapeSetsController < ApplicationController
       flash[:alert] = "The shape set you were looking for could not be found."
       redirect_to shape_sets_path
     end
+    
+    def update_default_perspective
+      if params[:shape_set][:default_perspective] == "Create new empty perspective"
+        @shape_set.default_perspective = Perspective.create :name => "new perspective #{Time.now.strftime("%Y%m%d%H%M%S%L")}"
+      else
+        @shape_set.default_perspective = Perspective.where("name = ?", params[:shape_set][:default_perspective]).first
+      end
+    end
+    
     def update_descriptors
       # updates radius center_point
       @shape_set.update_attribute :radius, params[:shape_set][:radius].to_f

@@ -8,17 +8,17 @@
   <%= @perspective.description %>
 </p>
 
-<p>Height:<%= @perspective.height %></p>
+<p><b>Height:</b> <%= @perspective.height %></p>
 
-<p>Angle: <%= @perspective.angle %></p>
+<p><b>Angle:</b> <%= @perspective.angle %></p>
 
-<p>Distance: <%= @perspective.distance %></p>
+<p><b>Distance:</b> <%= @perspective.distance %></p>
 
-<p>Inherits RegionStyles from: <%= @perspective.has_external_styles? ? @perspective.style_set.name : "none" %></p>
+<p><b>Inherits region_styles from:</b> <%= @perspective.has_external_styles? ? @perspective.style_set.name : "none" %></p>
 
-<h4>Regions:</h4>
+<br><h4>Regions:</h4>
 
-<table border="1">
+<table  class="backend_data">
   <tr>
     <th>Name</th>
     <th>Description</th>
@@ -40,5 +40,5 @@
 <% end %>
 </table>
 
-<%= link_to 'Back to Perspectives', perspectives_path %>
-<%= link_to 'Edit', edit_perspective_path(@perspective) %> |
+<%= link_to 'Back to Perspectives', perspectives_path %> | 
+<%= link_to 'Edit', edit_perspective_path(@perspective) %>

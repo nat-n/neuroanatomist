@@ -45,6 +45,10 @@ class ShapeSet < ActiveRecord::Base
     self
   end
   
+  def is_default?
+    self == ShapeSet.default
+  end
+  
   def default_perspective
     # assumed no conflicting regions
     return default_perspective_attr if default_perspective_attr.kind_of? Perspective rescue nil
@@ -54,6 +58,10 @@ class ShapeSet < ActiveRecord::Base
     set_of_all_defined_regions
   end
   
+  def default_perspective= perspective
+    update_attribute :default_perspective_attr, perspective
+  end
+    
   def name
     "#{subject} - #{version}"
   end
