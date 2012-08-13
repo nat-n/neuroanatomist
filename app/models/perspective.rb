@@ -84,7 +84,7 @@ class Perspective < ActiveRecord::Base
   
   
   def self.create_from_description description
-    description = JSON.load(description) if description.kind_of? String
+    throw description = JSON.load(description) if description.kind_of? String
     
     new_perspective = Perspective.create  name: description["name"],
                                           description: description["description"],

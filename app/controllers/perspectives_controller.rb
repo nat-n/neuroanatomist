@@ -35,6 +35,18 @@ class PerspectivesController < ApplicationController
   end
 
   def create
+    if params.has_key? "perspective_file"
+      contents = JSON.load params["perspective_file"].read
+      unless contents["type"] == "perspective"
+        redirect_to "index", notice: 'Invalid perspective file'
+        return
+      end
+      Perspective.create_from_description contents["perspective"]
+      @perspectives = Perspective.all
+      render action: "index"
+      return true
+    end
+    
     @perspective = Perspective.new(params[:perspective])
     
     respond_to do |format|
