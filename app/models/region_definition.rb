@@ -17,7 +17,7 @@ class RegionDefinition < ActiveRecord::Base
     shape_set.name + "::" + shapes.map(&:label).sort.join("+")
   end
   
-  def self.new_region_definition_from_label_string region_id, label_string
+  def self.create_from_label_string region_id, label_string
     shape_set, shapes = label_string.split("::")
     shape_set = shape_set.split(" - ")
     shape_set = ShapeSet.where("subject = ? and version = ?",shape_set[0],shape_set[1]).first

@@ -15,4 +15,21 @@ class RegionStyle < ActiveRecord::Base
     self.update_attributes updatable
   end
   
+  def description_hash
+    Hash[ region_name: region.name,
+          region: region.description_hash,
+          colour: colour,
+          transparency: description,
+          label: height ]
+  end
+  
+ #def self.create_from_description perspective_id, description
+ #  description = JSON.load(description) if description.kind_of? String
+ #  
+ #  
+ #  regions = thing["regions"].map {|rdesc| Region.where("name = ?", rdesc["name"]).first or Region.create_from_description(rdesc) }.compact
+ #  
+ #  
+ #end
+  
 end

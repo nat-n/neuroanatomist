@@ -37,9 +37,9 @@ class Region < ActiveRecord::Base
           definitions: region_definitions.map(&:label_string) ]
   end
   
-  def self.create_region_from_description description
+  def self.create_from_description description
     description = JSON.load(description) if description.kind_of? String
     new_region = Region.create :name => (description["name"] or description[:name])
-    (description["definitions"] or description[:definitions]).each { |label_string| RegionDefinition.new_region_definition_from_label_string new_region.id, label_string }
+    (description["definitions"] or description[:definitions]).each { |label_string| RegionDefinition.create_from_label_string new_region.id, label_string }
   end
 end

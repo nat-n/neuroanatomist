@@ -14,10 +14,14 @@ class PerspectivesController < ApplicationController
   def show
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render json: @perspective }
+      format.json { export }
     end
   end
-
+  
+  def export
+    send_data render_to_string("export.json")
+  end
+  
   def new
     @perspective = Perspective.new
 
@@ -67,7 +71,7 @@ class PerspectivesController < ApplicationController
       format.json { head :ok }
     end
   end
-
+    
   private
     def find_perspective
       @perspective = Perspective.find(params[:id])
@@ -100,5 +104,5 @@ class PerspectivesController < ApplicationController
         end
       end
     end
-
+    
 end

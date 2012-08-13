@@ -65,4 +65,44 @@ class Perspective < ActiveRecord::Base
     end
   end
   
+  def description_hash
+    h = Hash[ name: name,
+              description: description,
+              height: height,
+              angle: angle,
+              distance: distance]
+    if has_external_styles?
+      h[:style_set] = style_set 
+    else
+      h[:regions] = []
+      own_region_styles.each do |rs|
+        h[:regions] << rs.description_hash
+      end
+    end
+    return h
+  end
+  
+  
+  def self.create_from_description description
+    description = JSON.load(description) if description.kind_of? String
+    
+    new_perspective = Perspective.create  name: description["name"],
+                                          description: description["description"],
+                                          height: description["height"],
+                                          angle: description["angle"],
+                                          distance: description["distance"]
+    if description.has_key? "style_set"
+      new_perspective.style_set = description["style_set"]
+    else
+      description["regions"].each do |rsdesc|
+        region = (Region.where("name = ?", rsdesc["region_name"]).first or Region.create_from_description(rsdesc["region"]))
+        update_or_create_region_style region: region,
+                                      colour: rsdesc["colour"],
+                                      transparency: rsdesc["transparency"],
+                                      label: rsdesc["label"]
+      end
+    end
+  end
+  
+  
 end
