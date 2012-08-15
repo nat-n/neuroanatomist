@@ -1,8 +1,16 @@
+
+
 class JaxDataController < ApplicationController
   
   def fetch    
     @assets = []
+    @request_string = request.fullpath
     
+    if ENV["cache_server"] and (cached_request = JaxData.where(:request_string => @request_string).first)
+      redirect cached_request.uri
+      return cached_request.increment!
+    end
+        
     ## find shape_set
     shape_set = false
     @shape_set = case params[:shape_set_id]
@@ -21,9 +29,19 @@ class JaxDataController < ApplicationController
     elsif !params[:excluded].empty?
       @shape_set.mesh_ids.each { |mesh_id| @included[mesh_id] = :yes unless mesh_ids.include?(mesh_id) }
     end
-        
-    ## prepare descriptions of requested assets
-    if params[:requests]
+
+    # if there are no requests then respond with the default view or the shape_set if specified
+    if !params[:requests]
+      if not shape_set
+        @perspective = @shape_set.default_perspective
+        @cascade = encode_cascade(request["cascade"])
+        render :action => "defaults.json"
+        return
+      end
+      
+      @assets << describe_shape_set(request)
+      
+    else ## prepare descriptions of requested assets
       request_types = ["perspective", "region", "shape", "mesh"] # to request a shape_set: exclude type & id and include cascade
       required_feilds = ["type", "id"] # optional: "cascade", "included", "excluded"
       
@@ -39,21 +57,59 @@ class JaxDataController < ApplicationController
           @assets << describe_error("unknown request type: #{@type}")
         end
       end
+    end
+    
+    if ENV["cache_server"]
+      create_cached_response
     else
-      # if there are no requests then respond with the default view or the shape_set if specified
-      if not shape_set
-        @perspective = @shape_set.default_perspective
-        @cascade = encode_cascade(request["cascade"])
-        render :action => "defaults.json"
-        return
-      else
-        @assets << describe_shape_set(request)
+      render :action => "response.json"
+    end
+  end
+  
+  def create_cached_response
+    partial_response = Hash[included:@included]
+    perspectives = []
+    
+    @assets.each_with_index do |asset, i|
+      case asset[:type] 
+      when :shape_set
+        partial_response[i] = Hash[t:"ss"].merge(@shape_set.hash_partial asset[:cascade])
+      when :perspective
+        partial_response[i] = Hash[t:"p"].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
+        perspectives << asset[:object].id
+      when :region
+       partial_response[i] = Hash[ t:"r"].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
+      when :shape
+        partial_response[i] = Hash[t: "s",id:asset[:object].id]
+      when :mesh
+       partial_response[i] = Hash[t: "m",id:asset[:object].id]
+      when :error
+        partial_response[i] = Hash[type:error, message:asset[:message]]
       end
     end
     
-    render :action => "response.json"
-  end
+    #render :text => JSON.dump(partial_response) # for debug
+    d_key = (Digest::MD5.new << Random.rand.to_s).to_s
+    cache_id = (Digest::MD5.new << @request_string).to_s
+    new_cache = JaxData.create  :request_string       => @request_string,
+                                :response_description => JSON.dump(partial_response),
+                                :cache_id             => cache_id,
+                                :destroy_key          => d_key,
+                                :shape_set_id         => @shape_set.id,
+                                :perspectives         => perspectives.inspect[1...-1]
+                    
     
+    redirect_to "#{ENV["cache_server"]}/new/#{cache_id}"
+  end
+  
+  def fetch_partial_response
+    
+  end
+  
+  def destroy
+   throw "bone!"
+  end
+  
   private
     def describe_asset request
       new_asset = { :type => @type.to_sym }

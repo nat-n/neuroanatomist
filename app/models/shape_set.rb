@@ -3,6 +3,7 @@ class ShapeSet < ActiveRecord::Base
   has_many    :regions, :through => :region_definitions
   has_many    :shapes, :dependent => :destroy
   has_many    :meshes, :through => :shapes, :source => :low_meshes
+  has_many    :jax_data
   has_one     :default_perspective_attr, :class_name => 'Perspective', :foreign_key => 'default_for_shape_set_id'
   validates   :subject, :presence => true
   validates   :version, :presence => true
@@ -94,6 +95,17 @@ class ShapeSet < ActiveRecord::Base
   
   def has_definition_for? region
     regions.include? region
+  end
+  
+  def hash_partial
+    Hash.new[
+      id:                   self.id,
+      name:                 self.name,
+      radius:               self.radius,
+      center_point:         (self.center_point or nil),
+      default_perspective:  (self.default_perspective.id or nil rescue nil),
+      shapes:               self.shapes.map(&:id)
+    ]
   end
   
   def copy_region_definitons_from older_shape_set

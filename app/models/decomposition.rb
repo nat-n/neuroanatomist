@@ -7,4 +7,13 @@ class Decomposition < ActiveRecord::Base
     
   end
   
+  def hash_partial
+    Hash.new[
+      id:           self.id,
+      super_region: self.super_region.id,
+      description:  self.description,
+      sub_regions:  self.sub_regions.map(&:id)
+    ]
+  end
+  
 end

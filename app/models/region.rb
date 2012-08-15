@@ -32,6 +32,17 @@ class Region < ActiveRecord::Base
     attributes["name"] ? true : false
   end
   
+  def hash_partial shape_set, cascade
+    hp = Hash[
+      id:     self.id,
+      name:   self.name,
+      thing:  (self.thing ? self.thing.id : nil),
+      decompositions: self.decompositions.map(&:hash_partial)
+    ]
+    hp[:shapes] = self.definition_for(shape_set).shapes.map(&:id) if cascade
+    hp
+  end
+  
   def description_hash
     Hash[ name: name,
           definitions: region_definitions.map(&:label_string) ]
