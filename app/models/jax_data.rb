@@ -9,11 +9,11 @@ class JaxData < ActiveRecord::Base
   end
   
   def check_expiration
-    update_attriubte :response_description, ""  if !response_description.empty? and 30 < Time.now-created_at
+    update_attribute :response_description, ""  if !response_description.empty? and 30 < Time.now-created_at
   end
   
   def increment!
-    count.increment!
+    JaxData.increment_counter("count",id)
   end
   
 end

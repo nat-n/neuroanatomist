@@ -52,7 +52,7 @@ ActiveRecord::Schema.define(:version => 20120813223412) do
   create_table "jax_data", :force => true do |t|
     t.string   "request_string"
     t.string   "response_description"
-    t.integer  "cache_id"
+    t.string   "cache_id"
     t.string   "destroy_key"
     t.integer  "shape_set_id"
     t.string   "perspectives"

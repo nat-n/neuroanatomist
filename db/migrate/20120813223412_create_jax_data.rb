@@ -6,7 +6,7 @@ class CreateJaxData < ActiveRecord::Migration
 
       t.string  :response_description
 
-      t.integer :cache_id
+      t.string :cache_id
 
       t.string  :destroy_key
       

@@ -7,7 +7,7 @@ class JaxDataController < ApplicationController
     @request_string = request.fullpath
     
     if ENV["cache_server"] and (cached_request = JaxData.where(:request_string => @request_string).first)
-      redirect cached_request.uri
+      redirect_to cached_request.uri
       return cached_request.increment!
     end
         
@@ -76,7 +76,7 @@ class JaxDataController < ApplicationController
         partial_response[i] = Hash[t:"ss"].merge(@shape_set.hash_partial asset[:cascade])
       when :perspective
         partial_response[i] = Hash[t:"p"].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
-        perspectives << asset[:object].id
+        perspectives << asset[:object].id if asset[:object].id
       when :region
        partial_response[i] = Hash[ t:"r"].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
       when :shape
@@ -97,7 +97,6 @@ class JaxDataController < ApplicationController
                                 :destroy_key          => d_key,
                                 :shape_set_id         => @shape_set.id,
                                 :perspectives         => perspectives.inspect[1...-1]
-                    
     
     redirect_to "#{ENV["cache_server"]}/new/#{cache_id}"
   end
