@@ -111,12 +111,12 @@ class JaxDataController < ApplicationController
     end
   end
   
-  def fetch_shape_set_ids shape_set
-    
-  end
-  
-  def destroy
-   throw "bone!"
+  def fetch_shape_set_ids
+    if (ss = (ShapeSet.find(params[:shape_set_id]) rescue nil))
+      render :text => JSON.dump(ss.ids_hash)
+    else
+      render :text => JSON.dump({error: "invalid shape_set_id"})
+    end
   end
   
   private

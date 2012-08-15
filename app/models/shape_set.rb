@@ -88,6 +88,13 @@ class ShapeSet < ActiveRecord::Base
   def mesh_ids
     meshes.map { |mesh| mesh.id }
   end
+  
+  def ids_hash
+    Hash[ shape_set_id: id,
+      shapes: Hash[*shapes.map{|shape| [shape.volume_value, shape.id] }.flatten],
+      meshes: Hash[*meshes.map{|mesh| [mesh.mesh_data_id, mesh.id] }.flatten]
+    ]
+  end
 
   def shape_names
     shapes.map { |shape| shape.name }
