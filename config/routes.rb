@@ -36,6 +36,7 @@ Neuroanatomist::Application.routes.draw do
   resources :region_definitions
 
   match "/jaxdata(/:shape_set_id)" => "jax_data#fetch", :as => :jax_data  
+  match "/jaxdata/c/:cache_id" => "jax_data#fetch_partial_response", :as => :jax_data  
   
   
   mount Jax::Engine => "/jax" unless Rails.env == "production"

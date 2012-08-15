@@ -102,6 +102,16 @@ class JaxDataController < ApplicationController
   end
   
   def fetch_partial_response
+    # if newly created (less than 30s old) jax_data record has a matching cache_id then return it's partial_description attribute
+    jd = JaxData.where(:cache_id => params[:cache_id]).first
+    if jd and !jd.response_description.empty? and (Time.now-jd.created_at)<=30
+      render :text => jd.response_description
+    else
+      render :text => JSON.dump({error: "invalid cache_id"})
+    end
+  end
+  
+  def fetch_shape_set_ids shape_set
     
   end
   
