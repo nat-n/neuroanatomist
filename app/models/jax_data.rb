@@ -2,6 +2,7 @@ class JaxData < ActiveRecord::Base
   validates_presence_of :request_string, :shape_set_id
   validates_uniqueness_of :request_string
   belongs_to :shape_set
+  before_destroy :destroy_cache
   
   def uri
     check_expiration
@@ -14,6 +15,10 @@ class JaxData < ActiveRecord::Base
   
   def increment!
     JaxData.increment_counter("count",id)
+  end
+  
+  def destroy_cache
+    HTTParty.delete "#{ENV["cache_server"]}/#{cache_id}/#{destroy_key}"
   end
   
 end
