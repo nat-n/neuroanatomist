@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120802210157) do
+ActiveRecord::Schema.define(:version => 20120813223412) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -48,6 +48,22 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
   end
+
+  create_table "jax_data", :force => true do |t|
+    t.string   "request_string"
+    t.string   "response_description"
+    t.integer  "cache_id"
+    t.string   "destroy_key"
+    t.integer  "shape_set_id"
+    t.string   "perspectives"
+    t.integer  "count",                :default => 0
+    t.boolean  "expired",              :default => false
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
+  end
+
+  add_index "jax_data", ["request_string"], :name => "index_jax_data_on_request_string", :unique => true
+  add_index "jax_data", ["shape_set_id"], :name => "index_jax_data_on_shape_set_id"
 
   create_table "meshes", :force => true do |t|
     t.string   "mesh_data_id"
@@ -152,13 +168,8 @@ ActiveRecord::Schema.define(:version => 20120802210157) do
     t.string   "abstract"
     t.string   "description"
     t.integer  "resource_type_id"
-<<<<<<< HEAD
-    t.datetime "created_at"
-    t.datetime "updated_at"
-=======
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
->>>>>>> cleaned up and simplified migrations, added seed for the root type of the ontology, fixed a couple attribute references
   end
 
   create_table "resources_tags", :id => false, :force => true do |t|
