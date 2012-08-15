@@ -84,7 +84,7 @@ class JaxDataController < ApplicationController
       when :mesh
        partial_response[i] = Hash[t: "m",id:asset[:object].id]
       when :error
-        partial_response[i] = Hash[type:error, message:asset[:message]]
+        partial_response[i] = Hash[t:"error", message:asset[:message]]
       end
     end
     

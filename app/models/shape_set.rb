@@ -104,15 +104,18 @@ class ShapeSet < ActiveRecord::Base
     regions.include? region
   end
   
-  def hash_partial
-    Hash.new[
-      id:                   self.id,
-      name:                 self.name,
-      radius:               self.radius,
-      center_point:         (self.center_point or nil),
-      default_perspective:  (self.default_perspective.id or nil rescue nil),
-      shapes:               self.shapes.map(&:id)
+  def hash_partial cascade
+    hp = Hash.new[
+      attrs: Hash.new[
+        id:                   self.id,
+        name:                 self.name,
+        radius:               self.radius,
+        center_point:         (self.center_point or nil),
+        default_perspective:  (self.default_perspective.id or nil rescue nil)
+      ]
     ]
+    hp[:shapes] = self.shapes.map(&:id) if cascade
+    return hp
   end
   
   def copy_region_definitons_from older_shape_set
