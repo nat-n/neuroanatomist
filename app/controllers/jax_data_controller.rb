@@ -67,7 +67,10 @@ class JaxDataController < ApplicationController
   end
   
   def create_cached_response
-    partial_response = Hash[included:@included]
+    partial_response = Hash[
+      included:@included,
+      shape_set: {id: @shape_set.id, subject: @shape_set.subject, version: @shape_set.version}
+      ]
     perspectives = []
     
     @assets.each_with_index do |asset, i|
@@ -98,7 +101,7 @@ class JaxDataController < ApplicationController
                                 :shape_set_id         => @shape_set.id,
                                 :perspectives         => perspectives.inspect[1...-1]
     
-    redirect_to "#{ENV["cache_server"]}/new/#{cache_id}"
+    redirect_to "#{ENV["cache_server"]}/#{cache_id}/#{(Digest::MD5.new << d_key).to_s}"
   end
   
   def fetch_partial_response
