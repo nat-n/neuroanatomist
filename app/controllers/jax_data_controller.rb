@@ -1,5 +1,3 @@
-
-
 class JaxDataController < ApplicationController
   
   def fetch    

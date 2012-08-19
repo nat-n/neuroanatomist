@@ -5,8 +5,8 @@ class ShapeSet < ActiveRecord::Base
   has_many    :meshes, :through => :shapes, :source => :low_meshes
   has_many    :jax_data
   has_one     :default_perspective_attr, :class_name => 'Perspective', :foreign_key => 'default_for_shape_set_id'
-  validates   :subject, :presence => true
-  validates   :version, :presence => true
+  validates_presence_of   :subject, :version
+  #validates_uniqueness_of :name, :scope => [:subject, :version]
   validate    :validate_version
   
   def self.versions_of subject
@@ -176,7 +176,6 @@ class ShapeSet < ActiveRecord::Base
     errors.add(:shape_data_file, 'missing meshes data') unless @shape_data.has_key? "meshes"
     errors.add(:shape_data_file, 'labels must be unique') unless @shape_data["labels"].values.uniq.size == @shape_data["labels"].values.size
     return false unless errors.messages.empty?
-    
     @shape_data["meshes"].each do |mesh_data|
       mesh_id = mesh_data["name"].split("-").map { |x| x.to_i }
       unless mesh_id.uniq.join("-") == mesh_data["name"] and mesh_id.size == 2
@@ -242,6 +241,7 @@ class ShapeSet < ActiveRecord::Base
                    datasize: @shape_data["meshes"].to_s.size}
 
     return false unless errors.messages.empty?
+    
     self.update_attributes new_params    
   end
   
@@ -283,7 +283,7 @@ class ShapeSet < ActiveRecord::Base
     self.update_attribute :center_point, "#{JSON.dump([(ortho_bb[:xmin]+half_ranges[0]).round(4),
                                                        (ortho_bb[:xmin]+half_ranges[1]).round(4),
                                                        (ortho_bb[:xmin]+half_ranges[2]).round(4) ])}"
-  end
+  end  
   
   private
     def validate_version
@@ -294,7 +294,7 @@ class ShapeSet < ActiveRecord::Base
         return
       end
       max_previous_version = ShapeSet.newest_version_of(subject)
-      unless (current_version > max_previous_version rescue true)
+      unless (current_version > max_previous_version rescue true) or self == ShapeSet.where(version: current_version.to_s).first
         errors.add(:version, "Version string must be higher than previous highest for this subject (#{max_previous_version})")
       end
     end
