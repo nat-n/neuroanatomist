@@ -213,6 +213,7 @@ DEPENDENCIES
   dynamic_form
   email_spec
   factory_girl
+  httparty
   jax
   jquery-rails (>= 1.0.12)
   launchy
