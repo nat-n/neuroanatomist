@@ -83,15 +83,14 @@ ActiveRecord::Schema.define(:version => 20120813223412) do
   end
 
   create_table "perspectives", :force => true do |t|
+    t.string   "name"
+    t.string   "description"
     t.float    "height"
     t.float    "angle"
     t.float    "distance"
-    t.integer  "region_set_id"
+    t.integer  "style_set_id"
     t.datetime "created_at",               :null => false
     t.datetime "updated_at",               :null => false
-    t.string   "name"
-    t.string   "description"
-    t.integer  "style_set_id"
     t.integer  "default_for_shape_set_id"
   end
 
