@@ -19,8 +19,8 @@ class RegionStyle < ActiveRecord::Base
     Hash[ region_name: region.name,
           region: region.description_hash,
           colour: colour,
-          transparency: description,
-          label: height ]
+          transparency: transparency,
+          label: label ]
   end
   
  #def self.create_from_description perspective_id, description
