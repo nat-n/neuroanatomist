@@ -19,7 +19,11 @@ class PerspectivesController < ApplicationController
   end
   
   def export
-    send_data render_to_string("export.json"), :filename => "perspective_#{@perspective.name}.json"
+    send_data JSON.dump( Hash[ type: "perspective",
+                               version: 0.1,
+                               timestamp: Time.now,
+                               perspective: @perspective.description_hash ]),
+              :filename => "perspective_#{@perspective.name}.json"
   end
   
   def new

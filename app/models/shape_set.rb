@@ -3,9 +3,10 @@ class ShapeSet < ActiveRecord::Base
   has_many    :regions, :through => :region_definitions
   has_many    :shapes, :dependent => :destroy
   has_many    :meshes, :through => :shapes, :source => :low_meshes
+  has_many    :jax_data
   has_one     :default_perspective_attr, :class_name => 'Perspective', :foreign_key => 'default_for_shape_set_id'
-  validates   :subject, :presence => true
-  validates   :version, :presence => true
+  validates_presence_of   :subject, :version
+  #validates_uniqueness_of :name, :scope => [:subject, :version]
   validate    :validate_version
   
   def self.versions_of subject
@@ -87,6 +88,13 @@ class ShapeSet < ActiveRecord::Base
   def mesh_ids
     meshes.map { |mesh| mesh.id }
   end
+  
+  def ids_hash
+    Hash[ shape_set_id: id,
+      shapes: Hash[*shapes.map{|shape| [shape.volume_value, shape.id] }.flatten],
+      meshes: Hash[*meshes.map{|mesh| [mesh.mesh_data_id, mesh.id] }.flatten]
+    ]
+  end
 
   def shape_names
     shapes.map { |shape| shape.name }
@@ -94,6 +102,20 @@ class ShapeSet < ActiveRecord::Base
   
   def has_definition_for? region
     regions.include? region
+  end
+  
+  def hash_partial cascade
+    hp = Hash.new[
+      attrs: Hash.new[
+        id:                   self.id,
+        name:                 self.name,
+        radius:               self.radius,
+        center_point:         (self.center_point or nil),
+        default_perspective:  (self.default_perspective.id or nil rescue nil)
+      ]
+    ]
+    hp[:shapes] = self.shapes.map(&:id) if cascade
+    return hp
   end
   
   def copy_region_definitons_from older_shape_set
@@ -154,7 +176,6 @@ class ShapeSet < ActiveRecord::Base
     errors.add(:shape_data_file, 'missing meshes data') unless @shape_data.has_key? "meshes"
     errors.add(:shape_data_file, 'labels must be unique') unless @shape_data["labels"].values.uniq.size == @shape_data["labels"].values.size
     return false unless errors.messages.empty?
-    
     @shape_data["meshes"].each do |mesh_data|
       mesh_id = mesh_data["name"].split("-").map { |x| x.to_i }
       unless mesh_id.uniq.join("-") == mesh_data["name"] and mesh_id.size == 2
@@ -220,6 +241,7 @@ class ShapeSet < ActiveRecord::Base
                    datasize: @shape_data["meshes"].to_s.size}
 
     return false unless errors.messages.empty?
+    
     self.update_attributes new_params    
   end
   
@@ -261,7 +283,7 @@ class ShapeSet < ActiveRecord::Base
     self.update_attribute :center_point, "#{JSON.dump([(ortho_bb[:xmin]+half_ranges[0]).round(4),
                                                        (ortho_bb[:xmin]+half_ranges[1]).round(4),
                                                        (ortho_bb[:xmin]+half_ranges[2]).round(4) ])}"
-  end
+  end  
   
   private
     def validate_version
@@ -272,7 +294,7 @@ class ShapeSet < ActiveRecord::Base
         return
       end
       max_previous_version = ShapeSet.newest_version_of(subject)
-      unless (current_version > max_previous_version rescue true)
+      unless (current_version > max_previous_version rescue true) or self == ShapeSet.where(version: current_version.to_s).first
         errors.add(:version, "Version string must be higher than previous highest for this subject (#{max_previous_version})")
       end
     end

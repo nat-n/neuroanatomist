@@ -14,10 +14,9 @@ class ShapeSetsController < ApplicationController
   
   def create
     @shape_data = params[:shape_set].delete(:shape_data_file)
+    find_default_perspective
     @shape_set = ShapeSet.new(params[:shape_set])
-    
     if @shape_set.validate_and_save @shape_data
-      update_default_perspective
       @shape_set.save_shape_data
       @shape_set.generate_geometric_descriptions
       @shape_set.copy_region_definitons_from @shape_set.previous_version rescue nil
@@ -38,8 +37,8 @@ class ShapeSetsController < ApplicationController
     
   def update
     notes = params[:shape_set][:notes]
+    find_default_perspective
     if notes and @shape_set.update_attribute :notes, notes
-      update_default_perspective
       flash[:notice] = "Shape Set has been updated."
       redirect_to @shape_set
     else
@@ -71,16 +70,17 @@ class ShapeSetsController < ApplicationController
       redirect_to shape_sets_path
     end
     
-    def update_default_perspective
-      if params[:shape_set][:default_perspective] == "Create new empty perspective"
-        @shape_set.default_perspective = Perspective.create :name => "new perspective #{Time.now.strftime("%Y%m%d%H%M%S%L")}"
+    def find_default_perspective
+      params[:shape_set][:default_perspective] = if params[:shape_set][:default_perspective] == "Create new empty perspective"
+        Perspective.create :name => "new perspective #{Time.now.strftime("%Y%m%d%H%M%S%L")}"
       else
-        @shape_set.default_perspective = Perspective.where("name = ?", params[:shape_set][:default_perspective]).first
+        Perspective.where("name = ?", params[:shape_set][:default_perspective]).first
       end
     end
     
     def update_descriptors
       # updates radius center_point
+      return unless params[:center_point] and params[:shape_set][:radius]
       @shape_set.update_attribute :radius, params[:shape_set][:radius].to_f
       @shape_set.update_attribute :center_point, JSON.dump([params[:center_point][:x].to_f,params[:center_point][:y].to_f,params[:center_point][:z].to_f])
     end

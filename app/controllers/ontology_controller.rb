@@ -8,6 +8,10 @@ class OntologyController < ApplicationController
     end
   end
   
+  def show
+    index
+  end
+  
   def export
     send_data render_to_string("export.json")
   end
