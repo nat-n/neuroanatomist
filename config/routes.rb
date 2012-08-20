@@ -1,23 +1,17 @@
 Neuroanatomist::Application.routes.draw do
-  resources :decompositions
-  
-  resources :resource_types
 
   resources :nodes
-
   resources :sections
 
-  resources :ratings
-
   resources :bibliographies
-
   resources :resources
-
-  resources :region_styles
-
-  resources :perspectives
+  resources :resource_types
 
   resources :tags
+  resources :ratings
+
+  resources :perspectives
+  resources :region_styles
   
   resources :types, :path => "/ontology/types"
   resources :things, :path => "/ontology/things"
@@ -31,9 +25,9 @@ Neuroanatomist::Application.routes.draw do
   resources :shapes
   resources :meshes
   
-  resources :region_sets
   resources :regions
   resources :region_definitions
+  resources :decompositions
 
   match "/jaxdata(/:shape_set_id)" => "jax_data#fetch", :as => :jax_data
   match "/jaxdata/c/:cache_id" => "jax_data#fetch_partial_response", :as => :jax_data
