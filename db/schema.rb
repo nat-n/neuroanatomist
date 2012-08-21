@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120820210354) do
+ActiveRecord::Schema.define(:version => 20120821150951) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -69,6 +69,7 @@ ActiveRecord::Schema.define(:version => 20120820210354) do
     t.boolean  "expired",              :default => false
     t.datetime "created_at",                              :null => false
     t.datetime "updated_at",                              :null => false
+    t.string   "regions"
   end
 
   add_index "jax_data", ["request_string"], :name => "index_jax_data_on_request_string", :unique => true

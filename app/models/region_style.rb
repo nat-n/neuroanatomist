@@ -2,6 +2,8 @@ class RegionStyle < ActiveRecord::Base
   belongs_to :perspective
   belongs_to :region
   
+  after_update :invalidate_caches
+  
   def disown
     self.update_attributes :orphaned => true
   end
@@ -23,6 +25,10 @@ class RegionStyle < ActiveRecord::Base
           label: label ]
   end
   
+  def invalidate_caches
+    perspective.invalidate_caches
+  end
+
  #def self.create_from_description perspective_id, description
  #  description = JSON.load(description) if description.kind_of? String
  #  

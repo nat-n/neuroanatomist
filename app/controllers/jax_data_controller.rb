@@ -61,7 +61,7 @@ class JaxDataController < ApplicationController
       end
     end
     
-    response = create_cached_response
+    response = describe_response
     
     if ENV["cache_server"] and ENV["cache_server"] != "local"
       redirect_to "#{ENV["cache_server"]}/#{response.cache_id}/#{response.destroy_key}"
@@ -85,39 +85,6 @@ class JaxDataController < ApplicationController
     end
   end
   
-  def create_cached_response
-    partial_response = Hash[
-      included:@included,
-      shape_set: {id: @shape_set.id, subject: @shape_set.subject, version: @shape_set.version}
-    ]
-    perspectives = []
-    
-    @assets.each_with_index do |asset, i|
-      case asset[:type] 
-      when :shape_set
-        partial_response[i] = Hash[t:"ss", cascade:asset[:cascade]].merge(@shape_set.hash_partial asset[:cascade])
-      when :perspective
-        partial_response[i] = Hash[t:"p", cascade:asset[:cascade]].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
-        perspectives << asset[:object].id if asset[:object].id
-      when :region
-       partial_response[i] = Hash[ t:"r", cascade:asset[:cascade]].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
-      when :shape
-        partial_response[i] = Hash[t: "s", cascade:asset[:cascade],id:asset[:object].id]
-      when :mesh
-       partial_response[i] = Hash[t: "m", cascade:asset[:cascade],id:asset[:object].id]
-      when :error
-        partial_response[i] = Hash[t:"error", message:asset[:message]]
-      end
-    end
-    
-    JaxData.create  :request_string       => @request_string,
-                    :response_description => JSON.dump(partial_response),
-                    :cache_id             => (Digest::MD5.new << @request_string).to_s,
-                    :destroy_key          => (Digest::MD5.new << Random.rand.to_s).to_s,
-                    :shape_set_id         => @shape_set.id,
-                    :perspectives         => perspectives.inspect[1...-1]
-  end
-  
   def fetch_partial_response
     # if newly created (less than 30s old) jax_data record has a matching cache_id then return it's partial_description attribute
     jd = JaxData.where(:cache_id => params[:cache_id]).first
@@ -137,6 +104,44 @@ class JaxDataController < ApplicationController
   end
   
   private
+  
+    def describe_response
+      partial_response = Hash[
+        included:@included,
+        shape_set: {id: @shape_set.id, subject: @shape_set.subject, version: @shape_set.version}
+      ]
+      perspectives = []
+      regions = []
+
+      @assets.each_with_index do |asset, i|
+        case asset[:type] 
+        when :shape_set
+          partial_response[i] = Hash[t:"ss", cascade:asset[:cascade]].merge(@shape_set.hash_partial asset[:cascade])
+        when :perspective
+          partial_response[i] = Hash[t:"p", cascade:asset[:cascade]].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
+          perspectives << asset[:object].id if asset[:object].id
+          regions += partial_response[i][:regions].map{|r| r[:attrs][:id]} if partial_response[i][:regions]
+        when :region
+         partial_response[i] = Hash[ t:"r", cascade:asset[:cascade]].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
+         regions << asset[:object].id if asset[:object].id
+        when :shape
+          partial_response[i] = Hash[t: "s", cascade:asset[:cascade],id:asset[:object].id]
+        when :mesh
+         partial_response[i] = Hash[t: "m", cascade:asset[:cascade],id:asset[:object].id]
+        when :error
+          partial_response[i] = Hash[t:"error", message:asset[:message]]
+        end
+      end
+
+      JaxData.create  :request_string       => @request_string,
+                      :response_description => JSON.dump(partial_response),
+                      :cache_id             => (Digest::MD5.new << @request_string).to_s,
+                      :destroy_key          => (Digest::MD5.new << Random.rand.to_s).to_s,
+                      :shape_set_id         => @shape_set.id,
+                      :perspectives         => perspectives.inspect[1...-1],
+                      :regions              => regions.inspect[1...-1]
+    end
+    
     def describe_asset request
       new_asset = { :type => @type.to_sym }
       

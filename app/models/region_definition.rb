@@ -2,8 +2,11 @@ class RegionDefinition < ActiveRecord::Base
   has_and_belongs_to_many :shapes
   belongs_to  :shape_set
   belongs_to  :region
+  
   validates_presence_of :shape_set, :region
   validate    :only_one_definition_per_region, :message => "A region may be defined only once per shape set"
+  
+  after_update :invalidate_caches
   
   def self.all_definitions_for_shape_set shape_set
     RegionDefinition.where("shape_set_id = ? and orphaned = ?", shape_set.id, false)
@@ -129,4 +132,9 @@ class RegionDefinition < ActiveRecord::Base
     end
     return true
   end
+  
+  def invalidate_caches
+    JaxData.invalidate_caches_with shape_set: shape_set, region: region
+  end
+  
 end

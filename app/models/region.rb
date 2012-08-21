@@ -8,7 +8,10 @@ class Region < ActiveRecord::Base
   has_many :sub_regions,        :through => :decompositions
   has_many :shape_sets,         :through => :region_definitions
   has_many :perspectives,       :through => :region_styles
+  
   validates_uniqueness_of :name
+  
+  after_update :invalidate_caches
   
   alias :definitions :region_definitions
   
@@ -54,5 +57,9 @@ class Region < ActiveRecord::Base
     description = JSON.load(description) if description.kind_of? String
     new_region = Region.create :name => (description["name"] or description[:name])
     (description["definitions"] or description[:definitions]).each { |label_string| RegionDefinition.create_from_label_string new_region.id, label_string }
+  end
+  
+  def invalidate_caches
+    JaxData.invalidate_caches_with shape_sets: shape_sets, region: self
   end
 end

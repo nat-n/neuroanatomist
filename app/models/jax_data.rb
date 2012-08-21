@@ -42,6 +42,26 @@ class JaxData < ActiveRecord::Base
     ENV["cache_server"] == "local" and (File.open("#{Rails.root}/cached_responses/#{cache_id}.json", 'r') rescue false)
   end
   
+  def regions
+    attributes["regions"].split(/\s*,\s*/).map(&:to_i)
+  end
+
+  def perspectives
+    attributes["perspectives"].split(/\s*,\s*/).map(&:to_i)
+  end
+  
+  def self.invalidate_caches_with params    
+    [*params[:shape_set],*params[:shape_sets]].uniq.each do |ss|
+      shape_set_id = ShapeSet.find(ss).id
+      ([*params[:perspective],*params[:perspectives]].map do |perspective|
+        JaxData.where("shape_set_id = ? AND perspectives != ?", shape_set_id, "").select {|jd| jd.perspectives.include? Perspective.find(perspective).id }
+      end + 
+      [*params[:region],*params[:regions]].map do |region|
+        JaxData.where("shape_set_id = ?", shape_set_id).select { |jd| jd.regions.include? Region.find(region).id }
+      end).flatten.uniq.each { |jd| jd.destroy }
+    end
+  end
+  
   def destroy_cache
     if ENV["cache_server"] = "local"
       File.delete data_path
