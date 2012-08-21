@@ -11,6 +11,11 @@
 <body onload="start_jax('webgl','scene')">
 <div id="header">
  <h1 id="page_h">neuroanatomist</h1><span id="alpha">ALPHA</span>
+ <span id="login"><% if user_signed_in? %>
+   Signed in as <%= current_user.email %>
+ <% else %>
+   <%= link_to "Sign in", "/users/sign_in" %> | <%= link_to "Sign up", new_user_registration_path %>
+ <% end %></span>
 </div>
 <div id="content">
 <%= yield %>  

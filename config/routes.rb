@@ -1,5 +1,7 @@
 Neuroanatomist::Application.routes.draw do
 
+  devise_for :users
+
   resources :nodes
   resources :sections
 

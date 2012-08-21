@@ -209,7 +209,7 @@ DEPENDENCIES
   coffee-rails (~> 3.2.1)
   cucumber-rails
   database_cleaner
-  devise (~> 1.4.3)
+  devise
   dynamic_form
   email_spec
   factory_girl
