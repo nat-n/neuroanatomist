@@ -4,11 +4,16 @@ class JaxDataController < ApplicationController
     @assets = []
     @request_string = request.fullpath
     
+    
     if ENV["cache_server"] and (cached_request = JaxData.where(:request_string => @request_string).first)
-      redirect_to cached_request.uri
+      if (local_file = cached_request.access_locally)
+        render :file => local_file.path#, :content_type => Mime::Type.lookup_by_extension(:json).to_s
+      elsif ENV["cache_server"] != "local"
+        redirect_to cached_request.uri
+      end
       return cached_request.increment!
     end
-        
+    
     ## find shape_set
     shape_set = false
     @shape_set = case params[:shape_set_id]
@@ -31,9 +36,8 @@ class JaxDataController < ApplicationController
     # if there are no requests then respond with the default view or the shape_set if specified
     if !params[:requests]
       if not shape_set
-        @perspective = @shape_set.default_perspective
-        @cascade = encode_cascade(request["cascade"])
-        render :action => "defaults.json"
+        shape_set_hash = @shape_set.hash_partial(@cascade)
+        render :text => JSON.dump(Hash["default_shape_set" => shape_set_hash.merge(shape_set_hash.delete(:attrs))])
         return
       end
       
@@ -57,9 +61,26 @@ class JaxDataController < ApplicationController
       end
     end
     
-    if ENV["cache_server"]
-      create_cached_response
+    response = create_cached_response
+    
+    if ENV["cache_server"] and ENV["cache_server"] != "local"
+      redirect_to "#{ENV["cache_server"]}/#{response.cache_id}/#{response.destroy_key}"
     else
+      
+      @assets = JSON.load response.response_description
+      @assets.delete "included"
+      @assets.delete "shape_set"
+      @shapes = Hash[Shape.where(:shape_set_id => @shape_set.id).map { |s| [s.id, s] }]
+      @meshes = Hash[Mesh.where(:shape_set_id => @shape_set.id).map { |m| [m.id, m] }]
+      
+      if ENV["cache_server"] = "local"
+        cache_path = JaxData.local_data_path_for response.cache_id
+        response_string = render_to_string(:action => "response.json", :layout => false)
+        response.save_locally response_string
+        render :file => cache_path
+        return true
+      end
+      
       render :action => "response.json"
     end
   end
@@ -68,38 +89,33 @@ class JaxDataController < ApplicationController
     partial_response = Hash[
       included:@included,
       shape_set: {id: @shape_set.id, subject: @shape_set.subject, version: @shape_set.version}
-      ]
+    ]
     perspectives = []
     
     @assets.each_with_index do |asset, i|
       case asset[:type] 
       when :shape_set
-        partial_response[i] = Hash[t:"ss"].merge(@shape_set.hash_partial asset[:cascade])
+        partial_response[i] = Hash[t:"ss", cascade:asset[:cascade]].merge(@shape_set.hash_partial asset[:cascade])
       when :perspective
-        partial_response[i] = Hash[t:"p"].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
+        partial_response[i] = Hash[t:"p", cascade:asset[:cascade]].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
         perspectives << asset[:object].id if asset[:object].id
       when :region
-       partial_response[i] = Hash[ t:"r"].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
+       partial_response[i] = Hash[ t:"r", cascade:asset[:cascade]].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
       when :shape
-        partial_response[i] = Hash[t: "s",id:asset[:object].id]
+        partial_response[i] = Hash[t: "s", cascade:asset[:cascade],id:asset[:object].id]
       when :mesh
-       partial_response[i] = Hash[t: "m",id:asset[:object].id]
+       partial_response[i] = Hash[t: "m", cascade:asset[:cascade],id:asset[:object].id]
       when :error
         partial_response[i] = Hash[t:"error", message:asset[:message]]
       end
     end
     
-    #render :text => JSON.dump(partial_response) # for debug
-    d_key = (Digest::MD5.new << Random.rand.to_s).to_s
-    cache_id = (Digest::MD5.new << @request_string).to_s
-    new_cache = JaxData.create  :request_string       => @request_string,
-                                :response_description => JSON.dump(partial_response),
-                                :cache_id             => cache_id,
-                                :destroy_key          => d_key,
-                                :shape_set_id         => @shape_set.id,
-                                :perspectives         => perspectives.inspect[1...-1]
-    
-    redirect_to "#{ENV["cache_server"]}/#{cache_id}/#{(Digest::MD5.new << d_key).to_s}"
+    JaxData.create  :request_string       => @request_string,
+                    :response_description => JSON.dump(partial_response),
+                    :cache_id             => (Digest::MD5.new << @request_string).to_s,
+                    :destroy_key          => (Digest::MD5.new << Random.rand.to_s).to_s,
+                    :shape_set_id         => @shape_set.id,
+                    :perspectives         => perspectives.inspect[1...-1]
   end
   
   def fetch_partial_response

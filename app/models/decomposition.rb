@@ -8,7 +8,7 @@ class Decomposition < ActiveRecord::Base
   end
   
   def hash_partial
-    Hash.new[
+    Hash[
       id:           self.id,
       super_region: self.super_region.id,
       description:  self.description,

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120820155631) do
+ActiveRecord::Schema.define(:version => 20120820210354) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -81,11 +81,13 @@ ActiveRecord::Schema.define(:version => 20120820155631) do
     t.integer  "datasize"
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
+    t.integer  "shape_set_id"
   end
 
   add_index "meshes", ["back_shape_id"], :name => "index_meshes_on_back_shape_id"
   add_index "meshes", ["front_shape_id"], :name => "index_meshes_on_front_shape_id"
   add_index "meshes", ["mesh_data_id"], :name => "index_meshes_on_mesh_data_id"
+  add_index "meshes", ["shape_set_id"], :name => "index_meshes_on_shape_set_id"
 
   create_table "nodes", :force => true do |t|
     t.string   "name"

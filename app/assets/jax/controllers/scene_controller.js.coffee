@@ -20,7 +20,7 @@ Jax.Controller.create "Scene", ApplicationController,
         shape_set: data.default_shape_set.id
         requests: [
           type:"perspective"
-          id: data.default_perspective.id
+          id: data.default_shape_set.default_perspective
           cascade:"yes" ]
       @loader.fetch params, (data, textStatus, jqXHR) => 
         this.load_perspective(data[0].id, false)

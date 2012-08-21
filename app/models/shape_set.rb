@@ -105,8 +105,8 @@ class ShapeSet < ActiveRecord::Base
   end
   
   def hash_partial cascade
-    hp = Hash.new[
-      attrs: Hash.new[
+    hp = Hash[
+      attrs: Hash[
         id:                   self.id,
         name:                 self.name,
         radius:               self.radius,
