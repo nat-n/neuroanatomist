@@ -4,7 +4,6 @@
   <tr>
     <th>ID</th>
     <th>Name</th>
-    <th>Label</th>
     <th>Description</th>
     <th>Number of Definitions</th>
     <th>Number of Decompositions</th>
@@ -16,8 +15,7 @@
 <% @regions.each do |region| %>
   <tr>
     <td><%= region.id %></td>
-    <td><%= region.has_name? ? region.name : "" %></td>
-    <td><%= region.label %></td>
+    <td><%= region.name %></td>
     <td><%= region.description %></td>
     <td><%= region.region_definitions.size %></td>
     <td><%= region.decompositions.size %></td>

@@ -10,6 +10,7 @@ class Region < ActiveRecord::Base
   has_many :perspectives,       :through => :region_styles
   
   validates_uniqueness_of :name
+  validates_presence_of :name
   
   after_update :invalidate_caches
   
@@ -28,11 +29,7 @@ class Region < ActiveRecord::Base
   end
   
   def name
-    attributes["name"] or label
-  end
-  
-  def has_name?
-    attributes["name"] ? true : false
+    attributes["name"]
   end
   
   def hash_partial shape_set, cascade

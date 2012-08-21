@@ -1,12 +1,8 @@
 <p id="notice"><%= notice %></p>
 <p id="alert"><%= alert %></p>
 
-<h2>Region: <%= @region.has_name? ? @region.name : "<i>@region.label</i>" %></h2>
+<h2>Region: <%= @region.name %></h2>
 
-<p>
-  <b>Label:</b>
-  <%= @region.label %>
-</p>
 <p>
   <b>Description:</b>
   <%= @region.description %>
