@@ -1,5 +1,10 @@
 Neuroanatomist::Application.routes.draw do
-
+  
+  
+  namespace :admin do
+    resources :users
+  end
+  
   root :to => 'pages#home'
   match "/about" => "pages#about"
   match "/contact" => "pages#contact"
