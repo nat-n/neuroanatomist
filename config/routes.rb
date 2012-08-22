@@ -21,7 +21,7 @@ Neuroanatomist::Application.routes.draw do
   resources :facts, :path => "/ontology/facts"
   resources :ontology
 
-  root :to => 'home#index'
+  root :to => 'pages#home'
   
   resources :shape_sets
   resources :shapes
