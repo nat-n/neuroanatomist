@@ -1,0 +1,13 @@
+<div id="header_bar">
+  <h1 id="header_title"><%= link_to "neuroanatomist", "/" %></h1>
+  <span id="header_badge">alpha</span>
+  <nav class="header_nav">
+    <%= link_to "About", "#" %>
+    <%= link_to "Contact", "#" %>
+  </nav>
+  <%= link_to image_tag("/assets/ccace_logo.png", 
+                        :alt => "Centre for Cognitive Ageing and Cognitive Epidemiology at The University of Edinburgh",
+                        :height => 43),
+              "http://www.ccace.ed.ac.uk/", :id => "ccace_link"%>
+  <span id="login"><% if user_signed_in? %> Signed in as <%= current_user.email %><% else %><%= link_to "Sign in", new_user_session_path %> | <%= link_to "Sign up", new_user_registration_path %><% end %></span>
+</div>

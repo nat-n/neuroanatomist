@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
 <head>
   <title>Neuroanatomist</title>
@@ -9,16 +9,23 @@
   <meta charset="utf-8" />
 </head>
 <body onload="start_jax('webgl','scene')">
-<div id="header">
- <h1 id="page_h">neuroanatomist</h1><span id="alpha">ALPHA</span>
- <span id="login"><% if user_signed_in? %>
-   Signed in as <%= current_user.email %>
- <% else %>
-   <%= link_to "Sign in", new_user_session_path %> | <%= link_to "Sign up", new_user_registration_path %>
- <% end %></span>
-</div>
-<div id="content">
-<%= yield %>  
+<div id="page">
+  <header class="page">
+    <%= render :partial => "layouts/header_bar"%>
+  </header>
+  <div id="content_wrapper">
+    <div class="header_push"></div>
+    <div id="notice_area">
+    <p id="notice"><%= notice %></p>
+    </div>
+    <div id="content">
+      <%= yield %>  
+    </div>
+    <div class="footer_push"></div>
+  </div>
+  <footer class="page">
+    <%= render :partial => "layouts/footer_bar"%>
+  </footer>
 </div>
 </body>
 </html>

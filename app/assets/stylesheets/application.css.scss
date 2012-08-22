@@ -1,0 +1,210 @@
+$header_height: 44px;
+
+$footer_height: 18px;
+$neg_footer_height: -18px;
+
+html,body,div,span,applet,object,iframe,
+h1,h2,h3,h4,h5,h6,p,blockquote,pre,
+a,abbr,acronym,address,big,cite,code,
+del,dfn,em,img,ins,kbd,q,s,samp,
+small,strike,strong,sub,sup,tt,var,
+dl,dt,dd,
+fieldset,form,label,legend,
+table,caption,tbody,tfoot,thead,tr,th,td,
+article,aside,canvas,details,figcaption,figure,
+footer,header,hgroup,menu,nav,section,summary,
+time,mark,audio,video{
+  margin:0;
+  padding:0;
+  border:0;
+  outline:0;
+  vertical-align:baseline;
+}
+
+html, body {
+	height: 100%;
+}
+
+div#page {
+	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+	height: 100%;
+}
+
+/* @group header */
+
+header.page {
+	color: #fffeff;
+	background: #303030 url(/assets/blackbar.png) repeat-x;
+	height: $header_height;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 3;
+	width: auto;
+}
+
+h1#header_title a {
+	color: #fffeff;
+	text-shadow: #b4b3b4 -1px -1px 0;
+	height: auto;
+	text-decoration: none;
+	font-size: 1.4em;
+	line-height: $header_height;
+	margin-left: 5px;
+	font-weight: normal;
+	font-style: normal;
+	float: left;
+}
+
+#header_badge {
+	font-size: 0.6em;
+	text-transform: uppercase;
+	display: inline;
+	float: left;
+	font-weight: bold;
+}
+
+.header_nav {
+	float: left;
+	margin-left: 100px;
+	margin-top: 20px;
+}
+
+.header_nav a {
+	background-color: #252525;	
+	color: #f0f0f0;
+	height: 17px;
+	display: inline-block;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+	padding: 4px 8px 3px;
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 0.9em;
+	text-shadow: #222 0 0 6px;
+}
+
+.header_nav a:hover {
+	background-color: #454545;	
+}
+
+.header_nav a:active {
+	background-color: #252525;	
+}
+
+span#login {
+	float: right;
+	position: relative;
+	right: 10px;
+	top: 0px;
+	
+	
+	background-color: #252525;	
+	height: 17px;
+	display: inline-block;
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
+	padding: 1px 8px 5px;
+}
+
+span#login a {
+	color: #f0f0f0;
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 0.8em;
+	text-shadow: #222 0 0 6px;
+}
+
+a#ccace_link {
+	font-size: 0;
+	background-image: url(/images/ccace_logo.png);
+	height: $header_height;
+	width: 96px;
+	float: right;
+	margin: 0 15px 0 20px;
+}
+
+.header_push {
+	height: $header_height;
+}
+
+
+/* @end */
+
+/* @group footer */
+
+footer.page {
+	color: #fffeff;
+	background: #303030 url(/assets/blackbar.png) repeat-x;
+	height: 14px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 3;
+	width: auto;
+}
+
+footer.page, .footer_push {
+	clear: both;
+	height: $footer_height;
+}
+
+
+/* @end */
+
+/* @group content */
+
+div#content_wrapper {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin-right: auto;
+	margin-bottom: $neg_footer_height;
+	margin-left: auto;
+}
+
+div#content {
+}
+
+#static_col {
+	z-index: 2;
+	width: 640px;
+	padding-left: 1px;
+}
+
+#vis_controls {
+	z-index: 3;
+}
+
+#dynamic_col {
+	min-width: 590px;
+	width: auto;
+	height: auto;
+	position: absolute;
+	top: 44px;
+	left: 650px;
+	right: 0;
+	bottom: $footer_height;
+	z-index: 1;
+	padding-right: 1px;
+}
+
+#sup_content {
+}
+
+iframe {
+	width: 100%;
+	height: 100%;
+}
+
+
+
+/* @end */
+
+.backend_data, .backend_data td{
+	padding: 2px;
+	border: 1;
+	border-width: 1px;
+	border-style: groove;
+}
