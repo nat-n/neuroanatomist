@@ -42,6 +42,7 @@ header.page {
 	right: 0;
 	z-index: 3;
 	width: auto;
+	min-width: 1050px;
 }
 
 h1#header_title a {
@@ -98,10 +99,9 @@ span#login {
 	position: relative;
 	right: 10px;
 	top: 0px;
-	
-	
 	background-color: #252525;	
-	height: 17px;
+	height: 15px;
+	font-size: 0.8em;
 	display: inline-block;
 	border-bottom-left-radius: 8px;
 	border-bottom-right-radius: 8px;
@@ -112,8 +112,12 @@ span#login a {
 	color: #f0f0f0;
 	text-decoration: none;
 	font-weight: bold;
-	font-size: 0.8em;
 	text-shadow: #222 0 0 6px;
+}
+
+span#login a:hover {
+	text-shadow: #000000 0px 0px 0;
+	color: #feffff;
 }
 
 a#ccace_link {
@@ -122,7 +126,7 @@ a#ccace_link {
 	height: $header_height;
 	width: 96px;
 	float: right;
-	margin: 0 15px 0 20px;
+	margin: 0 15px;
 }
 
 .header_push {
@@ -170,6 +174,13 @@ div#content_wrapper {
 	margin-right: auto;
 	margin-bottom: $neg_footer_height;
 	margin-left: auto;
+}
+
+#notice_area {
+	width: 640px;
+	height: auto;
+	margin: 2px;
+	border-style: dotted;
 }
 
 div#content {

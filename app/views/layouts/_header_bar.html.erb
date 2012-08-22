@@ -9,5 +9,5 @@
                         :alt => "Centre for Cognitive Ageing and Cognitive Epidemiology at The University of Edinburgh",
                         :height => 43),
               "http://www.ccace.ed.ac.uk/", :id => "ccace_link"%>
-  <span id="login"><% if user_signed_in? %> Signed in as <%= current_user.email %><% else %><%= link_to "Sign in", new_user_session_path %> | <%= link_to "Sign up", new_user_registration_path %><% end %></span>
+  <span id="login"><% if user_signed_in? %> <span>Signed in as <%= current_user.email %></span> | <%= link_to "Sign out", destroy_user_session_path, :method => :delete %><% else %><%= link_to "Sign in", new_user_session_path %> | <%= link_to "Sign up", new_user_registration_path %><% end %></span>
 </div>
