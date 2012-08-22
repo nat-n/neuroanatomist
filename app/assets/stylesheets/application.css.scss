@@ -1,7 +1,7 @@
 $header_height: 44px;
 
-$footer_height: 18px;
-$neg_footer_height: -18px;
+$footer_height: 15px;
+$neg_footer_height: -15px;
 
 html,body,div,span,applet,object,iframe,
 h1,h2,h3,h4,h5,h6,p,blockquote,pre,
@@ -151,10 +151,11 @@ footer.page, .footer_push {
 }
 
 .copyright {
-	font-size: 10px;
+	font-size: 9px;
 	color: #f4f4f4;
 	float: right;
-	line-height: 20px;
+	line-height: $footer_height;
+	padding-right: 2px;
 }
 
 
