@@ -1,5 +1,9 @@
 Neuroanatomist::Application.routes.draw do
 
+  root :to => 'pages#home'
+  match "/about" => "pages#about"
+  match "/contact" => "pages#contact"
+  
   devise_for :users
 
   resources :nodes
@@ -20,8 +24,6 @@ Neuroanatomist::Application.routes.draw do
   resources :relations, :path => "/ontology/relations"
   resources :facts, :path => "/ontology/facts"
   resources :ontology
-
-  root :to => 'pages#home'
   
   resources :shape_sets
   resources :shapes
