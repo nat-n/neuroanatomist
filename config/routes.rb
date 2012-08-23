@@ -10,7 +10,7 @@ Neuroanatomist::Application.routes.draw do
   match "/about" => "pages#about"
   match "/contact" => "pages#contact"
   
-  devise_for :users
+  devise_for :users, :controllers => {:registrations => "registrations"}
 
   resources :nodes
   resources :sections
