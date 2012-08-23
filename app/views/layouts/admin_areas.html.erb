@@ -25,7 +25,7 @@
     <% if current_user.try(:admin?) %>
     <nav id="admin_nav">
       <%= link_to "Users", admin_users_path %>
-      <%= link_to "Ontology", "ontology" %>
+      <%= link_to "Ontology", "/ontology" %>
       <%= link_to "Perspectives", perspectives_path %>
       <%= link_to "Shape Sets", shape_sets_path %>
       <%= link_to "Regions", regions_path %>

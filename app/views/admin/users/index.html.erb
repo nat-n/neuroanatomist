@@ -1,6 +1,43 @@
-<%= link_to "New User", new_admin_user_path %>
-<ul>
+<h1>Listing Users</h1>
+
+<table class="backend_data">
+  <tr>
+    <th>id</th>
+    <th>Alias</th>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Sign ins</th>
+    <th>current_sign_in_at</th>
+    <th>last_sign_in_at</th>
+    <th>current ip</th>
+    <th>last ip</th>
+    <th>admin</th>
+    <th>member since</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
 <% @users.each do |user| %>
-  <li><%= link_to user.email, [:admin, user] %></li>
+  <tr>
+    <td><%= user.id %></td>
+    <td><%= user.alias %></td>
+    <td><%= user.name %></td>
+    <td><%= user.email %></td>
+    <td><%= user.sign_in_count %></td>
+    <td><%= user.current_sign_in_at %></td>
+    <td><%= user.last_sign_in_at %></td>
+    <td><%= user.current_sign_in_ip %></td>
+    <td><%= user.last_sign_in_ip %></td>
+    <td><%= "X" if user.admin? %></td>
+    <td><%= user.created_at %></td>
+    <td><%= link_to 'Show', "admin_user_path" %></td>
+    <td><%= link_to 'Edit', edit_admin_user_path(user) %></td>
+    <td><%= link_to 'Destroy', [:admin, user], confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
 <% end %>
-</ul>
+</table>
+
+<br />
+
+<%= link_to "New User", new_admin_user_path %>
