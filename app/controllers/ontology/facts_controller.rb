@@ -1,4 +1,4 @@
-class FactsController < ApplicationController
+class Ontology::FactsController < ApplicationController
   # GET /facts
   # GET /facts.json
   def index

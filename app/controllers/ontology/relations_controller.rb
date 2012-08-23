@@ -1,4 +1,4 @@
-class RelationsController < ApplicationController
+class Ontology::RelationsController < ApplicationController
   # GET /relations
   # GET /relations.json
   def index

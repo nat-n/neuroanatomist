@@ -1,4 +1,4 @@
-class TypesController < ApplicationController
+class Ontology::TypesController < ApplicationController
   before_filter :find_supertype, :only => [:create, :update]
   before_filter :find_type, :only => [:show, :edit, :update, :destroy]
   

@@ -1,4 +1,4 @@
-<%= form_for(@thing) do |f| %>
+<%= form_for([:ontology, @thing]) do |f| %>
   <% if @thing.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@thing.errors.count, "error") %> prohibited this thing from being saved:</h2>

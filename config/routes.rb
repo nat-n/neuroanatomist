@@ -25,11 +25,13 @@ Neuroanatomist::Application.routes.draw do
   resources :perspectives
   resources :region_styles
   
-  resources :types, :path => "/ontology/types"
-  resources :things, :path => "/ontology/things"
-  resources :relations, :path => "/ontology/relations"
-  resources :facts, :path => "/ontology/facts"
-  resources :ontology
+  
+  namespace :ontology do
+    root :to => "ontology#index"
+    post "/ontology/ontology" => "ontology#create"
+    get "/ontology/export" => "ontology#export"
+    resources :types, :things, :relations, :facts
+  end
   
   resources :shape_sets
   resources :shapes

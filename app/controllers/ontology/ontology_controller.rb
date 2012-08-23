@@ -1,4 +1,4 @@
-class OntologyController < ApplicationController
+class Ontology::OntologyController < ApplicationController
   before_filter :root_types
   
   def index

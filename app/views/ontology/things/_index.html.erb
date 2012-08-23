@@ -6,9 +6,9 @@
 	<th></th>
 </tr>	
 <% @type.things.each do |thing|  %><tr>
-  <td><%= link_to thing.name, thing %></td>
+  <td><%= link_to thing.name, [:ontology, thing] %></td>
   <td><%= thing.description %></td>
   <td><%= thing.facts %></td>
-  <td><%= link_to 'Edit', edit_thing_path(thing) %></td>
+  <td><%= link_to 'Edit', edit_ontology_thing_path(thing) %></td>
 </tr><% end %></table>
-<%= link_to 'New Instance', new_thing_path(:type => @type.name) %>
+<%= link_to 'New Instance', new_ontology_thing_path(:type => @type.name) %>
