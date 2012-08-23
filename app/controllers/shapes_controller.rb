@@ -2,6 +2,8 @@ class ShapesController < ApplicationController
   before_filter :find_shape, :only => [:show, :edit, :update, :destroy]  
   before_filter :find_shape_set, :only => [:show, :edit, :update, :destroy]  
   
+  layout 'admin_areas'
+  
   def index
     redirect_to ShapeSet
   end

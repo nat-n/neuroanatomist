@@ -1,6 +1,8 @@
 class Ontology::OntologyController < ApplicationController
   before_filter :root_types
   
+  layout 'admin_areas'
+  
   def index
     respond_to do |format|
       format.html # new.html.erb

@@ -1,4 +1,6 @@
 class MeshesController < ApplicationController
+  
+  layout 'admin_areas'
     
   def index
     @meshes = Mesh.all

@@ -1,11 +1,8 @@
-ActionController.add_renderer :obj do |mesh, options|
- #self.content_type ||= Mime::text
- self.response_body = json
-end
-
 class RegionDefinitionsController < ApplicationController
   before_filter :find_region_definition, :only => [:show, :edit, :update, :destroy]
   before_filter :validate_region_and_shape_set, :only => [:create]
+  
+  layout 'admin_areas'
   
   def index
     redirect_to @region_definition.region rescue

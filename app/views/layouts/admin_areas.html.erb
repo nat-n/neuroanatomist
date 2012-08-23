@@ -1,8 +1,15 @@
+<% content_for :head do %>
+  <title>neuranatomist :: admin</title>
+<% end %>
+
+
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
 <head>
   <title>Neuroanatomist</title>
   <%= stylesheet_link_tag    "application" %>
+  <%= stylesheet_link_tag    "admin_areas" %>
   <%= javascript_include_tag "application" %>
   <%= javascript_include_tag "jax/application" %>
   <%= csrf_meta_tags %>
@@ -15,6 +22,17 @@
   </header>
   <div id="content_wrapper">
     <div class="header_push"></div>
+    <% if current_user.try(:admin?) %>
+    <nav id="admin_nav">
+      <%= link_to "Users", admin_users_path %>
+      <%= link_to "Ontology", "ontology" %>
+      <%= link_to "Perspectives", perspectives_path %>
+      <%= link_to "Shape Sets", shape_sets_path %>
+      <%= link_to "Regions", regions_path %>
+      <%= link_to "Nodes", nodes_path %>
+      <%= link_to "Tags", tags_path %>
+    </nav>
+    <% end %>
     <% unless flash.keys.empty? %>
     <div id="notice_area">
     <% flash.keys.each { |flash_type| %>

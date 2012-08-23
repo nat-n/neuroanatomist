@@ -2,6 +2,8 @@ class RegionsController < ApplicationController
   before_filter :find_region, :only => [:show, :edit, :update, :destroy]
   before_filter :find_thing, :only => [:update, :create]
   
+  layout 'admin_areas'
+  
   def index
     @regions = Region.all
   end

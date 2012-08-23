@@ -1,6 +1,7 @@
 class Ontology::RelationsController < ApplicationController
-  # GET /relations
-  # GET /relations.json
+  
+  layout 'admin_areas'
+
   def index
     @relations = Relation.all
 

@@ -1,6 +1,7 @@
 class Ontology::FactsController < ApplicationController
-  # GET /facts
-  # GET /facts.json
+  
+  layout 'admin_areas'
+
   def index
     @facts = Fact.all
 
@@ -10,8 +11,6 @@ class Ontology::FactsController < ApplicationController
     end
   end
 
-  # GET /facts/1
-  # GET /facts/1.json
   def show
     @fact = Fact.find(params[:id])
 
@@ -21,8 +20,6 @@ class Ontology::FactsController < ApplicationController
     end
   end
 
-  # GET /facts/new
-  # GET /facts/new.json
   def new
     @fact = Fact.new
 
@@ -32,13 +29,10 @@ class Ontology::FactsController < ApplicationController
     end
   end
 
-  # GET /facts/1/edit
   def edit
     @fact = Fact.find(params[:id])
   end
 
-  # POST /facts
-  # POST /facts.json
   def create
     @fact = Fact.new(params[:fact])
 
@@ -53,8 +47,6 @@ class Ontology::FactsController < ApplicationController
     end
   end
 
-  # PUT /facts/1
-  # PUT /facts/1.json
   def update
     @fact = Fact.find(params[:id])
 
@@ -69,8 +61,6 @@ class Ontology::FactsController < ApplicationController
     end
   end
 
-  # DELETE /facts/1
-  # DELETE /facts/1.json
   def destroy
     @fact = Fact.find(params[:id])
     @fact.destroy

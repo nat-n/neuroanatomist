@@ -1,6 +1,8 @@
 class Admin::UsersController < Admin::BaseController
   before_filter :find_user, :only => [:show, :edit, :update, :destroy]
   
+  layout 'admin_areas'
+  
   def index
     @users = User.all(:order => "email")
   end
