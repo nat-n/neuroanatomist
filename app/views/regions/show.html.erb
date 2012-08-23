@@ -19,10 +19,10 @@
 <div class="actions">
   <%= f.submit %>
 </div>
-
 <% end %>
-
-<br><h3>Definitions</h3>
+<br>
+<hr width="90%">
+<h3>Definitions</h3>
 
 <%= @region_definitions = @region.region_definitions
     render :partial => 'region_definitions/index' %>
@@ -41,7 +41,7 @@
 <%= "none" if @region.decompositions.empty? %>
 <%= @decompositions = @region.decompositions; render :partial => 'decompositions/index'%>
 <%= link_to "New Decomposition", new_decomposition_path(:region => @region.name) %>
-<br>
-<h3>Region sytles</h3>
+<br><br>
+<h3>Region styles</h3>
 <%= @region_styles = @region.region_styles; render :partial => 'region_styles/index'%>
 <br>

@@ -34,7 +34,7 @@ p[contenteditable~=true] {
 	margin: 0;
 }
 
-p, label {
+p, label, input {
 	margin: 4px;
 }
 
@@ -49,8 +49,4 @@ select#region_thing {
 	padding-left: 5px;
 	list-style-position: inside;
 	list-style-type: none;
-}
-
-* {
-	
 }
