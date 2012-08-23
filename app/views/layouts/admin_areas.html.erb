@@ -13,6 +13,17 @@
   <%= javascript_include_tag "application" %>
   <%= javascript_include_tag "jax/application" %>
   <%= csrf_meta_tags %>
+  
+  <script type="text/javascript">
+    $(function() {
+      $("p[contenteditable~=true]").bind("input",function(){
+        this.style['border-style']='inset';
+        this.style['border-width']='1px';
+        this.style['background-color']='#ceedff';
+        if($("#"+this.title).length) $("#"+this.title).val(this.innerHTML);
+      });
+    });
+  </script>
   <meta charset="utf-8" />
 </head>
 <body onload="start_jax('webgl','scene')">

@@ -14,7 +14,7 @@
   <tr>
     <td><%= node.name %></td>
     <td><%= node.introduction %></td>
-    <td><%= link_to node.thing ? node.thing.name : "" , node.thing %></td>
+    <td><%= link_to node.thing ? node.thing.name : "" , [:ontology, node.thing] %></td>
     <td><%= link_to 'Show', node %></td>
     <td><%= link_to 'Edit', edit_node_path(node) %></td>
     <td><%= link_to 'Destroy', node, confirm: 'Are you sure?', method: :delete %></td>

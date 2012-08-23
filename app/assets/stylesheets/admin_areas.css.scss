@@ -20,6 +20,37 @@ nav#admin_nav a:hover {
 	color: white;
 }
 
-h3 {
-	margin: 5px;
+h2, h3 {
+	margin: 8px;
+	display: inline-block;
+}
+
+p[contenteditable~=true] {
+	padding: 2px;
+}
+
+.inline {
+	display: inline-block;
+	margin: 0;
+}
+
+p, label {
+	margin: 4px;
+}
+
+select#region_thing {
+	display: inline;
+	margin: 6px;
+}
+
+.tabled_list {
+	margin: 0 2px 0 0;
+	text-indent: 0;
+	padding-left: 5px;
+	list-style-position: inside;
+	list-style-type: none;
+}
+
+* {
+	
 }
