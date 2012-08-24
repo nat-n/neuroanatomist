@@ -216,6 +216,46 @@ div#content {
 	margin: 0;
 }
 
+/* @group nodes */
+
+.embedded_node {
+	padding: 10px 5px 5px;
+}
+
+.embedded_node h2, .embedded_node h3, .embedded_node h4, .embedded_node h5, .embedded_node h6 {
+	padding: 10px 5px;
+}
+
+.embedded_node h2 {
+	font-size: 2em;
+	margin-bottom: 8px;
+}
+
+.embedded_node h3  {
+}
+
+.embedded_node h4  {
+	
+}
+
+.embedded_node h5  {
+	
+}
+
+.embedded_node h6  {
+	
+}
+
+.embedded_node p  {
+	font-size: 1em;
+	margin-top: 0.7em;
+	margin-bottom: 0.5em;
+}
+
+
+
+/* @end */
+
 iframe {
 	width: 100%;
 	height: 100%;

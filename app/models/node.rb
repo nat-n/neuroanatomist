@@ -8,6 +8,9 @@ class Node < ActiveRecord::Base
   validates_uniqueness_of :name
   validates_presence_of :name, :tag
   
+  def name
+    attribute(:name).gsub(/_+/, " ")
+  end
   
   def self.find_by_name node_name
     Node.where(:name => node_name).first

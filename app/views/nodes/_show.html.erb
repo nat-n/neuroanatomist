@@ -1,0 +1,7 @@
+<div class="embedded_node">
+  <h2 class="node_title"><%= @node.name %></h2>
+  <div class="node_intro">
+  <%= raw RedCloth.new((@node.introduction or "")).to_html %>
+  </div>
+
+</div>

@@ -49,4 +49,6 @@
 	margin: 2px 5px 0 10px;
 }
 
-
+.ui-tabs-panel {
+	overflow: auto;
+}
