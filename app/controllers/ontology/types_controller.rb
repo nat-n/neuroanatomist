@@ -1,8 +1,6 @@
-class Ontology::TypesController < ApplicationController
+class Ontology::TypesController  < Admin::BaseController
   before_filter :find_supertype, :only => [:create, :update]
   before_filter :find_type, :only => [:show, :edit, :update, :destroy]
-  
-  layout 'admin_areas'
   
   def index
     @types = Type.all

@@ -1,6 +1,4 @@
-class RegionStylesController < ApplicationController
-  
-  layout 'admin_areas'
+class RegionStylesController  < Admin::BaseController
 
   def index
     @region_styles = RegionStyle.all

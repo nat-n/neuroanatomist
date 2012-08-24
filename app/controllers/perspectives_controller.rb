@@ -1,8 +1,6 @@
-class PerspectivesController < ApplicationController
+class PerspectivesController  < Admin::BaseController
   before_filter :find_perspective, :only => [:show, :edit, :update, :destroy]
   before_filter :find_regions, :only => [:new, :edit]
-  
-  layout 'admin_areas'
 
   def index
     @perspectives = Perspective.all

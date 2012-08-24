@@ -1,7 +1,5 @@
-class Ontology::OntologyController < ApplicationController
+class Ontology::OntologyController < Admin::BaseController
   before_filter :root_types
-  
-  layout 'admin_areas'
   
   def index
     respond_to do |format|

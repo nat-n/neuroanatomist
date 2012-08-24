@@ -1,6 +1,4 @@
-class Ontology::FactsController < ApplicationController
-  
-  layout 'admin_areas'
+class Ontology::FactsController  < Admin::BaseController
 
   def index
     @facts = Fact.all

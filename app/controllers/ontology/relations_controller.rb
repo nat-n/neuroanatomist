@@ -1,6 +1,4 @@
-class Ontology::RelationsController < ApplicationController
-  
-  layout 'admin_areas'
+class Ontology::RelationsController  < Admin::BaseController
 
   def index
     @relations = Relation.all

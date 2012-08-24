@@ -1,8 +1,6 @@
-class ShapeSetsController < ApplicationController
+class ShapeSetsController  < Admin::BaseController
   before_filter :find_shape_set, :only => [:show, :edit, :update, :destroy]
   before_filter :update_descriptors, :only => [:update]
-  
-  layout 'admin_areas'
   
   include S3Helper
   

@@ -1,9 +1,7 @@
-class DecompositionsController < ApplicationController
+class DecompositionsController < Admin::BaseController
   before_filter :find_super_region, :only => [:create]
   before_filter :find_decomposition, :only => [:show, :edit, :update, :destroy]
   
-  layout 'admin_areas'
-
   def index
     @decompositions = Decomposition.all
 
