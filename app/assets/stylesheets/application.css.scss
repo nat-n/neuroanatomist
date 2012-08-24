@@ -144,7 +144,7 @@ footer.page {
 	bottom: 0;
 	left: 0;
 	right: 0;
-	z-index: 3;
+	z-index: 5;
 	width: auto;
 }
 
@@ -196,19 +196,22 @@ div#content {
 }
 
 #dynamic_col {
-	min-width: 590px;
+	min-width: 600px;
 	width: auto;
 	height: auto;
 	position: absolute;
 	top: 44px;
-	left: 650px;
+	left: 645px;
 	right: 0;
 	bottom: $footer_height;
 	z-index: 1;
-	padding-right: 1px;
+	padding: 0;
 }
 
 #sup_content {
+	height: 100%;
+	padding: 0;
+	margin: 0;
 }
 
 iframe {
@@ -225,4 +228,8 @@ iframe {
 	border: 1;
 	border-width: 1px;
 	border-style: groove;
+}
+
+svg {
+	z-index: 10;
 }
