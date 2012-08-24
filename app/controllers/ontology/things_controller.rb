@@ -37,7 +37,7 @@ class Ontology::ThingsController  < Admin::BaseController
     
     respond_to do |format|
       if @thing.save
-        format.html { redirect_to @thing, notice: 'Thing was successfully created.' }
+        format.html { redirect_to [:ontology, @thing], notice: 'Thing was successfully created.' }
         format.json { render json: @thing, status: :created, location: @thing }
       else
         format.html { render action: "new" }

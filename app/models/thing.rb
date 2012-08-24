@@ -12,4 +12,8 @@ class Thing < ActiveRecord::Base
     subject_facts + object_facts
   end
   
+  def name
+    attribute(:name).gsub(/_+/, " ")
+  end
+  
 end

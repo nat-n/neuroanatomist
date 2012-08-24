@@ -26,7 +26,7 @@
     <td><%= thing.dbpedia_resource %></td>
     <td><%= thing.wikipedia_title %></td>
     <td><%= link_to 'Show', [:ontology, thing] %></td>
-    <td><%= link_to 'Edit', edit__ontology_thing_path(thing) %></td>
+    <td><%= link_to 'Edit', edit_ontology_thing_path(thing) %></td>
     <td><%= link_to 'Destroy', [:ontology, thing], confirm: 'Are you sure?', method: :delete %></td>
   </tr>
 <% end %>
