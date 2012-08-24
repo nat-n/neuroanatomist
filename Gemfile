@@ -10,7 +10,6 @@ gem 'thin'
 gem 'aws-sdk'
 
 gem 'jax'
-gem 'jquery-rails', '>= 1.0.12'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -44,6 +43,7 @@ gem 'cancan'
 
 gem 'searcher'
 
+gem 'RedCloth'
 gem 'versionomy'
 gem 'httparty'
 
