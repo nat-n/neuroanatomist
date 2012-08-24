@@ -146,6 +146,7 @@ footer.page {
 	right: 0;
 	z-index: 5;
 	width: auto;
+	overflow: hidden;
 }
 
 footer.page, .footer_push {
@@ -159,6 +160,12 @@ footer.page, .footer_push {
 	float: right;
 	line-height: $footer_height;
 	padding-right: 2px;
+}
+
+#github_link {
+	float: right;
+	padding: 0 12px 1px 2px;
+	margin: 0;
 }
 
 
