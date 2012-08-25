@@ -10,6 +10,9 @@ Jax.Controller.create "Scene", ApplicationController,
     @history = window.context.history ?= { log: [], back: [], forward: [], recent_regions: {} }
     @s3 = window.context.s3 ?= {}
     
+    @context.canvas.addEventListener 'DOMMouseScroll', this.mouse_scrolled, false
+    @context.canvas.addEventListener 'mousewheel', this.mouse_scrolled, false
+    
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
 	  # fetch default visualisation data
@@ -27,7 +30,7 @@ Jax.Controller.create "Scene", ApplicationController,
         this.update_history()
         this.hide_loading_spinner()
     this.patch_world()
-    
+        
   helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper, StatusHelper ]
   
   activate_shape_set: (shape_set) ->

@@ -31,9 +31,13 @@ Jax.getGlobal().CanvasEventRoutingHelper = Jax.Helper.create
       @tooltip.mouse_released event.pageX, event.pageY, @world.pick(event.x, event.y)
     if @labeler
       @labeler.mouse_released event
+  
+  mouse_scrolled: (event) ->
+    event.preventDefault()
+    window.context.current_controller.camera_scroll(event)
 
   key_pressed: (event) ->
-    this.depth_key(event) # camera control
+    #this.depth_key(event) # camera control
   
   key_typed: (event) ->
     
