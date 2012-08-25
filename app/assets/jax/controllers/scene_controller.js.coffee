@@ -1,4 +1,3 @@
-
 Jax.Controller.create "Scene", ApplicationController,
   index: ->
     @active_shape_set = false
@@ -13,7 +12,8 @@ Jax.Controller.create "Scene", ApplicationController,
     
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
-	# fetch default visualisation data
+	  # fetch default visualisation data
+    this.show_loading_spinner($('#visualisation'), true)
     @loader.fetch_defaults (data, textStatus, jqXHR) =>
       this.activate_shape_set(data.default_shape_set.id)
       params =
@@ -25,10 +25,10 @@ Jax.Controller.create "Scene", ApplicationController,
       @loader.fetch params, (data, textStatus, jqXHR) => 
         this.load_perspective(data[0].id, false)
         this.update_history()
-      
+        this.hide_loading_spinner()
     this.patch_world()
     
-  helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper ]
+  helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper, StatusHelper ]
   
   activate_shape_set: (shape_set) ->
     @active_shape_set = shape_set
