@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <title>Neuroanatomist</title>
-  <%= stylesheet_link_tag    "application" %>
-  <%= stylesheet_link_tag "jquery_ui/jquery.ui.all.css" if @admin_layout and current_user.try(:admin?) %>
-  <%= stylesheet_link_tag    "admin_areas" %>
+  <%= stylesheet_link_tag "application" %>
+  <%= stylesheet_link_tag "jquery_ui/jquery.ui.all.css" %>
+  <%= stylesheet_link_tag "admin_areas" if @admin_layout and current_user.try(:admin?) %>
   
   <%= javascript_include_tag "application" %>
   <%= javascript_include_tag "jax/application" %>
