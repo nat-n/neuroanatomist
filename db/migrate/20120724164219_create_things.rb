@@ -9,10 +9,11 @@ class CreateThings < ActiveRecord::Migration
       t.string :wikipedia_title
       
       t.integer :type_id
-      t.integer :tag_id
       t.integer :node_id
 
       t.timestamps
     end
+    
+    add_column :regions, :thing_id, :integer
   end
 end

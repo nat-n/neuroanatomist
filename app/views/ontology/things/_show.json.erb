@@ -1,10 +1,10 @@
-  {
-      "name": "<%= @thing.name %>",
-      "description": "<%= @thing.description %>",
-      "synonyms": "<%= @thing.synonyms %>",
-      "neurolex_category": "<%= @thing.neurolex_category %>",
-      "dbpedia_resource": "<%= @thing.dbpedia_resource %>",
-      "wikipedia_title": "<%= @thing.wikipedia_title %>",
-      "neurolex_category": "<%= @thing.neurolex_category %>",
-      "regions": "<%= raw JSON.dump(@thing.regions.map(&:name)) %>"
-    }
+<%= raw JSON.dump(name: @thing.name,
+                  description: @thing.description,
+                  synonyms: @thing.synonyms,
+                  neurolex_category: @thing.neurolex_category,
+                  dbpedia_resource: @thing.dbpedia_resource,
+                  wikipedia_title: @thing.wikipedia_title,
+                  neurolex_category: @thing.neurolex_category,
+                  scholarpedia_article: @thing.scholarpedia_article,
+                  regions: @thing.regions.map(&:description_hash))
+%>

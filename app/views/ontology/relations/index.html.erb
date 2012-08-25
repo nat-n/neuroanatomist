@@ -4,6 +4,8 @@
   <tr>
     <th>Name</th>
     <th>Description</th>
+    <th>Object Type</th>
+    <th>Subject Type</th>
     <th></th>
     <th></th>
     <th></th>
@@ -13,6 +15,8 @@
   <tr>
     <td><%= relation.name %></td>
     <td><%= relation.description %></td>
+    <td><%= relation.object_type.name %></td>
+    <td><%= relation.subject_type.name %></td>
     <td><%= link_to 'Show', relation %></td>
     <td><%= link_to 'Edit', edit_relation_path(relation) %></td>
     <td><%= link_to 'Destroy', relation, confirm: 'Are you sure?', method: :delete %></td>
@@ -22,4 +26,4 @@
 
 <br />
 
-<%= link_to 'New Relation', new_relation_path %>
+<%= link_to 'New Relation', new_ontology_relation_path %>

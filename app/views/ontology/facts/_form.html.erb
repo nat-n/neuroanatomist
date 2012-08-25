@@ -1,4 +1,4 @@
-<%= form_for(@fact) do |f| %>
+<%= form_for([:ontology, @fact]) do |f| %>
   <% if @fact.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@fact.errors.count, "error") %> prohibited this fact from being saved:</h2>
@@ -10,7 +10,22 @@
       </ul>
     </div>
   <% end %>
-
+  
+  <div class="field">
+    <%= f.label :relation %><br />
+    <%= f.select :relation, Relation.all.map{|r| [r.name,r.id]}, :selected => (@fact.relation and @fact.relation.name) %>
+  </div>
+  
+  <div class="field">
+    <%= f.label :subject %><br />
+    <%= f.select :subject, Thing.all.map{|t| [t.name,t.id]}, :selected => (@fact.subject and @fact.subject.name) %>
+  </div>
+  
+  <div class="field">
+    <%= f.label :object %><br />
+    <%= f.select :object, Thing.all.map{|t| [t.name,t.id]}, :selected => (@fact.object and @fact.object.name) %>
+  </div>
+  
   <div class="actions">
     <%= f.submit %>
   </div>

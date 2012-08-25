@@ -11,6 +11,7 @@
     <th>Neurolex Category</th>
     <th>DBpedia Resource</th>
     <th>Wikipedia Title</th>
+    <th>Scholarpedia Article</th>
     <th></th>
     <th></th>
     <th></th>
@@ -25,13 +26,14 @@
     <td><%= thing.neurolex_category %></td>
     <td><%= thing.dbpedia_resource %></td>
     <td><%= thing.wikipedia_title %></td>
-    <td><%= link_to 'Show', thing %></td>
-    <td><%= link_to 'Edit', edit_thing_path(thing) %></td>
-    <td><%= link_to 'Destroy', thing, confirm: 'Are you sure?', method: :delete %></td>
+    <td><%= thing.scholarpedia_article %></td>
+    <td><%= link_to 'Show', [:ontology, thing] %></td>
+    <td><%= link_to 'Edit', edit_ontology_thing_path(thing) %></td>
+    <td><%= link_to 'Destroy', [:ontology, thing], confirm: 'Are you sure?', method: :delete %></td>
   </tr>
 <% end %>
 </table>
 
 <br />
 
-<%= link_to 'New Thing', new_thing_path %>
+<%= link_to 'New Thing', new_ontology_thing_path %>

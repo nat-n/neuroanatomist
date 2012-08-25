@@ -1,31 +1,31 @@
 <p id="notice"><%= notice %></p>
 <p id="alert"><%= alert %></p>
 
-<h2>Region: <%= @region.has_name? ? @region.name : "<i>@region.label</i>" %></h2>
+<%= form_for(@region) do |f| %>
 
-<p>
-  <b>Label:</b>
-  <%= @region.label %>
-</p>
-<p>
-  <b>Description:</b>
-  <%= @region.description %>
-</p>
+<h2>Region:</h2><p class="inline" contenteditable="true" title="region_name"><%= @region.name %></p>
+<%= hidden_field(:region, :name)%>
+
 <br>
+<h3>Description:</h3>
+<p contenteditable="true" title="region_description"><%= @region.description %><p>
+<%= hidden_field(:region, :description)%>
 
-<h4>Definitions:</h4>
+<div class="field">
+<%= f.label :thing, raw("<h3>Thing:</h3>") %><br />
+<%= f.select :thing, ["none"]+Thing.all.map(&:name), :selected => (@region.thing ? @region.thing.name : @region.name) %>
+</div>
+<br>
+<div class="actions">
+  <%= f.submit %>
+</div>
+<% end %>
+<br>
+<hr width="90%">
+<h3>Definitions</h3>
 
 <%= @region_definitions = @region.region_definitions
     render :partial => 'region_definitions/index' %>
-
-<br>
-<h4>Decompositions:</h4>
-<%= "none" if @region.decompositions.empty? %>
-<ul>
-	<% @region.decompositions.each do |d| %>
-	<li><%= link_to "  #{d.rank}. #{d.description}", d %></li>
-	<% end%>
-</ul>
 <br>
 <div>
   <%= form_tag(new_region_definition_path, :method => "get") do  %>
@@ -33,9 +33,15 @@
   <%= label_tag :shape_set, "Select a shape set"%>
   <%= select_tag :shape_set, options_for_select(@free_shape_sets.map {|shape_set| [shape_set.name, shape_set.id]}) %>
   <%= submit_tag "New Definition" %>
-    
+
   <% end %>
 </div>
-
-<%= link_to 'Back to Regions', regions_path %> | 
-<%= link_to 'Edit', edit_region_path(@region) %>
+<br>
+<h3>Decompositions</h3>
+<%= "none" if @region.decompositions.empty? %>
+<%= @decompositions = @region.decompositions; render :partial => 'decompositions/index'%>
+<%= link_to "New Decomposition", new_decomposition_path(:region => @region.name) %>
+<br><br>
+<h3>Region styles</h3>
+<%= @region_styles = @region.region_styles; render :partial => 'region_styles/index'%>
+<br>

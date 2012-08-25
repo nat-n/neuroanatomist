@@ -18,7 +18,7 @@
   <div class="field">
     <%= f.label :super_region %>: 
     <%= f.select :super_region, Region.all.map(&:name), 
-		{:selected => (!@decomposition.new_record? and @decomposition.super_region.name)}, 
+		{:selected => ((!@decomposition.new_record? and @decomposition.super_region.name) or params[:region])}, 
 		{:disabled => !@decomposition.new_record?} %>
   </div>
   

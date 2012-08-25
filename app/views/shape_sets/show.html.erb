@@ -17,16 +17,17 @@
   <%= @shape_set.bounding_box %>
 </p>
 <p>
+  <b>radius:</b>
+  <%= @shape_set.radius %>
+</p>
+<p>
   <b>center point:</b>
   <%= @shape_set.center_point %>
 </p>
 <p>
-  <b>radius:</b>
-  <%= @shape_set.radius %>
+  <b>default perspective:</b>
+  <%= link_to @shape_set.default_perspective.name, @shape_set.default_perspective %>
 </p>
-
-
-
 
 <p>
 <b>Shapes:</b>

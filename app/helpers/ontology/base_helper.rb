@@ -1,0 +1,2 @@
+module Ontology::BaseHelper
+end

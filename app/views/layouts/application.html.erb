@@ -1,19 +1,69 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
 <head>
   <title>Neuroanatomist</title>
-  <%= stylesheet_link_tag    "application" %>
+  <%= stylesheet_link_tag "application" %>
+  <%= stylesheet_link_tag "jquery_ui/jquery.ui.all.css" %>
+  <%= stylesheet_link_tag "admin_areas" if @admin_layout and current_user.try(:admin?) %>
+  
   <%= javascript_include_tag "application" %>
   <%= javascript_include_tag "jax/application" %>
   <%= csrf_meta_tags %>
   <meta charset="utf-8" />
 </head>
 <body onload="start_jax('webgl','scene')">
-<div id="header">
- <h1 id="page_h">neuroanatomist</h1><span id="alpha">ALPHA</span>
-</div>
-<div id="content">
-<%= yield %>  
+<div id="page">
+  <header class="page">
+    <%= render :partial => "layouts/header_bar" %>
+  </header>
+  <div id="content_wrapper">
+    <div class="header_push"></div>
+    
+    <% if @admin_layout and current_user.try(:admin?) %>
+      <nav id="admin_nav">
+        <%= link_to "Users", admin_users_path %>
+        <%= link_to "Ontology", "/ontology" %>
+        <%= link_to "Perspectives", perspectives_path %>
+        <%= link_to "Shape Sets", shape_sets_path %>
+        <%= link_to "Regions", regions_path %>
+        <%= link_to "Nodes", nodes_path %>
+        <%= link_to "Tags", tags_path %>
+      </nav>      
+    <%= javascript_tag "
+      $(function() {
+        $('p[contenteditable~=true]').bind('input',function(){
+          this.style['border-style']='inset';
+          this.style['border-width']='1px';
+          this.style['background-color']='#ceedff';
+          if($('#'+this.title).length) $('#'+this.title).val(this.innerHTML);
+        });
+      });" %>
+    <% end %>
+    <% if @ontology_layout %>
+      <nav id="ontology_nav">
+        <%= link_to "Types", "/ontology/types" %>
+        <%= link_to "Things", "/ontology/things" %>
+        <%= link_to "Relations", "/ontology/relations" %>
+        <%= link_to "Facts", "/ontology/facts" %>
+        </nav>
+    <% end %>
+    
+    <% unless flash.keys.empty? %>
+    <div id="notice_area">
+    <% flash.keys.each { |flash_type| %>
+      <p class="flash_type"><%= flash[:flash_type] %></p>
+    <% } %>
+    </div>
+    <% end %>
+    
+    <div id="content">
+      <%= yield %>  
+    </div>
+    <div class="footer_push"></div>
+  </div>
+  <footer class="page">
+    <%= render :partial => "layouts/footer_bar"%>
+  </footer>
 </div>
 </body>
 </html>

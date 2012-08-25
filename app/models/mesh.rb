@@ -1,7 +1,8 @@
 class Mesh < ActiveRecord::Base
+  belongs_to  :shape_set
   belongs_to  :front_shape, :class_name => "Shape", :foreign_key => 'back_shape_id'
   belongs_to  :back_shape, :class_name => "Shape", :foreign_key => 'front_shape_id'
-  after_save  :save_mesh_data
+  after_create  :save_mesh_data
     
   include S3Helper
   
@@ -85,7 +86,7 @@ class Mesh < ActiveRecord::Base
     @mesh_data = mesh_data
     @shape_set = shape_set
         
-    @new_params = { :mesh_data_id => @mesh_data["name"] }
+    @new_params = { :mesh_data_id => @mesh_data["name"], :shape_set_id => shape_set.id }
     
     shape_ids = @mesh_data["name"].split("-").map { |x| x.to_i }
     @new_params[:front_shape_id] = Shape.where("shape_set_id = #{@shape_set.id} and volume_value = #{shape_ids[0]}").first.id unless shape_ids[0] == 0

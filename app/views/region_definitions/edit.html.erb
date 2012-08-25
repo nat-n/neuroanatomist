@@ -1,5 +1,6 @@
-<h1>Editing region definition</h1>
+<h2>Editing definition for region: <%= @region_definition.region.name %></h2>
 
 <%= render 'form' %>
 
+<%= link_to 'Back to Region', region_path(@region_definition.region) %> |
 <%= link_to 'Show', @region_definition %>

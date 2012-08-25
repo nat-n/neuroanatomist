@@ -10,7 +10,6 @@ gem 'thin'
 gem 'aws-sdk'
 
 gem 'jax'
-gem 'jquery-rails', '>= 1.0.12'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -35,16 +34,18 @@ group :test do
   gem 'capybara'
   gem 'database_cleaner'
   gem 'factory_girl'
-  gem 'devise', '~> 1.4.3'
   gem 'email_spec'
   gem 'launchy'
 end
 
+gem 'devise'
 gem 'cancan'
 
 gem 'searcher'
 
+gem 'RedCloth'
 gem 'versionomy'
+gem 'httparty'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'

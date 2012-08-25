@@ -1,4 +1,4 @@
-class RegionsController < ApplicationController
+class RegionsController < Admin::BaseController
   before_filter :find_region, :only => [:show, :edit, :update, :destroy]
   before_filter :find_thing, :only => [:update, :create]
   

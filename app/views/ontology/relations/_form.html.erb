@@ -1,4 +1,4 @@
-<%= form_for(@relation) do |f| %>
+<%= form_for([:ontology,@relation]) do |f| %>
   <% if @relation.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@relation.errors.count, "error") %> prohibited this relation from being saved:</h2>
@@ -18,6 +18,15 @@
   <div class="field">
     <%= f.label :description %><br />
     <%= f.text_field :description %>
+  </div>
+  <div class="field">
+    <%= f.label :subject_type %><br />
+    <%= f.select :subject_type, Type.all.map{|t| [t.name,t.id]}, :selected => (@relation.subject_type and @relation.subject_type.name) %>
+  </div>
+  
+  <div class="field">
+    <%= f.label :object_type %><br />
+    <%= f.select :object_type, Type.all.map{|t| [t.name,t.id]}, :selected => (@relation.object_type and @relation.object_type.name) %>
   </div>
   <div class="actions">
     <%= f.submit %>

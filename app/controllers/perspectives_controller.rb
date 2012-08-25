@@ -1,4 +1,4 @@
-class PerspectivesController < ApplicationController
+class PerspectivesController  < Admin::BaseController
   before_filter :find_perspective, :only => [:show, :edit, :update, :destroy]
   before_filter :find_regions, :only => [:new, :edit]
 
@@ -14,10 +14,18 @@ class PerspectivesController < ApplicationController
   def show
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render json: @perspective }
+      format.json { export }
     end
   end
-
+  
+  def export
+    send_data JSON.dump( Hash[ type: "perspective",
+                               version: 0.1,
+                               timestamp: Time.now,
+                               perspective: @perspective.description_hash ]),
+              :filename => "perspective_#{@perspective.name}.json"
+  end
+  
   def new
     @perspective = Perspective.new
 
@@ -31,6 +39,18 @@ class PerspectivesController < ApplicationController
   end
 
   def create
+    if params.has_key? "perspective_file"
+      contents = JSON.load params["perspective_file"].read
+      unless contents["type"] == "perspective"
+        redirect_to "index", notice: 'Invalid perspective file'
+        return
+      end
+      Perspective.create_from_description contents["perspective"]
+      @perspectives = Perspective.all
+      render action: "index"
+      return true
+    end
+    
     @perspective = Perspective.new(params[:perspective])
     
     respond_to do |format|
@@ -67,7 +87,7 @@ class PerspectivesController < ApplicationController
       format.json { head :ok }
     end
   end
-
+    
   private
     def find_perspective
       @perspective = Perspective.find(params[:id])
@@ -100,5 +120,5 @@ class PerspectivesController < ApplicationController
         end
       end
     end
-
+    
 end

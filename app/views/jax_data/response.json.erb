@@ -1,33 +1,10 @@
-<% # @shape_set, @included and @assets should be defined %>
 {
-  <% @assets.each_with_index do |asset, i| @asset = asset
-      case asset[:type] 
-      when :shape_set
-       @cascade = @asset[:cascade] %>
-  "<%= i %>" : <%= render :partial => 'shape_sets/show.json' %>
-  
-   <% when :perspective
-       @perspective = asset[:object] 
-       @cascade = @asset[:cascade] %>
-  "<%= i %>" : <%= render :partial => 'perspectives/show.json'  %>
-  
-   <% when :region
-       @region = Region.find asset[:object]
-       @cascade = @asset[:cascade] %>
-  "<%= i %>" : <%= render :partial => 'regions/show.json'  %>
-
-   <% when :shape
-       @shape = Shape.find asset[:object]
-       @cascade = @asset[:cascade] %>
-  "<%= i %>" : <%= render :partial => 'shapes/show.json'  %>
-    
-   <% when :mesh
-       @mesh = Mesh.find asset[:object]
-       @cascade = @asset[:cascade] %>
-  "<%= i %>" : <%= render :partial => 'meshes/show.json' %>
-    
-   <% when :error %>
-  "<%= i %>" : { "type":"error", "message":"<%= asset[:message]%>"}
-   <% end %><%= "," unless i == @assets.size-1 %>
-  <% end %>
+<% n = 0; @assets.each do |i, asset| n+=1; @asset = asset %>"<%= i %>":<%
+  @cascade = asset.delete("cascade")
+  case @asset.delete("t")
+  when "error"%>{"type":"error", "message":"<%= @asset["message"] %>"}<% 
+  when "m" %><%= @mesh = asset; render :partial => 'meshes/show.json' %><% 
+  when "s" %><%= @shape = asset; render :partial => 'shapes/show.json' %><% 
+  else %><%= render :partial => 'asset', :formats=>[:json] %><% end %><%= "," if n < @assets.length %>
+<% end %>
 }

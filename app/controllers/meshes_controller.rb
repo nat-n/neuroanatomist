@@ -1,4 +1,4 @@
-class MeshesController < ApplicationController
+class MeshesController  < Admin::BaseController
     
   def index
     @meshes = Mesh.all

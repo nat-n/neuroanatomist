@@ -1,4 +1,4 @@
-<%= form_for(@thing) do |f| %>
+<%= form_for([:ontology, @thing]) do |f| %>
   <% if @thing.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@thing.errors.count, "error") %> prohibited this thing from being saved:</h2>
@@ -38,6 +38,10 @@
   <div class="field">
     <%= f.label :wikipedia_title %><br />
     <%= f.text_field :wikipedia_title %>
+  </div>
+  <div class="field">
+    <%= f.label :scholarpedia_article %><br />
+    <%= f.text_field :scholarpedia_article %>
   </div>
   <div class="field">
     <%= f.label :node %><br />

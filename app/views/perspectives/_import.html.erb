@@ -1,0 +1,6 @@
+<div id="import_perspective">
+  <%= form_tag({:action => :create}, :multipart => true)  do %> 
+  <b><%= label :perspective_file, "Upload a Perspective data file:" %></b>
+	<%= file_field_tag :perspective_file %><%= submit_tag :Upload %>
+  <% end %>  
+</div>

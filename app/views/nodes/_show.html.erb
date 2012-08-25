@@ -1,0 +1,62 @@
+<div class="embedded_node">
+  <div class="node_options">
+    <a href="#editing_node" id="edit_node">edit</a>
+    <a href="#discussing_node" id="discuss_node">discuss</a>
+    <a href="#viewing_history_node" id="history_node">view history</a>
+  </div>
+  <div id="node_edit">
+    <%= form_for @node, :url=>"/nodes/#{@node.id}?return=true", :remote => true do |f| %>
+      <%= f.label :introduction, "Editing textile:" %> <a href="http://redcloth.org/textile/writing-paragraph-text/" id="textile_ref" target="_blank">textile reference</a>
+      <%= f.text_area :introduction, :rows => 16 %>
+      <input id="redcloth_preview" name="preview" type="button", value="Preview Changes">
+      <%= f.submit "Save Changes!" %>
+      <span id="inline_notice"></span>
+    <% end %>
+  </div>
+    
+  <h2 id="node_title"><%= @node.name %></h2>
+  <div id="node_intro">
+  <%= raw RedCloth.new((@node.introduction or "")).to_html %>
+  </div>
+  
+  <%= javascript_tag "
+    $('#edit_node').click(function(){
+      if ($(this).hasClass('active')) {
+        $(this).parent().children().removeClass('active');
+        $('#node_edit').hide();
+      } else {
+        $(this).siblings().removeClass('active');
+        $(this).addClass('active');
+        $('#node_edit').show();
+      };
+    })
+    $('#redcloth_preview').click(function(){$.ajax({
+      type: 'POST',
+      url: '/nodes/preview',
+      data: {'textile':$('#node_introduction').val()},
+      success: function(r){
+        $('#node_intro').html(r);
+        $('#inline_notice').addClass('success_notice');
+        $('#inline_notice').removeClass('error_notice');
+        $('#inline_notice').html('Preview updated Sucessfully!');
+      },
+      error: function(r){
+        $('#inline_notice').addClass('error_notice');
+        $('#inline_notice').removeClass('success_notice');
+        $('#inline_notice').html('Error: Preview could not be updated!');
+      },
+      dataType: 'text'
+    });});
+    $(edit_node_#{@node.id})
+      .bind('ajax:success', function(data, status, xhr){
+        $('#inline_notice').addClass('success_notice');
+        $('#inline_notice').removeClass('error_notice');
+        $('#inline_notice').html('Text updated Sucessfully!');
+      })
+      .bind('ajax:error', function(data, status, xhr){
+        $('#inline_notice').addClass('error_notice');
+        $('#inline_notice').removeClass('success_notice');
+        $('#inline_notice').html('Error: something went wrong, the text may not have been updated!');
+      })
+      ;" %>
+</div>
