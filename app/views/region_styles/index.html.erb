@@ -3,6 +3,7 @@
 <table class="backend_data">
   <tr>
     <th>ID</th>
+    <th>Perspective</th>
     <th>Colour</th>
     <th>Transparency</th>
     <th>Label</th>
@@ -15,6 +16,7 @@
 <% @region_styles.each do |region_style| %>
   <tr>
     <td><%= region_style.id %></td>
+    <td><%= link_to region_style.perspective.name, region_style.perspective %></td>
     <td><%= region_style.colour %></td>
     <td><%= region_style.transparency %></td>
     <td><%= region_style.label %></td>

@@ -1,0 +1,29 @@
+
+<div id="static_col">
+  
+  <div id="visualisation">
+    <canvas id="webgl" width="640" height="570">
+      Sorry, your browser doesn't support the &lt;canvas/&gt; tag. Please come back with a newer
+      browser.
+    </canvas>
+  </div>
+  <div id="vis_controls">
+    <h5 id="controls_title">Controls:</h5>
+    <div>
+      <%= radio_button_tag(:label_type, "tooltip", true, 
+                           :onchange => 'context.current_controller.activate_tooltip()') %>
+      <%= label_tag(:label_type_tooltip, "Enable Tooltip") %><br />
+      <%= radio_button_tag(:label_type, "labels", false, 
+                           :onchange => 'context.current_controller.activate_labels()') %>
+      <%= label_tag(:label_type_labels, "Enable Labels") %>
+    </div>
+	<div  id="undo_redo">
+		<button onclick="context.current_controller.go_back()">< back</button> | <button onclick="context.current_controller.go_forward()"> foward ></button>
+	</div>
+  </div>
+
+</div>
+
+<div id="dynamic_col">
+  <%= render :partial => "layouts/sup_content"%>
+</div>

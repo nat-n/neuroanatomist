@@ -1,7 +1,10 @@
-<h1>Listing facts</h1>
+<h2>Listing facts</h2>
 
-<table>
+<table class="backend_data">
   <tr>
+    <th>Relation</th>
+    <th>Subject</th>
+    <th>Object</th>
     <th></th>
     <th></th>
     <th></th>
@@ -9,8 +12,11 @@
 
 <% @facts.each do |fact| %>
   <tr>
-    <td><%= link_to 'Show', fact %></td>
-    <td><%= link_to 'Edit', edit_fact_path(fact) %></td>
+    <td><%= link_to fact.relation, [:ontology,fact.relation] %></td>
+    <td><%= link_to fact.subject, [:ontology,fact.subject] %></td>
+    <td><%= link_to fact.object, [:ontology,fact.object] %></td>
+    <td><%= link_to 'Show', [:ontology,fact] %></td>
+    <td><%= link_to 'Edit', edit_ontology_fact_path(fact) %></td>
     <td><%= link_to 'Destroy', fact, confirm: 'Are you sure?', method: :delete %></td>
   </tr>
 <% end %>
@@ -18,4 +24,4 @@
 
 <br />
 
-<%= link_to 'New Fact', new_fact_path %>
+<%= link_to 'New Fact', new_ontology_fact_path %>

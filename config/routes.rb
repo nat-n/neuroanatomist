@@ -1,41 +1,52 @@
 Neuroanatomist::Application.routes.draw do
-  resources :decompositions
   
-  resources :resource_types
+  
+  namespace :admin do
+    root :to => "base#index"
+    resources :users
+  end
+  
+  root :to => 'pages#home'
+  match "/about" => "pages#about"
+  match "/contact" => "pages#contact"
+  
+  devise_for :users, :controllers => {:registrations => "registrations"}
 
+  match "/nodes/preview" => "nodes#preview"
   resources :nodes
-
   resources :sections
 
-  resources :ratings
-
   resources :bibliographies
-
   resources :resources
-
-  resources :region_styles
-
-  resources :perspectives
+  resources :resource_types
 
   resources :tags
-  
-  resources :types, :path => "/ontology/types"
-  resources :things, :path => "/ontology/things"
-  resources :relations, :path => "/ontology/relations"
-  resources :facts, :path => "/ontology/facts"
-  resources :ontology
+  resources :ratings
 
-  root :to => 'home#index'
+  resources :perspectives
+  resources :region_styles
+  
+  
+  namespace :ontology do
+    root :to => "ontology#index"
+    post "/ontology/ontology" => "ontology#create"
+    get "/ontology/export" => "ontology#export"
+    resources :types, :things, :relations, :facts
+  end
   
   resources :shape_sets
   resources :shapes
   resources :meshes
   
-  resources :region_sets
   resources :regions
   resources :region_definitions
+  resources :decompositions
 
-  match "/jaxdata(/:shape_set_id)" => "jax_data#fetch", :as => :jax_data  
+  match "/jaxdata(/:shape_set_id)" => "jax_data#fetch", :as => :jax_data
+  match "/jaxdata/c/:cache_id" => "jax_data#fetch_partial_response", :as => :jax_data
+  match "/jaxdata/i/:shape_set_id" => "jax_data#fetch_shape_set_ids", :as => :jax_data
+    
+  match "/images/:file" => redirect {|params| "/assets/#{params[:file]}.#{params[:format]}" }
   
   
   mount Jax::Engine => "/jax" unless Rails.env == "production"

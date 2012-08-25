@@ -15,14 +15,26 @@ class NodesController < ApplicationController
       format.json { render json: @nodes }
     end
   end
-
+  
   def show
+    return embed if params[:id] =~ /\d+:embed/
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @node }
     end
   end
-
+  
+  def embed
+    # returns json wrapped fields for generating the embedded tabs view
+    response = Hash[
+        embedded_node: render_to_string(:partial => 'show', :layout => false),
+        resources: []
+      ]
+      response[:wikipedia_uri] = @node.wikipedia_uri(true) if @node.wikipedia_uri
+      response[:scholarpedia_uri] = @node.scholarpedia_uri(true) if @node.scholarpedia_uri
+    render :text => JSON.dump(response), :content_type => "application/json"
+  end
+  
   def new
     @node = Node.new
 
@@ -37,7 +49,7 @@ class NodesController < ApplicationController
 
   def create
     @node = Node.new(params[:node])
-    
+
     respond_to do |format|
       if @node.save
         format.html { redirect_to @node, notice: 'Node was successfully created.' }
@@ -48,11 +60,15 @@ class NodesController < ApplicationController
       end
     end
   end
-
+  
+  def preview
+    render :text => RedCloth.new(params[:textile]).to_html
+  end
+  
   def update
     respond_to do |format|
       if @node.update_attributes(params[:node])
-        format.html { redirect_to @node, notice: 'Node was successfully updated.' }
+        format.html { redirect_to (params[:return] ? :back : @node), notice: 'Node was successfully updated.' }
         format.json { head :ok }
       else
         format.html { render action: "edit" }
@@ -78,6 +94,7 @@ class NodesController < ApplicationController
       redirect_to nodes_path
     end
     def find_or_create_tag
+      return unless params[:node][:name]
       if not params[:node][:tag] or params[:node][:tag] = "auto-assign"
         params[:node][:tag] = Tag.find_or_create params[:node][:name]
       else

@@ -11,11 +11,9 @@ anim    = false
 
 
 Jax.getGlobal().CameraHelper = Jax.Helper.create
-  depth_key: (event) ->
+  camera_scroll: (event) ->
     unless anim
-      switch event.keyCode
-        when KeyEvent.DOM_VK_W then d -= 1
-        when KeyEvent.DOM_VK_S then d += 1
+      d += event.wheelDeltaY/100
       d = d_min if d < d_min
       d = d_max if d > d_max
   

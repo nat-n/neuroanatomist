@@ -1,6 +1,5 @@
-class RegionStylesController < ApplicationController
-  # GET /region_styles
-  # GET /region_styles.json
+class RegionStylesController  < Admin::BaseController
+
   def index
     @region_styles = RegionStyle.all
 
@@ -10,8 +9,6 @@ class RegionStylesController < ApplicationController
     end
   end
 
-  # GET /region_styles/1
-  # GET /region_styles/1.json
   def show
     @region_style = RegionStyle.find(params[:id])
 
@@ -21,8 +18,6 @@ class RegionStylesController < ApplicationController
     end
   end
 
-  # GET /region_styles/new
-  # GET /region_styles/new.json
   def new
     @region_style = RegionStyle.new
 
@@ -32,13 +27,10 @@ class RegionStylesController < ApplicationController
     end
   end
 
-  # GET /region_styles/1/edit
   def edit
     @region_style = RegionStyle.find(params[:id])
   end
 
-  # POST /region_styles
-  # POST /region_styles.json
   def create
     @region_style = RegionStyle.new(params[:region_style])
 
@@ -53,8 +45,6 @@ class RegionStylesController < ApplicationController
     end
   end
 
-  # PUT /region_styles/1
-  # PUT /region_styles/1.json
   def update
     @region_style = RegionStyle.find(params[:id])
 
@@ -69,8 +59,6 @@ class RegionStylesController < ApplicationController
     end
   end
 
-  # DELETE /region_styles/1
-  # DELETE /region_styles/1.json
   def destroy
     @region_style = RegionStyle.find(params[:id])
     @region_style.destroy

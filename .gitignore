@@ -16,5 +16,6 @@
 
 /shape_sets/*
 shape_sets/*
+cached_responses/*
 
 config/initializers/secret*

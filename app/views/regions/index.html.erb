@@ -1,13 +1,14 @@
-<h2>Regions</h2>
+<h2>Regions</h2> <%= link_to "create new region", new_region_path %>
+
 
 <table class="backend_data">
   <tr>
     <th>ID</th>
     <th>Name</th>
-    <th>Label</th>
     <th>Description</th>
-    <th>Number of Definitions</th>
-    <th>Number of Decompositions</th>
+    <th>Definitions</th>
+    <th>Decompositions</th>
+    <th>Perspectives</th>
     <th></th>
     <th></th>
     <th></th>
@@ -16,16 +17,13 @@
 <% @regions.each do |region| %>
   <tr>
     <td><%= region.id %></td>
-    <td><%= region.has_name? ? region.name : "" %></td>
-    <td><%= region.label %></td>
+    <td><%= link_to region.name, region%></td>
     <td><%= region.description %></td>
     <td><%= region.region_definitions.size %></td>
     <td><%= region.decompositions.size %></td>
-    <td><%= link_to 'Show', region %></td>
-    <td><%= link_to 'Edit', edit_region_path(region) %></td>
+    <td><%= region.perspectives.size %></td>
     <td><%= link_to 'Destroy', region, confirm: 'Are you sure?', method: :delete %></td>
   </tr>
 <% end %>
 </table>
-
-<%= link_to "New Region", new_region_path %>
+<br>

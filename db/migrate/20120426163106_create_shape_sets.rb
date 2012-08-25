@@ -8,7 +8,12 @@ class CreateShapeSets < ActiveRecord::Migration
       t.integer :mesh_count
       t.integer :shape_count
       t.integer :datasize
-      t.string  :data_created_at 
+      t.string  :data_created_at
+      
+      t.string  :bounding_box
+      t.string  :center_point
+      t.float   :radius
+      
       t.timestamps
     end    
   end

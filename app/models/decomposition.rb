@@ -3,8 +3,23 @@ class Decomposition < ActiveRecord::Base
   has_and_belongs_to_many :sub_regions, :class_name => 'Region'
   validates_presence_of :super_region, :description
   
+  after_update :invalidate_caches
+  
   def is_compatible_with shape_set
     
+  end
+  
+  def hash_partial
+    Hash[
+      id:           self.id,
+      super_region: self.super_region.id,
+      description:  self.description,
+      sub_regions:  self.sub_regions.map(&:id)
+    ]
+  end
+  
+  def invalidate_caches
+    super_region.invalidate_caches
   end
   
 end

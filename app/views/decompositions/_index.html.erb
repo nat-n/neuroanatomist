@@ -1,0 +1,25 @@
+<table class="backend_data">
+  <tr>
+    <th>ID</th>
+    <th>Description</th>
+    <th>Subregions</th>
+    <th>Rank</th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @decompositions.each do |decomposition| %>
+  <tr>
+    <td><%= decomposition.id %></td>
+    <td><%= decomposition.description %></td>
+    <td><ul class="tabled_list">
+    	<% decomposition.sub_regions.each do |sub_region| %>
+    	<li><%= link_to sub_region.name, sub_region %></li>
+    	<% end %>
+    </ul></td>
+    <td><%= decomposition.rank %></td>
+    <td><%= link_to 'Edit', edit_decomposition_path(decomposition) %></td>
+    <td><%= link_to 'Destroy', decomposition, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>

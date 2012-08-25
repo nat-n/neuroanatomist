@@ -8,6 +8,25 @@ class Node < ActiveRecord::Base
   validates_uniqueness_of :name
   validates_presence_of :name, :tag
   
+  def name
+    attribute(:name).gsub(/_+/, " ")
+  end
+  
+  def wikipedia_uri *args
+    thing.wikipedia_uri *args if thing
+  end
+  
+  def dbpedia_uri *args
+    thing.dbpedia_uri *args if thing
+  end
+
+  def neurolex_uri *args
+    thing.neurolex_uri *args if thing
+  end
+
+  def scholarpedia_uri *args
+    thing.scholarpedia_uri *args if thing
+  end
   
   def self.find_by_name node_name
     Node.where(:name => node_name).first

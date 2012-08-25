@@ -28,6 +28,12 @@
     <%= f.label :notes %><br />
     <%= f.text_area :notes, :size => "33x6" %>
   </div>
+  <div class="field">
+    <%= f.label :default_perspective %><br />
+    <%= f.select :default_perspective, 
+                 ["Create new empty perspective", *Perspective.all.select{|pers| !pers.default_for_shape_set or pers.default_for_shape_set.id == @shape_set.id }.map(&:name)],
+                 :selected => @shape_set.default_perspective.name %>
+  </div>
   <% if editing %>
    <div class="field">
      <%= f.label :radius %><br />

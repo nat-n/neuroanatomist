@@ -1,6 +1,6 @@
 class FixTags < ActiveRecord::Migration
   def up
-    remove_column :things, :tag_id
+    remove_column :things, :tag_id  # really?
     add_column :tags, :node_id, :integer
     add_index :tags, :node_id
   end
