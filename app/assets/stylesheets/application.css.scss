@@ -356,6 +356,19 @@ iframe {
 	border-style: groove;
 }
 
+#ontology_nav {
+	padding: 2px;
+	margin: 2px 2px 10px 100px;
+}
+
+#ontology_nav a {
+	text-decoration: none;
+}
+
+#ontology_nav a:hover {
+	font-weight: bold;
+}
+
 svg {
 	z-index: 10;
 }
