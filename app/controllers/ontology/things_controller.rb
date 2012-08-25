@@ -1,4 +1,4 @@
-class Ontology::ThingsController  < Admin::BaseController
+class Ontology::ThingsController  < Ontology::BaseController
   before_filter :find_or_create_node, :only => [:create]
   before_filter :find_type, :only => [:create, :update]
   before_filter :find_thing, :only => [:show, :edit, :update, :destroy]

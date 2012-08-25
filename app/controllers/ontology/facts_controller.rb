@@ -1,4 +1,4 @@
-class Ontology::FactsController  < Admin::BaseController
+class Ontology::FactsController  < Ontology::BaseController
 
   def index
     @facts = Fact.all

@@ -1,4 +1,4 @@
-class Ontology::RelationsController  < Admin::BaseController
+class Ontology::RelationsController  < Ontology::BaseController
 
   def index
     @relations = Relation.all

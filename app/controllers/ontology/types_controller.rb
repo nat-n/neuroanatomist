@@ -1,4 +1,4 @@
-class Ontology::TypesController  < Admin::BaseController
+class Ontology::TypesController  < Ontology::BaseController
   before_filter :find_supertype, :only => [:create, :update]
   before_filter :find_type, :only => [:show, :edit, :update, :destroy]
   
