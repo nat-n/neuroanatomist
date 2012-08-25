@@ -4,13 +4,13 @@ ntabs = 0
 Jax.getGlobal().SupContentHelper = Jax.Helper.create
   
   sc_load_node: (thing_id) ->
+    $(tabs_id).tabs() # not sure why but this is neccessary...
     $.ajax(
       type: 'GET'
       url: '/ontology/things/'+thing_id+':node:embed'
       dataType: 'json'
       success: (data) =>
-        console.log "success"
-        console.log this.sc_clear_tabs
+        this.sc_clear_tabs
         this.sc_clear_tabs()
         this.sc_new_tab 'Node',         data.embedded_node
         this.sc_new_tab 'Wikipedia',    "<iframe src='"+data.wikipedia_uri+"'></iframe>" if data.wikipedia_uri
@@ -22,11 +22,7 @@ Jax.getGlobal().SupContentHelper = Jax.Helper.create
     )
 
   sc_clear_tabs: () ->
-    console.log $(tabs_id).tabs().tabs('remove', 0)
     $(tabs_id).tabs('remove', i) for i in [ntabs-1..0]
-    #while $(tabs_id).children('div').length
-    #  console.log $(tabs_id).children('div').length
-    #  $(tabs_id).tabs('remove', 0)
     ntabs = 0
     
   sc_new_tab: (title, content) ->

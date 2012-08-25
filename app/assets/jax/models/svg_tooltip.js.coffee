@@ -44,9 +44,8 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
         window.context.current_controller.decompose(window.context.current_controller.tooltip.hovered_region.id)
         window.context.current_controller.tooltip.clear()
       About: () -> 
-        console.log window.context.current_controller.tooltip.hovered_region.thing
-        console.log window.context.current_controller.sc_load_node
-        console.log window.context.current_controller.sc_load_node(window.context.current_controller.tooltip.hovered_region.thing)
+        window.context.current_controller.sc_load_node(window.context.current_controller.tooltip.hovered_region.thing)
+        window.context.current_controller.tooltip.clear()
     
     @box.set = @paper.set @paper.path(@box.path(@label.h)).attr(@box.style),
       @label.el = @paper.text(@box.offset.x+@box.w/2,@label.h/2,"").attr(@label.text.style)
