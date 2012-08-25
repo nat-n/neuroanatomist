@@ -9,17 +9,17 @@
   </div>
   <div id="vis_controls">
     <h5 id="controls_title">Controls:</h5>
-    <p>
+    <div>
       <%= radio_button_tag(:label_type, "tooltip", true, 
                            :onchange => 'context.current_controller.activate_tooltip()') %>
       <%= label_tag(:label_type_tooltip, "Enable Tooltip") %><br />
       <%= radio_button_tag(:label_type, "labels", false, 
                            :onchange => 'context.current_controller.activate_labels()') %>
       <%= label_tag(:label_type_labels, "Enable Labels") %>
-    </p>
-	<p>
+    </div>
+	<div  id="undo_redo">
 		<button onclick="context.current_controller.go_back()">< back</button> | <button onclick="context.current_controller.go_forward()"> foward ></button>
-	</p>
+	</div>
   </div>
 
 </div>

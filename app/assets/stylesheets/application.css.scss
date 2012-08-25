@@ -139,7 +139,7 @@ a#ccace_link {
 
 footer.page {
 	color: #fffeff;
-	background: #303030 url(/assets/blackbar.png) repeat-x;
+	background: #303030 url(/assets/blackbar.png) repeat-x 0 -2px;
 	height: 14px;
 	bottom: 0;
 	left: 0;
@@ -156,7 +156,7 @@ footer.page, .footer_push {
 
 .copyright {
 	font-size: 9px;
-	color: #f4f4f4;
+	color: #dcdcdc;
 	float: right;
 	line-height: $footer_height;
 	padding-right: 2px;
@@ -166,12 +166,41 @@ footer.page, .footer_push {
 	float: right;
 	padding: 0 12px 1px 2px;
 	margin: 0;
+	opacity: 0.8;
 }
 
 
 /* @end */
 
 /* @group content */
+
+/* @group vis controls */
+
+#vis_controls {
+	border-radius: 8px;
+	box-shadow:inset 1px 1px 3px #222;
+	background-color: #696969;
+	padding: 3px 10px 5px;
+	margin: 2px 2px 3px;
+}
+
+#controls_title {
+	color: #ff9430;
+	font-size: 1em;
+}
+
+#vis_controls div {
+	display: inline-block;
+}
+
+#undo_redo {
+	display: inline-block;
+	float: right;
+}
+
+
+
+/* @end */
 
 div#content_wrapper {
 	min-height: 100%;
