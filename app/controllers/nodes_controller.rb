@@ -37,7 +37,7 @@ class NodesController < ApplicationController
 
   def create
     @node = Node.new(params[:node])
-    
+
     respond_to do |format|
       if @node.save
         format.html { redirect_to @node, notice: 'Node was successfully created.' }
@@ -48,11 +48,15 @@ class NodesController < ApplicationController
       end
     end
   end
-
+  
+  def preview
+    render :text => RedCloth.new(params[:textile]).to_html
+  end
+  
   def update
     respond_to do |format|
       if @node.update_attributes(params[:node])
-        format.html { redirect_to @node, notice: 'Node was successfully updated.' }
+        format.html { redirect_to (params[:return] ? :back : @node), notice: 'Node was successfully updated.' }
         format.json { head :ok }
       else
         format.html { render action: "edit" }
@@ -78,6 +82,7 @@ class NodesController < ApplicationController
       redirect_to nodes_path
     end
     def find_or_create_tag
+      return unless params[:node][:name]
       if not params[:node][:tag] or params[:node][:tag] = "auto-assign"
         params[:node][:tag] = Tag.find_or_create params[:node][:name]
       else

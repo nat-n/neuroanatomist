@@ -12,6 +12,7 @@ Neuroanatomist::Application.routes.draw do
   
   devise_for :users, :controllers => {:registrations => "registrations"}
 
+  match "/nodes/preview" => "nodes#preview"
   resources :nodes
   resources :sections
 

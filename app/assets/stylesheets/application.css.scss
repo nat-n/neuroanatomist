@@ -225,8 +225,85 @@ div#content {
 
 /* @group nodes */
 
+/* @group options */
+
+.node_options {
+	width: auto;
+	height: 25px;
+	float: right;
+	margin-right: 35px;
+}
+
+.node_options a {
+	display: inline-block;
+	text-decoration: none;
+	color: #e0e0e0;
+	background-color: #3b3b3b;
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
+	height: 16px;
+	font-size: 13px;
+	padding: 1px 5px 3px;
+	position: relative;
+	top: 0;
+}
+
+.node_options a.active {
+	top: 5px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+
+}
+
+.node_options a:hover {
+	color: #ff9430;
+}
+
+#textile_ref {
+	color: #ff9430;
+	float: right;
+}
+
+#node_edit {
+	background-color: #3b3b3b;
+	position: relative;
+	top: 25px;
+	border-radius: 8px;
+	padding: 3px;
+	margin-bottom: 35px;
+	color: #e0e0e0;
+	display: none;
+}
+
+#node_edit {
+	color: #f0f0f0;
+}
+
+textarea#node_introduction {
+	min-width: 98%;
+	max-width: 98%;
+}
+
+#inline_notice {
+	font-weight: bold;	
+}
+
+.success_notice {
+	color: #28ea33;
+}
+
+.error_notice {
+	color: #e74632;
+}
+
+
+
+/* @end */
+
 .embedded_node {
-	padding: 10px 5px 5px;
+	padding: 0 5px 5px;
 }
 
 .embedded_node h2, .embedded_node h3, .embedded_node h4, .embedded_node h5, .embedded_node h6 {
