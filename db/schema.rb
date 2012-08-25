@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120821211009) do
+ActiveRecord::Schema.define(:version => 20120825122038) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -100,6 +100,15 @@ ActiveRecord::Schema.define(:version => 20120821211009) do
 
   add_index "nodes", ["name"], :name => "index_nodes_on_name", :unique => true
   add_index "nodes", ["thing_id"], :name => "index_nodes_on_thing_id"
+
+  create_table "permissions", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "permitted_id"
+    t.string   "permitted_type"
+    t.string   "action"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
 
   create_table "perspectives", :force => true do |t|
     t.string   "name"
@@ -285,8 +294,9 @@ ActiveRecord::Schema.define(:version => 20120821211009) do
     t.string   "wikipedia_title"
     t.integer  "type_id"
     t.integer  "node_id"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+    t.string   "scholarpedia_article"
   end
 
   add_index "things", ["name"], :name => "index_things_on_name", :unique => true

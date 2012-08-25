@@ -12,6 +12,22 @@ class Node < ActiveRecord::Base
     attribute(:name).gsub(/_+/, " ")
   end
   
+  def wikipedia_uri
+    thing.wikipedia_uri if thing
+  end
+  
+  def dbpedia_uri
+    thing.dbpedia_uri if thing
+  end
+
+  def neurolex_uri
+    thing.neurolex_uri if thing
+  end
+
+  def scholarpedia_uri
+    thing.scholarpedia_uri if thing
+  end
+  
   def self.find_by_name node_name
     Node.where(:name => node_name).first
   end

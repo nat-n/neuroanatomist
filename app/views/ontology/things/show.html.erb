@@ -22,17 +22,22 @@
 
 <p>
   <b>Neurolex category:</b>
-  <%= link_to @thing.neurolex_category,  "http://neurolex.org/wiki/Category:#{@thing.neurolex_category}"%>
+  <%= link_to @thing.neurolex_category,  @thing.neurolex_uri %>
 </p>
 
 <p>
   <b>Dbpedia resource:</b>
-  <%= link_to @thing.dbpedia_resource,  "http://dbpedia.org/page/#{@thing.dbpedia_resource}"%>
+  <%= link_to @thing.dbpedia_resource,  @thing.dbpedia_uri %>
 </p>
 
 <p>
   <b>Wikipedia title:</b>
-  <%= link_to @thing.wikipedia_title,  "http://en.wikipedia.org/wiki/#{@thing.wikipedia_title}"%>
+  <%= link_to @thing.wikipedia_title,  @thing.wikipedia_uri %>
+</p>
+
+<p>
+  <b>Scholarpedia article:</b>
+  <%= link_to @thing.scholarpedia_article,  @thing.scholarpedia_uri %>
 </p>
 
 <p>
