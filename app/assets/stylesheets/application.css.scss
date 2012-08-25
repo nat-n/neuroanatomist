@@ -266,6 +266,11 @@ div#content {
 	float: right;
 }
 
+textarea#node_introduction {
+	min-width: 98%;
+	max-width: 98%;
+}
+
 #node_edit {
 	background-color: #3b3b3b;
 	position: relative;
@@ -275,15 +280,11 @@ div#content {
 	margin-bottom: 35px;
 	color: #e0e0e0;
 	display: none;
-}
-
-#node_edit {
 	color: #f0f0f0;
 }
 
-textarea#node_introduction {
-	min-width: 98%;
-	max-width: 98%;
+#node_edit label{
+	margin-left: 4px;
 }
 
 #inline_notice {
