@@ -43,7 +43,10 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
       "Show Parts": () ->
         window.context.current_controller.decompose(window.context.current_controller.tooltip.hovered_region.id)
         window.context.current_controller.tooltip.clear()
-      About: () -> $("#sup_content iframe").attr("src", "/nodes?thing="+window.context.current_controller.tooltip.hovered_region.thing)
+      About: () -> 
+        console.log window.context.current_controller.tooltip.hovered_region.thing
+        console.log window.context.current_controller.sc_load_node
+        console.log window.context.current_controller.sc_load_node(window.context.current_controller.tooltip.hovered_region.thing)
     
     @box.set = @paper.set @paper.path(@box.path(@label.h)).attr(@box.style),
       @label.el = @paper.text(@box.offset.x+@box.w/2,@label.h/2,"").attr(@label.text.style)

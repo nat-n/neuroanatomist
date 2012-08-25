@@ -13,6 +13,9 @@ class Ontology::ThingsController  < Admin::BaseController
   end
 
   def show
+    if params[:id] =~ /\d+:node:embed/
+      return redirect_to :controller => '/nodes', :action => 'show', :id => params[:id].split(":").first<<":embed"
+    end
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @thing }
@@ -49,7 +52,7 @@ class Ontology::ThingsController  < Admin::BaseController
   def update
     respond_to do |format|
       if @thing.update_attributes(params[:thing])
-        format.html { redirect_to @thing, notice: 'Thing was successfully updated.' }
+        format.html { redirect_to [:ontology,@thing], notice: 'Thing was successfully updated.' }
         format.json { head :ok }
       else
         format.html { render action: "edit" }

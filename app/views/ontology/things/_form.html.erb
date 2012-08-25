@@ -40,6 +40,10 @@
     <%= f.text_field :wikipedia_title %>
   </div>
   <div class="field">
+    <%= f.label :scholarpedia_article %><br />
+    <%= f.text_field :scholarpedia_article %>
+  </div>
+  <div class="field">
     <%= f.label :node %><br />
     <%= if @thing.node
           link_to @thing.node.name, @thing.node

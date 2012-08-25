@@ -28,7 +28,7 @@ Jax.Controller.create "Scene", ApplicationController,
       
     this.patch_world()
     
-  helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper ]
+  helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper ]
   
   activate_shape_set: (shape_set) ->
     @active_shape_set = shape_set

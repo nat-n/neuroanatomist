@@ -12,20 +12,20 @@ class Node < ActiveRecord::Base
     attribute(:name).gsub(/_+/, " ")
   end
   
-  def wikipedia_uri
-    thing.wikipedia_uri if thing
+  def wikipedia_uri *args
+    thing.wikipedia_uri *args if thing
   end
   
-  def dbpedia_uri
-    thing.dbpedia_uri if thing
+  def dbpedia_uri *args
+    thing.dbpedia_uri *args if thing
   end
 
-  def neurolex_uri
-    thing.neurolex_uri if thing
+  def neurolex_uri *args
+    thing.neurolex_uri *args if thing
   end
 
-  def scholarpedia_uri
-    thing.scholarpedia_uri if thing
+  def scholarpedia_uri *args
+    thing.scholarpedia_uri *args if thing
   end
   
   def self.find_by_name node_name
