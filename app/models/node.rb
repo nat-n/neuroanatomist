@@ -36,4 +36,26 @@ class Node < ActiveRecord::Base
     Node.find_by_name(node_name) or Node.create(:name => node_name, :tag => Tag.find_or_create(node_name))
   end
   
+  def self.default
+    defaults = Node.where("is_default")
+    case defaults.size
+    when 1
+      return defaults.first
+    when 0
+      return Node.last.make_default!
+    else
+      return defaults.first.make_default!
+    end
+  end
+  
+  def make_default!
+    Node.update_all(:is_default => false)
+    self.update_attribute :is_default, true
+    self
+  end
+  
+  def is_default?
+    default
+  end
+  
 end
