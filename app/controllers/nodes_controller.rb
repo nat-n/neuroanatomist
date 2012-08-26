@@ -1,7 +1,9 @@
 class NodesController < ApplicationController
   before_filter :find_or_create_tag, :only => [:create, :update]
   before_filter :find_node, :only => [:show, :edit, :update, :destroy]
-
+  
+  include NodesHelper
+  
   def index
     # can request nodes by Thing with this action
     if params["thing"].to_i > 0

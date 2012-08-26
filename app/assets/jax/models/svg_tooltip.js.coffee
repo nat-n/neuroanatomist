@@ -61,6 +61,9 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
       this.clear()
     @dragging = true
   
+  mouse_scrolled: (event) ->
+    this.clear()
+  
   mouse_released: (pageX,pageY,region) ->
     if @menu.active
       this.hide_menu(pageX,pageY,region)

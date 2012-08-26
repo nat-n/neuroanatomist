@@ -13,10 +13,11 @@ anim    = false
 Jax.getGlobal().CameraHelper = Jax.Helper.create
   camera_scroll: (event) ->
     unless anim
-      d += event.wheelDeltaY/100
+      d -= event.wheelDeltaY/100
       d = d_min if d < d_min
       d = d_max if d > d_max
-  
+    @tooltip.mouse_scrolled() if @tooltip
+    
   camera_drag: (event) ->
     unless anim
       a += 0.02 * -event.diffx
