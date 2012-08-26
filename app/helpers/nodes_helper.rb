@@ -3,7 +3,7 @@ module NodesHelper
   def embedded_json
     # returns json wrapped fields for generating the embedded tabs view
     response = Hash[
-      embedded_node: render_to_string(:partial => 'nodes/show', :layout => false),
+      embedded_node: render_to_string(:partial => 'nodes/show', :layout => false).squeeze!(" "),
       perspective: (@node.perspective ? @node.perspective.id : nil),
       resources: []
     ]

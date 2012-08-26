@@ -21,7 +21,7 @@
   
   <%= javascript_tag "
     $('#edit_node').click(function(){
-      if ($(this).hasClass('active')) {
+      if ($(this).hasClass('active')){
         $(this).parent().children().removeClass('active');
         $('#node_edit').hide();
       } else {
@@ -47,16 +47,13 @@
       },
       dataType: 'text'
     });});
-    $(edit_node_#{@node.id})
-      .bind('ajax:success', function(data, status, xhr){
+    $(edit_node_#{@node.id}).bind('ajax:success', function(data, status, xhr){
         $('#inline_notice').addClass('success_notice');
         $('#inline_notice').removeClass('error_notice');
         $('#inline_notice').html('Text updated Sucessfully!');
-      })
-      .bind('ajax:error', function(data, status, xhr){
+      }).bind('ajax:error', function(data, status, xhr){
         $('#inline_notice').addClass('error_notice');
         $('#inline_notice').removeClass('success_notice');
         $('#inline_notice').html('Error: something went wrong, the text may not have been updated!');
-      })
-      ;" %>
+      });" %>
 </div>
