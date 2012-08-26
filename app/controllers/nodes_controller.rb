@@ -17,24 +17,13 @@ class NodesController < ApplicationController
   end
   
   def show
-    return embed if params[:id] =~ /\d+:embed/
+    return render(:text => JSON.dump(embedded_json), :content_type => "application/json") if params[:id] =~ /\d+:embed/
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @node }
     end
   end
-  
-  def embed
-    # returns json wrapped fields for generating the embedded tabs view
-    response = Hash[
-        embedded_node: render_to_string(:partial => 'show', :layout => false),
-        resources: []
-      ]
-      response[:wikipedia_uri] = @node.wikipedia_uri(true) if @node.wikipedia_uri
-      response[:scholarpedia_uri] = @node.scholarpedia_uri(true) if @node.scholarpedia_uri
-    render :text => JSON.dump(response), :content_type => "application/json"
-  end
-  
+    
   def new
     @node = Node.new
 
@@ -101,4 +90,5 @@ class NodesController < ApplicationController
         params[:node][:tag] = Tag.find_by_name params[:node][:tag]
       end
     end
+    
 end

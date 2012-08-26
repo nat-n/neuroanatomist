@@ -1,18 +1,9 @@
+<%= content_tag :div, id: "sup_content", data: ({node: @node_data} if @node_data) do %>
 
-<div id=sup_content>
-  
+
   <div id="sup_tabs">
     <ul>
-  		<li><a href="#tabs-1">Node</a></li>
-  		<li><a href="#tabs-2">Wikipedia</a></li>
   	</ul>
-  	
-  	<div id="tabs-1">
-      <%= @node = Node.find_by_name("The_Brain"); render :partial => "nodes/show" %>
-  	</div>
-  	<div id="tabs-2">
-		  <iframe src="http://en.wikipedia.org/wiki/Human_brain?printable=yes"></iframe>
-  	</div>
   </div>
 
 <%= javascript_tag "$(\"#sup_tabs\").tabs();
@@ -21,4 +12,5 @@ tab_height = function(){
   if($(window).scrollTop()) new_h += (Math.max(0,$(window).scrollTop()-$('footer.page').height())-Math.max(0,$(window).scrollTop()+$(window).height()-$(document).height()));
   $('.ui-tabs-panel').height(new_h);}
 $(window).resize(tab_height); $(window).scroll(tab_height); $(tab_height);" %>
-</div>
+
+<% end %>

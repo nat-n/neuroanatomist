@@ -31,13 +31,15 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       dataType: 'json'
       error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: " + textStatus
       success: (data, textStatus, jqXHR) =>
-        shape_set = data.default_shape_set        
-        @s3[shape_set.id] ?= {}
-        @s3[shape_set.id].id ?= shape_set.id
-        @s3[shape_set.id].name ?= shape_set.name
-        @s3[shape_set.id].radius ?= shape_set.radius
-        @s3[shape_set.id].center_point ?= shape_set.center_point
+        this.cache_shape_set data.default_shape_set        
         callback(data, textStatus, jqXHR)
+  
+  cache_shape_set: (shape_set) ->
+    @s3[shape_set.id] ?= {}
+    @s3[shape_set.id].id ?= shape_set.id
+    @s3[shape_set.id].name ?= shape_set.name
+    @s3[shape_set.id].radius ?= shape_set.radius
+    @s3[shape_set.id].center_point ?= shape_set.center_point  
   
   fetch_regions: (shape_set_id, region_ids, callback) ->
 	  # should compose the params to fetch the requested regions, excluding already aquired meshes

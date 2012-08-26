@@ -15,6 +15,10 @@ class Thing < ActiveRecord::Base
   def name
     attribute(:name).gsub(/_+/, " ")
   end
+
+  def self.find_by_name name
+    Thing.where(:name => name).first
+  end
   
   def wikipedia_uri printable=false
     "http://en.wikipedia.org/wiki/#{wikipedia_title}#{"?printable=yes" if printable}" unless wikipedia_title.to_s.empty?

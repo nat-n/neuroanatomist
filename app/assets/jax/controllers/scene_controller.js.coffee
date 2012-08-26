@@ -10,6 +10,7 @@ Jax.Controller.create "Scene", ApplicationController,
     @history = window.context.history ?= { log: [], back: [], forward: [], recent_regions: {} }
     @s3 = window.context.s3 ?= {}
     
+    # this needs to go somewhere to initialise the mouse_wheel events for zooming
     @context.canvas.addEventListener 'DOMMouseScroll', this.mouse_scrolled, false
     @context.canvas.addEventListener 'mousewheel', this.mouse_scrolled, false
     
@@ -17,19 +18,39 @@ Jax.Controller.create "Scene", ApplicationController,
     
 	  # fetch default visualisation data
     this.show_loading_spinner($('#visualisation'), true)
-    @loader.fetch_defaults (data, textStatus, jqXHR) =>
-      this.activate_shape_set(data.default_shape_set.id)
-      params =
-        shape_set: data.default_shape_set.id
-        requests: [
-          type:"perspective"
-          id: data.default_shape_set.default_perspective
-          cascade:"yes" ]
-      @loader.fetch params, (data, textStatus, jqXHR) => 
+    
+    perspective_id =  $('#visualisation').data('perspectiveId')
+    shape_set =  $('#visualisation').data('shapeSet')
+    node_data = $('#sup_content').data('node')
+    @loader.cache_shape_set(shape_set) if shape_set
+    shape_set_id = try shape_set.id catch err
+      null
+    
+    init_params = 
+      shape_set: shape_set_id 
+      requests: [
+        type:"perspective"
+        id: perspective_id
+        cascade:"yes" ]
+
+    unless perspective_id and shape_set_id
+      @loader.fetch_defaults (data, textStatus, jqXHR) =>
+        this.activate_shape_set (shape_set_id or data.default_shape_set.id)
+        init_params.shape_set = (shape_set_id or data.default_shape_set.id)
+        init_params.requests.id = (perspective_id or data.default_shape_set.default_perspective)
+        @loader.fetch init_params, (data, textStatus, jqXHR) => 
+          this.load_perspective(data[0].id, false)
+          this.update_history()
+          this.hide_loading_spinner()
+    else
+      this.activate_shape_set shape_set.id
+      @loader.fetch init_params, (data, textStatus, jqXHR) =>
         this.load_perspective(data[0].id, false)
         this.update_history()
         this.hide_loading_spinner()
-    this.patch_world()
+    
+    this.sc_init_node(node_data)
+
         
   helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper, StatusHelper ]
   
