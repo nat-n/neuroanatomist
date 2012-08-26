@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120825122038) do
+ActiveRecord::Schema.define(:version => 20120826174847) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -120,9 +120,11 @@ ActiveRecord::Schema.define(:version => 20120825122038) do
     t.datetime "created_at",               :null => false
     t.datetime "updated_at",               :null => false
     t.integer  "default_for_shape_set_id"
+    t.integer  "node_id"
   end
 
   add_index "perspectives", ["name"], :name => "index_perspectives_on_name"
+  add_index "perspectives", ["node_id"], :name => "index_perspectives_on_node_id"
   add_index "perspectives", ["style_set_id"], :name => "index_perspectives_on_style_set_id"
 
   create_table "ratings", :force => true do |t|
