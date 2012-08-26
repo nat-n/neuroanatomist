@@ -1,0 +1,23 @@
+<% content_for :head do %>
+  <%= stylesheet_link_tag "admin_areas" %>
+<% end %>
+<% content_for :sub_header do %>
+  <nav id="admin_nav">
+    <%= link_to "Users", admin_users_path %>
+    <%= link_to "Ontology", "/ontology" %>
+    <%= link_to "Perspectives", perspectives_path %>
+    <%= link_to "Shape Sets", shape_sets_path %>
+    <%= link_to "Regions", regions_path %>
+    <%= link_to "Nodes", nodes_path %>
+    <%= link_to "Tags", tags_path %>
+  </nav>      
+<%= javascript_tag "
+  $(function() {
+    $('p[contenteditable~=true]').bind('input',function(){
+      this.style['border-style']='inset';
+      this.style['border-width']='1px';
+      this.style['background-color']='#ceedff';
+      if($('#'+this.title).length) $('#'+this.title).val(this.innerHTML);
+    });
+  });" %>
+<% end %>
