@@ -3,6 +3,8 @@ class PagesController < ApplicationController
   
   def home
     render :debug and return if params.has_key? "debug"
+    @node = Node.default
+    return access_node nil, @node
   end
   
   def about
@@ -13,8 +15,8 @@ class PagesController < ApplicationController
     
   end
   
-  def access_node shape_set = nil    
-    @node = Node.find_by_name(params[:node_name][1..-1]) or return record_not_found(params[:node_name][1..-1])
+  def access_node shape_set = nil, node = nil
+    @node = Node.find_by_name(params[:node_name][1..-1]) or return record_not_found(params[:node_name][1..-1]) unless node
     @node_data = embedded_json
     shape_set = (shape_set or ShapeSet.default)
     @perspective = ( @node.perspective or shape_set.default_perspective or nil )
