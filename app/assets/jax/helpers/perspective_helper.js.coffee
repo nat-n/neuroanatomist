@@ -1,7 +1,7 @@
 Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
   load_perspective_from_url: () ->
     # url scheme: p=shape_set_id:perspective_id:angle:distance:height:r1,r2,r3...
-    url_param = this.get_param('p')
+    return false unless url_param = this.get_param('p')
     ss = url_param.split(':')[0]
     # need to have the shape_set first!!!
     if ss of @s3
@@ -34,7 +34,6 @@ Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
       perspective = @history.log[parseInt(pid.substring(1,pid.length))].perspective
       return this.load_perspective(perspective) if typeof perspective == "string"
     else perspective = @s3[@active_shape_set].perspectives[pid] # load from s3
-    console.log @s3[@active_shape_set].perspectives
     this.clear_regions(false)
     cp = this.camera_position()
     this.camera_position perspective.angle or cp.a,
@@ -59,9 +58,6 @@ Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
     this.regions_changed() if fire
     this.hide_loading_spinner()
     true # should indicate success...
-    
-  
-  
   
   save_perspective: (params) ->
     # returns a description of which regions are visible and the camera position
