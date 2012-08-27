@@ -34,12 +34,43 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         this.cache_shape_set data.default_shape_set        
         callback(data, textStatus, jqXHR)
   
-  cache_shape_set: (shape_set) ->
-    @s3[shape_set.id] ?= {}
-    @s3[shape_set.id].id ?= shape_set.id
-    @s3[shape_set.id].name ?= shape_set.name
-    @s3[shape_set.id].radius ?= shape_set.radius
-    @s3[shape_set.id].center_point ?= shape_set.center_point  
+  cache_shape_set: (ss) ->
+    @s3[ss.id] ?= {}
+    @s3[ss.id].id ?= ss.id
+    @s3[ss.id].name ?= ss.name
+    @s3[ss.id].radius ?= ss.radius
+    @s3[ss.id].center_point ?= ss.center_point  
+  
+  cache_perspective: (p,ss) ->
+    p_def = 
+      id: p.id or 'lp'+Date.now() # loaded perspective
+      name: p.name
+      style_set: p.style_set
+      height: p.height
+      angle: p.angle
+      distance: p.distance
+      regions: p.regions
+    @s3[ss].perspectives[p_def.id] = p_def
+    return p_def.id
+    
+    perspective_proc = (shape_set_id, perspective, region_proc, shape_proc, mesh_proc) =>
+      perspective_def = 
+        id: perspective.id
+        name: perspective.name
+        style_set: perspective.style_set
+        height: perspective.height
+        angle: perspective.angle
+        distance: perspective.distance
+        regions: []
+      
+      if "regions" of perspective
+        for region in perspective.regions
+          perspective_def.regions.push region.id
+          region_proc(shape_set_id, region, shape_proc, mesh_proc)
+      @s3[shape_set_id].perspectives[perspective.id] = perspective_def 
+  
+  
+  
   
   fetch_regions: (shape_set_id, region_ids, callback) ->
 	  # should compose the params to fetch the requested regions, excluding already aquired meshes

@@ -1,10 +1,22 @@
 Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
+  load_perspective_from_url: () ->
+    components = this.get_param('p').split(':')
+    perspective = {id:components[0],regions:[],name:"url_persepective"}
+    return false unless components.length == 5 and 
+      (perspective.angle = parseInt(components[1])) != NaN and
+      (perspective.distance = parseInt(components[2])) != NaN and
+      (perspective.height = parseInt(components[3])) != NaN
+    return false unless (perspective.regions.push(parseInt(r)) and parseInt(r)) != NaN for r in components[4].split(',')
+    this.load_perspective @loader.cache_perspective(perspective, @active_shape_set)
+    
+  
   load_perspective: (pid, fire=true) ->
     # loads the referenced perspective from the asset store or log (determined by the id)
     if String(pid).substring(0,1) == "l" # load from log
       perspective = @history.log[parseInt(pid.substring(1,pid.length))].perspective
       return this.load_perspective(perspective) if typeof perspective == "string"
     else perspective = @s3[@active_shape_set].perspectives[pid] # load from s3
+    console.log @s3[@active_shape_set].perspectives
     this.clear_regions(false)
     cp = this.camera_position()
     this.camera_position perspective.angle or cp.a,

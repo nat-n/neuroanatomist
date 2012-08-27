@@ -1,5 +1,10 @@
 Jax.getGlobal().ApplicationHelper = Jax.Helper.create
-  patch_world: ->
+  get_param: (name) ->
+    results = RegExp("[\\?&]" + name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]") + "=([^&#]*)").exec(window.location.href)
+    return results[1] if results
+    null
+
+  patch_world: ->    
     Jax.World.prototype.find_region_centers = () ->
       show_debug_view = window.location.href.split("?")[1] and window.location.href.split("?")[1].split("&").indexOf("debug")>=0
       
