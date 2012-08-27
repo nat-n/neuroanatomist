@@ -27,4 +27,16 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
 
   hide_loading_spinner: () ->
     @spinner.spin(false)
+    this.intialisation_complete()
+  
+  intialisation_complete: () ->
     @init_complete = true
+    
+    # this needs to go somewhere to initialise the mouse_wheel events for zooming
+    @context.canvas.addEventListener 'DOMMouseScroll', this.mouse_scrolled, false
+    @context.canvas.addEventListener 'mousewheel', this.mouse_scrolled, false
+    
+    # initialse popstate event for use of forward/back buttons
+    window.onpopstate = (e) => this.state_popped(e)
+    
+    

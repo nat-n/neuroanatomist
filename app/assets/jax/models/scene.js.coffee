@@ -32,6 +32,7 @@ Jax.getGlobal()['Scene'] = Jax.Model.create
     this.activate_region(@newest_region.id)
     
   activate_region: (id) ->
+    return false if id in @active_ids
     @active_ids.push id
     @active_regions[id] = @inactive_regions[id]
     delete @inactive_regions[id]

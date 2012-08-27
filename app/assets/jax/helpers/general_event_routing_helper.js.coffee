@@ -12,4 +12,7 @@ Jax.getGlobal().GeneralEventRoutingHelper = Jax.Helper.create
   node_changed: () ->
     if @init_complete
       this.update_url()
+  
+  state_popped: (event) ->
+    this.load_perspective_from_url this.get_param('p'), false
     

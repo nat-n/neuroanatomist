@@ -5,6 +5,13 @@ Jax.getGlobal().ApplicationHelper = Jax.Helper.create
     null
 
   patch_world: ->    
+    Array.prototype.uniq = () ->
+      arr = this.sort (a, b) -> a*1 - b*1
+      ret = [arr[0]]
+      for i in [1..arr.length-1]
+        ret.push arr[i] if arr[i-1] != arr[i]
+      ret;
+      
     Jax.World.prototype.find_region_centers = () ->
       show_debug_view = window.location.href.split("?")[1] and window.location.href.split("?")[1].split("&").indexOf("debug")>=0
       

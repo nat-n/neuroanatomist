@@ -1,20 +1,20 @@
 Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
-  load_perspective_from_url: () ->
+  load_perspective_from_url: (url_param, fire=true) ->
     # url scheme: p=shape_set_id:perspective_id:angle:distance:height:r1,r2,r3...
-    return false unless url_param = this.get_param('p')
+    return false unless url_param or (url_param = this.get_param('p'))
     ss = url_param.split(':')[0]
     # need to have the shape_set first!!!
     if ss of @s3
       @active_shape_set = ss
       if (perspective = this.validate_perspective(url_param))
-        this.load_perspective @loader.cache_perspective(perspective, @active_shape_set)
+        this.load_perspective @loader.cache_perspective(perspective, @active_shape_set), fire
       else
         return false
     else
       return false unless (perspective = this.validate_perspective(url_param))
       @loader.fetch_shape_set ss, () =>
         @active_shape_set = ss
-        this.load_perspective @loader.cache_perspective(perspective, @active_shape_set)
+        this.load_perspective @loader.cache_perspective(perspective, @active_shape_set), fire
     return true # should indicate success!
   
   validate_perspective: (url_param) ->
@@ -52,12 +52,15 @@ Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
             this.show_region @scene.new_region(@active_shape_set, region_id), false
           else
             console.log "ERROR: No such region with id "+region_id
+        this.regions_changed() if fire
+        this.hide_loading_spinner()
+        @active_perspective = pid
     else
       for region_id in perspective.regions
           this.show_region @scene.new_region(@active_shape_set, region_id), false
-    this.regions_changed() if fire
-    this.hide_loading_spinner()
-    @active_perspective = pid
+      this.regions_changed() if fire
+      this.hide_loading_spinner()
+      @active_perspective = pid
     true # should indicate success...
   
   save_perspective: (params) ->

@@ -10,12 +10,8 @@ Jax.Controller.create "Scene", ApplicationController,
     @tooltip_ = SVGTooltip.find "region_dark"
     @labeler_ = SVGLabeler.find "regions_light"
     this.activate_tooltip()
-    @history = window.context.history ?= { log: [], back: [], forward: [], recent_regions: {} }
+    @history = window.context.history ?= { log: [], back: [], forward: [], previous_url: null }
     @s3 = window.context.s3 ?= {}
-    
-    # this needs to go somewhere to initialise the mouse_wheel events for zooming
-    @context.canvas.addEventListener 'DOMMouseScroll', this.mouse_scrolled, false
-    @context.canvas.addEventListener 'mousewheel', this.mouse_scrolled, false
     
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
@@ -68,18 +64,18 @@ Jax.Controller.create "Scene", ApplicationController,
     d = @world.objects[region_uid].decompositions[0]
     return false unless d
     @loader.fetch_regions @active_shape_set, d.sub_regions, (data) =>
-      this.hide_region(region_uid, false)
+      this.hide_region(region_uid, false) if region_uid in @scene.active_regions
       for item of data
         this.show_region @scene.new_region(@active_shape_set, data[item].id), false
     this.regions_changed() if fire
   
   show_region: (id, fire=true) ->
-    @world.addObject(@scene.activate_region(id)).id
+    return false unless r = @scene.activate_region(id)
+    @world.addObject(r).id
     this.regions_changed() if fire
     
   hide_region: (id, fire=true) ->
     @world.removeObject @scene.deactivate_region(id)
-    #@history.recent_regions[@world.objects[id].region_id] = @world.objects[id]
     this.regions_changed() if fire
   
   clear_regions: (fire=true) ->
@@ -101,13 +97,14 @@ Jax.Controller.create "Scene", ApplicationController,
     @labeler.draw()
     
   update_url: () ->
+    return false if @history.previous_url and @history.previous_url == window.location.href
     new_title = document.title
     state_object = {}
     cp = this.camera_position()
     new_url = "/node:"+@active_node+"?p="+@active_shape_set+":"+@active_perspective+":"+cp.a+":"+cp.d+":"+cp.h+":"
-    new_url += @scene.active_regions[r].region_id + "," for r of @scene.active_regions
+    new_url += r + "," for r in (@scene.active_regions[r].region_id for r of @scene.active_regions).uniq()
     new_url = new_url.slice(0,new_url.length-1)
     window.history.pushState state_object, new_title, new_url
-    
-    
+    @history.previous_url = new_url
+  
     

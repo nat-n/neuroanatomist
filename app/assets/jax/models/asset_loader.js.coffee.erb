@@ -86,9 +86,9 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     url += "/" + params.shape_set if params.shape_set
     url += "?" if params.include or params.exclude or params.requests or params.cascade
     if params.include and params.include.length
-      url += "include=" + params.include + "&"
+      url += "include=" + params.include.uniq() + "&"
     else if params.exclude and params.exclude.length
-      url += "exclude=" + params.exclude + "&"
+      url += "exclude=" + params.exclude.uniq() + "&"
     if params.requests
       url += "requests=" + encodeURIComponent(JSON.stringify(params.requests))
     else if params.cascade
