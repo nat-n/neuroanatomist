@@ -44,7 +44,3 @@ Jax.getGlobal()['Scene'] = Jax.Model.create
     delete @active_regions[id]
     return @inactive_regions[id]
   
-  newest_region: -> @newest_region
-  active_regions: -> @active_regions
-  inactive_regions: -> @inactive_regions
-  

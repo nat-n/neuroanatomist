@@ -5,16 +5,15 @@ Jax.getGlobal().SupContentHelper = Jax.Helper.create
   
   sc_load_node: (thing_id) ->
     $(tabs_id).tabs() # not sure why but this is neccessary...
-    $.ajax(
+    $.ajax
       type: 'GET'
       url: '/ontology/things/'+thing_id+':node:embed'
       dataType: 'json'
       success: (data) =>
         this.sc_init_node(data)
-      error: (r) -> console.log("Couldn't fetch node")
-    )
-  
-  #sc_init_node: 
+      error: (r) -> console.log("Couldn't fetch node") 
+    @active_node = node_data.name
+    this.node_changed()
   
   sc_init_node: (node_data) ->
     unless node_data
@@ -28,6 +27,8 @@ Jax.getGlobal().SupContentHelper = Jax.Helper.create
     this.sc_new_tab 'Resources',    "resources template goes here"
     $(tabs_id).tabs 'select', 0
     $(window).scroll() # this just triggers the javascript resize of the tabs
+    @active_node = node_data.name
+    this.node_changed()
   
   sc_clear_tabs: () ->
     $(tabs_id).tabs('remove', i) for i in [ntabs-1..0]

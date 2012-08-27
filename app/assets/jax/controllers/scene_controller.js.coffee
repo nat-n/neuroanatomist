@@ -1,6 +1,9 @@
 Jax.Controller.create "Scene", ApplicationController,
   index: ->
     @active_shape_set = false
+    @active_perspective = false
+    @active_node = false
+    @init_complete = false
     @context.gl.clearColor(0.0, 0.0, 0.0, 0.0)
     @loader = AssetLoader.find "standard"
     @scene = Scene.find "primary"
@@ -52,7 +55,7 @@ Jax.Controller.create "Scene", ApplicationController,
           this.hide_loading_spinner()
     
     this.sc_init_node(node_data)
-
+    this.patch_world()
         
   helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper, StatusHelper ]
   
@@ -67,7 +70,7 @@ Jax.Controller.create "Scene", ApplicationController,
     @loader.fetch_regions @active_shape_set, d.sub_regions, (data) =>
       this.hide_region(region_uid, false)
       for item of data
-        this.show_region(@scene.new_region(@active_shape_set, data[item].id), false)
+        this.show_region @scene.new_region(@active_shape_set, data[item].id), false
     this.regions_changed() if fire
   
   show_region: (id, fire=true) ->
@@ -97,4 +100,14 @@ Jax.Controller.create "Scene", ApplicationController,
     @labeler.source_labels()
     @labeler.draw()
     
-  
+  update_url: () ->
+    new_title = document.title
+    state_object = {}
+    cp = this.camera_position()
+    new_url = "/node:"+@active_node+"?p="+@active_shape_set+":"+@active_perspective+":"+cp.a+":"+cp.d+":"+cp.h+":"
+    new_url += @scene.active_regions[r].region_id + "," for r of @scene.active_regions
+    new_url = new_url.slice(0,new_url.length-1)
+    window.history.pushState state_object, new_title, new_url
+    
+    
+    

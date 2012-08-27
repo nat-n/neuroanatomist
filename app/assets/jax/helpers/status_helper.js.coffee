@@ -25,4 +25,6 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     @spinner = target.spin(opts)
     
 
-  hide_loading_spinner: () -> @spinner.spin(false)
+  hide_loading_spinner: () ->
+    @spinner.spin(false)
+    @init_complete = true

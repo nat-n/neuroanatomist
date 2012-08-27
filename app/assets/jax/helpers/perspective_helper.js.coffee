@@ -21,9 +21,9 @@ Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
     components = url_param.split(':')
     perspective = {id:components[1],regions:[],name:"url_persepective"}
     return false unless components.length == 6 and 
-      (perspective.angle = parseInt(components[2])) != NaN and
-      (perspective.distance = parseInt(components[3])) != NaN and
-      (perspective.height = parseInt(components[4])) != NaN
+      (perspective.angle = parseFloat(components[2])) != NaN and
+      (perspective.distance = parseFloat(components[3])) != NaN and
+      (perspective.height = parseFloat(components[4])) != NaN
     return false unless (perspective.regions.push(parseInt(r)) and parseInt(r)) != NaN for r in components[5].split(',')
     return perspective
   
@@ -57,6 +57,7 @@ Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
           this.show_region @scene.new_region(@active_shape_set, region_id), false
     this.regions_changed() if fire
     this.hide_loading_spinner()
+    @active_perspective = pid
     true # should indicate success...
   
   save_perspective: (params) ->
