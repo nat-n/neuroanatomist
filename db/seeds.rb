@@ -10,3 +10,10 @@
 root_type = Type.new name: 'Thing', description: 'The root type of all things.'
 root_type.supertype = root_type
 root_type.save :validate => false
+
+# seed an admin user
+
+admin_user = User.create(:email => "admin@fake.com",
+                         :password => "seeded_password")
+admin_user.admin = true
+admin_user.save
