@@ -52,25 +52,13 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       regions: p.regions
     @s3[ss].perspectives[p_def.id] = p_def
     return p_def.id
-    
-    perspective_proc = (shape_set_id, perspective, region_proc, shape_proc, mesh_proc) =>
-      perspective_def = 
-        id: perspective.id
-        name: perspective.name
-        style_set: perspective.style_set
-        height: perspective.height
-        angle: perspective.angle
-        distance: perspective.distance
-        regions: []
-      
-      if "regions" of perspective
-        for region in perspective.regions
-          perspective_def.regions.push region.id
-          region_proc(shape_set_id, region, shape_proc, mesh_proc)
-      @s3[shape_set_id].perspectives[perspective.id] = perspective_def 
   
-  
-  
+  fetch_shape_set: (ss,callback,cascade) ->
+    console.log cascade
+    params =
+      shape_set: ss
+      cascade: cascade or "no"
+    this.fetch params, callback
   
   fetch_regions: (shape_set_id, region_ids, callback) ->
 	  # should compose the params to fetch the requested regions, excluding already aquired meshes
@@ -165,7 +153,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         
         unless "default_shape_set" of data # not sure if this is necccessary
           for ri of data
-            if "type" of params.requests[ri]
+            if params.requests and "type" of params.requests[ri]
               switch params.requests[ri].type
                 when "perspective"                  
                   perspective_proc(params.shape_set, data[ri], region_proc, shape_proc, mesh_proc)

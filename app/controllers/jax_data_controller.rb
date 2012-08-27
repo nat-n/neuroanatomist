@@ -36,11 +36,11 @@ class JaxDataController < ApplicationController
     # if there are no requests then respond with the default view or the shape_set if specified
     if !params[:requests]
       if not shape_set
-        shape_set_hash = @shape_set.hash_partial(@cascade)
+        throw params['cascade'].downcase
+        shape_set_hash = @shape_set.hash_partial(['1','true'].include? params['cascade'].downcase)
         render :text => JSON.dump(Hash["default_shape_set" => shape_set_hash.merge(shape_set_hash.delete(:attrs))])
         return
       end
-      
       @assets << describe_shape_set(request)
       
     else ## prepare descriptions of requested assets
@@ -167,7 +167,7 @@ class JaxDataController < ApplicationController
     end
     
     def describe_shape_set request
-      { :type => :shape_set, :id => @shape_set, :cascade => encode_cascade(request["cascade"]) }
+      { :type => :shape_set, :id => @shape_set, :cascade => encode_cascade((request["cascade"] or params["cascade"])) }
     end
     
     def encode_cascade cascade

@@ -16,38 +16,40 @@ Jax.Controller.create "Scene", ApplicationController,
     
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
-	  # fetch default visualisation data
+	  # load visualisation and node data via url, dom, or ajax
     this.show_loading_spinner($('#visualisation'), true)
     
     perspective_id =  $('#visualisation').data('perspectiveId')
     shape_set =  $('#visualisation').data('shapeSet')
     node_data = $('#sup_content').data('node')
-    @loader.cache_shape_set(shape_set) if shape_set
-    shape_set_id = try shape_set.id catch err
-      null
     
-    init_params = 
-      shape_set: shape_set_id 
-      requests: [
-        type:"perspective"
-        id: perspective_id
-        cascade:"yes" ]
-
-    unless perspective_id and shape_set_id
-      @loader.fetch_defaults (data, textStatus, jqXHR) =>
-        this.activate_shape_set (shape_set_id or data.default_shape_set.id)
-        init_params.shape_set = (shape_set_id or data.default_shape_set.id)
-        init_params.requests.id = (perspective_id or data.default_shape_set.default_perspective)
-        @loader.fetch init_params, (data, textStatus, jqXHR) => 
+    unless this.load_perspective_from_url()
+      @loader.cache_shape_set(shape_set) if shape_set
+      shape_set_id = try shape_set.id catch err
+        null
+    
+      init_params = 
+        shape_set: shape_set_id 
+        requests: [
+          type:"perspective"
+          id: perspective_id
+          cascade:"yes" ]
+      
+      unless perspective_id and shape_set_id
+        @loader.fetch_defaults (data, textStatus, jqXHR) =>
+          this.activate_shape_set (shape_set_id or data.default_shape_set.id)
+          init_params.shape_set = (shape_set_id or data.default_shape_set.id)
+          init_params.requests.id = (perspective_id or data.default_shape_set.default_perspective)
+          @loader.fetch init_params, (data, textStatus, jqXHR) => 
+            this.load_perspective(data[0].id, false)
+            this.update_history()
+            this.hide_loading_spinner()
+      else
+        this.activate_shape_set shape_set.id
+        @loader.fetch init_params, (data, textStatus, jqXHR) =>
           this.load_perspective(data[0].id, false)
           this.update_history()
           this.hide_loading_spinner()
-    else
-      this.activate_shape_set shape_set.id
-      @loader.fetch init_params, (data, textStatus, jqXHR) =>
-        this.load_perspective(data[0].id, false)
-        this.update_history()
-        this.hide_loading_spinner()
     
     this.sc_init_node(node_data)
 

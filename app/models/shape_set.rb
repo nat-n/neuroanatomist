@@ -107,6 +107,7 @@ class ShapeSet < ActiveRecord::Base
   def hash_partial cascade
     hp = Hash[
       attrs: Hash[
+        type:                 'shape_set',
         id:                   self.id,
         name:                 self.name,
         radius:               self.radius,
@@ -114,7 +115,7 @@ class ShapeSet < ActiveRecord::Base
         default_perspective:  (self.default_perspective.id or nil rescue nil)
       ]
     ]
-    hp[:shapes] = self.shapes.map(&:id) if cascade
+    hp[:shapes] = self.shapes.map(&:id) if [true,:yes,:partial].include? cascade
     return hp
   end
   
