@@ -4,6 +4,7 @@ Jax.Controller.create "Scene", ApplicationController,
     @active_perspective = false
     @active_node = false
     @init_complete = false
+    @mode = null
     @context.gl.clearColor(0.0, 0.0, 0.0, 0.0)
     @loader = AssetLoader.find "standard"
     @scene = Scene.find "primary"
@@ -93,17 +94,5 @@ Jax.Controller.create "Scene", ApplicationController,
     @tooltip = null
     @labeler.pressed = false
     @labeler.source_labels()
-    @labeler.draw()
-    
-  update_url: () ->
-    return false if @history.previous_url and @history.previous_url == window.location.href
-    new_title = document.title
-    state_object = {}
-    cp = this.camera_position()
-    new_url = "/node:"+@active_node+"?p="+@active_shape_set+":"+@active_perspective+":"+cp.a+":"+cp.d+":"+cp.h+":"
-    new_url += r + "," for r in (@scene.active_regions[r].region_id for r of @scene.active_regions).uniq()
-    new_url = new_url.slice(0,new_url.length-1)
-    window.history.pushState state_object, new_title, new_url
-    @history.previous_url = new_url
-  
+    @labeler.draw()  
     

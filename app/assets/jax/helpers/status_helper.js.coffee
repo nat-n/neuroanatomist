@@ -23,8 +23,33 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
         opts.radius = 33
         opts.className = 'big_spinner'
     @spinner = target.spin(opts)
-    
-
+  
+  update_mode_from_url: () ->
+    @mode = window.location.href.split('#')[1]
+    switch @mode
+      when 'editing_node'
+        $('#edit_node')[0].show_edit()
+      else
+        $('#edit_node')[0].hide_edit()
+        if @mode and @mode[0] == '!'
+          new_title = document.title
+          state_object = {type:'m'}
+          new_url = window.location.href.split('#')[0]
+          setTimeout (()=>window.history.replaceState state_object, new_title, new_url), 10 # dirty hack i know... but it need to be async
+        @mode = null
+      
+  update_url: () ->
+    return false if @history.previous_url and @history.previous_url == window.location.href
+    new_title = document.title
+    state_object = {type:'p'}
+    cp = this.camera_position()
+    new_url = "/node:"+@active_node+"?p="+@active_shape_set+":"+@active_perspective+":"+cp.a+":"+cp.d+":"+cp.h+":"
+    new_url += r + "," for r in (@scene.active_regions[r].region_id for r of @scene.active_regions).uniq()
+    new_url = new_url.slice(0,new_url.length-1)
+    new_url += '#'+@mode if @mode
+    window.history.pushState state_object, new_title, new_url
+    @history.previous_url = new_url
+  
   hide_loading_spinner: () ->
     @spinner.spin(false)
     this.intialisation_complete()
@@ -34,7 +59,9 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     this.sc_load_node_from_url null, false
   
   intialisation_complete: () ->
+    return true if @init_complete
     @init_complete = true
+    this.update_mode_from_url()
     
     # this needs to go somewhere to initialise the mouse_wheel events for zooming
     @context.canvas.addEventListener 'DOMMouseScroll', this.mouse_scrolled, false

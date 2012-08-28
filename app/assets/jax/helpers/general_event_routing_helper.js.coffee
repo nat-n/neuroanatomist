@@ -14,4 +14,7 @@ Jax.getGlobal().GeneralEventRoutingHelper = Jax.Helper.create
       this.update_url()
   
   state_popped: (event) ->
-    this.load_state_from_url()
+    unless event.state == null # this seems to detect is this event is a has link being clicked?
+      this.load_state_from_url()
+    this.update_mode_from_url()
+    

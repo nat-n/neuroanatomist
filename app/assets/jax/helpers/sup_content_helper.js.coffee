@@ -18,7 +18,9 @@ Jax.getGlobal().SupContentHelper = Jax.Helper.create
       error: (r) -> console.log("Couldn't fetch node") 
     
   sc_load_node_from_url: () ->
-    this.sc_load_node null, window.location.pathname.split(':')[1], false
+    node = window.location.pathname.split(':')[1]
+    return false if @active_node == node
+    this.sc_load_node null, node, false
   
   sc_init_node: (node_data, fire=true) ->
     unless node_data

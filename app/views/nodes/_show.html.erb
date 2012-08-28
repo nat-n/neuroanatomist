@@ -20,16 +20,16 @@
   </div>
   
   <%= javascript_tag "
-    $('#edit_node').click(function(){
-      if ($(this).hasClass('active')){
-        $(this).parent().children().removeClass('active');
-        $('#node_edit').hide();
-      } else {
-        $(this).siblings().removeClass('active');
-        $(this).addClass('active');
-        $('#node_edit').show();
-      };
-    })
+    $('#edit_node')[0].show_edit = function(){
+      $('#edit_node').siblings().removeClass('active');
+      $('#edit_node').addClass('active').attr('href', '#!editing_node');
+      $('#node_edit').addClass('active');
+    };
+    $('#edit_node')[0].hide_edit = function(){
+      if(!$('#edit_node').hasClass('active')) return false;
+      $('#edit_node').attr('href', '#editing_node').parent().children().removeClass('active');
+      $('#node_edit').removeClass('active');
+    };
     $('#redcloth_preview').click(function(){$.ajax({
       type: 'POST',
       url: '/nodes/preview',
