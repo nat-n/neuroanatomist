@@ -57,10 +57,7 @@ Jax.Controller.create "Scene", ApplicationController,
   
   activate_shape_set: (shape_set) ->
     @active_shape_set = shape_set
-    console.log @active_shape_set
-    console.log @s3[@active_shape_set]
     this.configure_camera(@s3[@active_shape_set].center_point, @s3[@active_shape_set].radius)
-  
   
   decompose: (region_uid, fire=true) ->
     d = @world.objects[region_uid].decompositions[0]
@@ -99,7 +96,6 @@ Jax.Controller.create "Scene", ApplicationController,
     @labeler.draw()
     
   update_url: () ->
-    console.log "updating"
     return false if @history.previous_url and @history.previous_url == window.location.href
     new_title = document.title
     state_object = {}
