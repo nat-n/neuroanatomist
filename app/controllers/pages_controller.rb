@@ -16,8 +16,8 @@ class PagesController < ApplicationController
   end
   
   def access_node shape_set = nil, node = nil
-    node_name = params[:node_name].split(':')[1]
-    if params[:node_name].end_with? ':embed'
+    node_name = (params[:node_name].split(':')[1] rescue node.name)
+    if params[:node_name] and params[:node_name].end_with? ':embed'
       @node = Node.find_by_name(node_name) or return record_not_found(node_name) unless node
       return redirect_to :controller => '/nodes', :action => 'show', :id => "#{@node.id}"<<":embed"
     else
