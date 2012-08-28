@@ -14,7 +14,7 @@ class Ontology::ThingsController  < Ontology::BaseController
 
   def show
     if params[:id] =~ /\d+:node:embed/
-      return redirect_to :controller => '/nodes', :action => 'show', :id => params[:id].split(":").first<<":embed"
+      return redirect_to :controller => '/nodes', :action => 'show', :id => "#{@thing.node.id}"<<":embed"
     end
     respond_to do |format|
       format.html # show.html.erb
