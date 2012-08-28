@@ -29,7 +29,7 @@ class ShapeSet < ActiveRecord::Base
   end
   
   def self.default
-    defaults = ShapeSet.where("is_default")
+    defaults = ShapeSet.where(:is_default => true)
     case defaults.size
     when 1
       return defaults.first

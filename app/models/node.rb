@@ -37,7 +37,7 @@ class Node < ActiveRecord::Base
   end
   
   def self.default
-    defaults = Node.where("is_default")
+    defaults = Node.where(:is_default => true)
     case defaults.size
     when 1
       return defaults.first
