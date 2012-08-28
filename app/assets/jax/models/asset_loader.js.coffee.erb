@@ -54,7 +54,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     return p_def.id
   
   fetch_shape_set: (ss,callback,cascade) ->
-    console.log cascade
     params =
       shape_set: ss
       cascade: cascade or "no"
@@ -164,7 +163,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
                 when "mesh"
                   mesh_proc(params.shape_set, data[ri])
             else
-              null # it's a shape_set
+              this.cache_shape_set data[ri]
         callback(data, textStatus, jqXHR)
         
 

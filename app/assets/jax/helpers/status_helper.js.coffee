@@ -29,6 +29,10 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     @spinner.spin(false)
     this.intialisation_complete()
   
+  load_state_from_url: () ->
+    this.load_perspective_from_url this.get_param('p'), false
+    this.sc_load_node_from_url null, false
+  
   intialisation_complete: () ->
     @init_complete = true
     

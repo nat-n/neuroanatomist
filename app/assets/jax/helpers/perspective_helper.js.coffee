@@ -5,7 +5,7 @@ Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
     ss = url_param.split(':')[0]
     # need to have the shape_set first!!!
     if ss of @s3
-      @active_shape_set = ss
+      this.activate_shape_set ss unless @active_shape_set == ss
       if (perspective = this.validate_perspective(url_param))
         this.load_perspective @loader.cache_perspective(perspective, @active_shape_set), fire
       else
@@ -13,7 +13,7 @@ Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
     else
       return false unless (perspective = this.validate_perspective(url_param))
       @loader.fetch_shape_set ss, () =>
-        @active_shape_set = ss
+        this.activate_shape_set ss unless @active_shape_set == ss
         this.load_perspective @loader.cache_perspective(perspective, @active_shape_set), fire
     return true # should indicate success!
   

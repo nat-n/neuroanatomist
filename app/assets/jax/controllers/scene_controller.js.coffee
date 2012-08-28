@@ -11,7 +11,7 @@ Jax.Controller.create "Scene", ApplicationController,
     @labeler_ = SVGLabeler.find "regions_light"
     this.activate_tooltip()
     @history = window.context.history ?= { log: [], back: [], forward: [], previous_url: null }
-    @s3 = window.context.s3 ?= {}
+    @s3 = window.context.s3 ?= {previous_node:null}
     
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
@@ -57,6 +57,8 @@ Jax.Controller.create "Scene", ApplicationController,
   
   activate_shape_set: (shape_set) ->
     @active_shape_set = shape_set
+    console.log @active_shape_set
+    console.log @s3[@active_shape_set]
     this.configure_camera(@s3[@active_shape_set].center_point, @s3[@active_shape_set].radius)
   
   
@@ -64,13 +66,13 @@ Jax.Controller.create "Scene", ApplicationController,
     d = @world.objects[region_uid].decompositions[0]
     return false unless d
     @loader.fetch_regions @active_shape_set, d.sub_regions, (data) =>
-      this.hide_region(region_uid, false) if region_uid in @scene.active_regions
+      this.hide_region(region_uid, false) if region_uid in @scene.active_ids
       for item of data
         this.show_region @scene.new_region(@active_shape_set, data[item].id), false
-    this.regions_changed() if fire
+      this.regions_changed() if fire
   
   show_region: (id, fire=true) ->
-    return false unless r = @scene.activate_region(id)
+    return false unless id and r = @scene.activate_region(id)
     @world.addObject(r).id
     this.regions_changed() if fire
     
@@ -79,7 +81,7 @@ Jax.Controller.create "Scene", ApplicationController,
     this.regions_changed() if fire
   
   clear_regions: (fire=true) ->
-    this.hide_region(r, fire) for r of @world.objects
+    this.hide_region(r, false) for r of @world.objects
     this.regions_changed() if fire
 	
   activate_tooltip: () ->
@@ -97,6 +99,7 @@ Jax.Controller.create "Scene", ApplicationController,
     @labeler.draw()
     
   update_url: () ->
+    console.log "updating"
     return false if @history.previous_url and @history.previous_url == window.location.href
     new_title = document.title
     state_object = {}

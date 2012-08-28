@@ -2,27 +2,34 @@ Jax.getGlobal()['Scene'] = Jax.Model.create
   after_initialize: ->
     @active_regions = {}
     @active_ids = []
+    @actived_regions = {} # keeps track of regions than have been instanciated by db id
     @inactive_regions = {}
     @newest_region = null
     @highlighted = null
   
-  highlight: (region_id) ->
+  highlight: (uid) ->
     if @highlighted
       @highlighted.mesh.material = @default_material
       @highlighted = null
-    if region_id and context.world.objects[region_id]
-      @highlighted = context.world.objects[region_id]
+    if uid and context.world.objects[uid]
+      @highlighted = context.world.objects[uid]
       @highlighted.mesh.material = @highlight_material
       return true
     return false
   
-  active: (region_id) ->
-    region_id in @active_ids
+  active: (uid) ->
+    uid in @active_ids
     
   new_region: (shape_set_id, region_id) ->
+    # if this region has been instanciated before then return its uid from inactive regions
+    return prev if prev = this.region_activated(region_id)
     @newest_region = Region.find("standard").compose(shape_set_id, region_id)
     @inactive_regions[@newest_region.id] = @newest_region
+    @actived_regions[region_id] = @newest_region.id
     @newest_region.id
+  
+  region_activated: (region_id) ->
+    @actived_regions[region_id] or false
   
   add_region: (region) ->
     @inactive_regions[region._id] = region
@@ -32,7 +39,6 @@ Jax.getGlobal()['Scene'] = Jax.Model.create
     this.activate_region(@newest_region.id)
     
   activate_region: (id) ->
-    return false if id in @active_ids
     @active_ids.push id
     @active_regions[id] = @inactive_regions[id]
     delete @inactive_regions[id]
