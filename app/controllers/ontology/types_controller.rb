@@ -34,7 +34,7 @@ class Ontology::TypesController  < Ontology::BaseController
     @type = Type.new(params[:type])    
     respond_to do |format|
       if @type.save
-        format.html { redirect_to types_path, notice: 'Type was successfully created.' }
+        format.html { redirect_to ontology_types_path, notice: 'Type was successfully created.' }
         format.json { render json: @type, status: :created, location: @type }
       else
         format.html { render action: "new" }
