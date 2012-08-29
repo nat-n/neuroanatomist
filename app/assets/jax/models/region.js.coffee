@@ -2,7 +2,7 @@ Jax.getGlobal()['Region'] = Jax.Model.create
   after_initialize: ->
     @id = @__unique_id
     @s3 = window.context.s3  
-    color = [Math.random(),Math.random(),Math.random(),1]
+    @color = [Math.random(),Math.random(),Math.random(),1]
     
   compose: (shape_set_id, region_id) ->
     @shape_set_id = shape_set_id
@@ -16,7 +16,7 @@ Jax.getGlobal()['Region'] = Jax.Model.create
     model_data = borders: {}, faces: [], vertex_normals: [], vertex_positions: []
     @mesh = new Jax.Mesh
       material: "scene"
-      color: color
+      color: @color
       init: (vertices, colors, texCoords, normals, indices) =>
         if model_data
           vertices.push datum for datum in model_data["vertex_positions"]

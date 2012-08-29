@@ -37,7 +37,7 @@ Jax.getGlobal()['Color'] = Jax.Model.create
     @paper.canvas.style.left = ""+pageX+"px"
     @paper.canvas.style.top = ""+pageY+"px"
     @paper.canvas.style.opacity = 1
-    @paper.rect(0, 0, @paper.width, @paper.height).attr fill: 'white', border: 'white'
+    @paper.rect(0, 0, @paper.width, @paper.height).attr(fill: 'white', border: 'white')
     .click (e) ->
       c = this.attr('fill')
       context.current_controller.color_.target_region.mesh.setColor [c.r/255,c.g/255,c.b/255,1]
