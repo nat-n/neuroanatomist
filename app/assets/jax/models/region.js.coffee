@@ -2,7 +2,12 @@ Jax.getGlobal()['Region'] = Jax.Model.create
   after_initialize: ->
     @id = @__unique_id
     @s3 = window.context.s3  
+    @color = [Math.random(),Math.random(),Math.random(),1]
     
+  update_color: (rgba_array) ->
+    @color = rgba_array
+    @mesh.update(null, rgba_array)
+  
   compose: (shape_set_id, region_id) ->
     @shape_set_id = shape_set_id
     @region_id = region_id
@@ -14,15 +19,19 @@ Jax.getGlobal()['Region'] = Jax.Model.create
     @thing = region_def.thing
     model_data = borders: {}, faces: [], vertex_normals: [], vertex_positions: []
     @mesh = new Jax.Mesh
-      color: [Math.random(),Math.random(),Math.random(),1]
       material: "scene"
-      init: (vertices, colors, texCoords, normals, indices) ->
+      color: @color
+      init: (vertices, colors, texCoords, normals, indices) =>
+        this.color = @color
         if model_data
           vertices.push datum for datum in model_data["vertex_positions"]
           normals.push  datum for datum in model_data["vertex_normals"]
           indices.push  datum for datum in model_data["faces"]
-      update: ((updated_model_data) => model_data = updated_model_data; @mesh.rebuild())
-        
+      update: (updated_model_data, color) => 
+        model_data = updated_model_data if updated_model_data
+        rgba = color or @color if color? or @color?
+        @mesh.rebuild()
+      
     model_data.shapes = []
     # construct array of meshes included in this region
     meshes = []

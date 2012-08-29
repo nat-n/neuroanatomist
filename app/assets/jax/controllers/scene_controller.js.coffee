@@ -10,6 +10,7 @@ Jax.Controller.create "Scene", ApplicationController,
     @scene = Scene.find "primary"
     @tooltip_ = SVGTooltip.find "region_dark"
     @labeler_ = SVGLabeler.find "regions_light"
+    @color_ = Color.find "standard"
     this.activate_tooltip()
     @history = window.context.history ?= { log: [], back: [], forward: [], previous_url: null }
     @s3 = window.context.s3 ?= {previous_node:null}

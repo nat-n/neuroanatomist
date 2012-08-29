@@ -10,6 +10,7 @@ Jax.getGlobal()['Scene'] = Jax.Model.create
   highlight: (uid) ->
     if @highlighted
       @highlighted.mesh.material = @default_material
+      @highlighted.mesh.color = [1,1,1,1]
       @highlighted = null
     if uid and context.world.objects[uid]
       @highlighted = context.world.objects[uid]
