@@ -47,7 +47,7 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
         window.context.current_controller.sc_load_node(window.context.current_controller.tooltip.hovered_region.thing)
         window.context.current_controller.tooltip.clear()
       "Pick Colour": () ->
-        window.context.current_controller.color_.show_at(750,200,window.context.current_controller.tooltip.hovered_region)
+        window.context.current_controller.color_.show_at(730,350,window.context.current_controller.tooltip.hovered_region)
         window.context.current_controller.tooltip.clear()
     
     @box.set = @paper.set @paper.path(@box.path(@label.h)).attr(@box.style),

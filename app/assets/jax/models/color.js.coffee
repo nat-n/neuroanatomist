@@ -38,6 +38,9 @@ Jax.getGlobal()['Color'] = Jax.Model.create
     @paper.canvas.style.top = ""+pageY+"px"
     @paper.canvas.style.opacity = 1
     @paper.rect(0, 0, @paper.width, @paper.height).attr fill: 'white', border: 'white'
+    .click (e) ->
+      c = this.attr('fill')
+      context.current_controller.color_.target_region.mesh.setColor [c.r/255,c.g/255,c.b/255,1]
     r=0
     c=0
     for fill in @colours
@@ -53,7 +56,7 @@ Jax.getGlobal()['Color'] = Jax.Model.create
         stroke: fill
       .click (e) ->
         c = this.attr('fill')
-        context.current_controller.color_.target_region.update_color [c.r/255,c.g/255,c.b/255,1]
+        context.current_controller.color_.target_region.mesh.setColor [c.r/255,c.g/255,c.b/255,1]
       r+=1
     @paper.text(@paper.width-5,5,'X').click () => context.current_controller.color_.hide()
   
