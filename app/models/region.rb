@@ -8,7 +8,7 @@ class Region < ActiveRecord::Base
   has_many :sub_regions,        :through    => :decompositions
   has_many :shape_sets,         :through    => :region_definitions
   has_many :perspectives,       :through    => :region_styles
-  has_many :versions,           :as         => :updated
+  has_many :versions,           :as         => :updated,            :dependent => :destroy
   
   validates_uniqueness_of :name
   validates_presence_of :name
@@ -16,6 +16,19 @@ class Region < ActiveRecord::Base
   after_update :invalidate_caches
   
   alias :definitions :region_definitions
+  
+  include VersioningHelper
+  
+  def version_bump size, description, user
+    super
+    perspectives.each { |p| 
+      if description.is_a? String
+        description = "Region<#{name}>: #{description}"
+      else
+        description = "Region<#{name}>"        
+      end
+      p.version_bump size, description, user  }
+  end
   
   def decompositions
     # position any unranked decompositions at end of ranking preserving order

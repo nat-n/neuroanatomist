@@ -14,6 +14,7 @@ class RegionsController < Admin::BaseController
     @region = Region.new(params[:region])
     
     if @region.save
+      Version.init_for @region, {}
       flash[:notice] = "Region has been created."
       redirect_to @region
     else
