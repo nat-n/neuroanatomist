@@ -63,7 +63,4 @@ Jax.getGlobal()['Color'] = Jax.Model.create
   
   hide: () ->
     @paper.canvas.style.opacity = 0
-    
-    
-    
-    
+  

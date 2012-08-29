@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120826213245) do
+ActiveRecord::Schema.define(:version => 20120829145712) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -338,5 +338,22 @@ ActiveRecord::Schema.define(:version => 20120826213245) do
   add_index "users", ["alias"], :name => "index_users_on_alias", :unique => true
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
+
+  create_table "versions", :force => true do |t|
+    t.string   "version_string"
+    t.string   "description"
+    t.integer  "user_id"
+    t.integer  "updated_id"
+    t.string   "updated_type"
+    t.boolean  "is_current",     :default => true
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
+  end
+
+  add_index "versions", ["is_current"], :name => "index_versions_on_is_current"
+  add_index "versions", ["updated_id"], :name => "index_versions_on_updated_id"
+  add_index "versions", ["updated_type"], :name => "index_versions_on_updated_type"
+  add_index "versions", ["user_id"], :name => "index_versions_on_user_id"
+  add_index "versions", ["version_string"], :name => "index_versions_on_version_string"
 
 end

@@ -1,10 +1,11 @@
 class Perspective < ActiveRecord::Base
-  belongs_to  :default_for_shape_set, :class_name => 'ShapeSet', :foreign_key => 'default_for_shape_set_id'
-  belongs_to  :style_set, :class_name => 'Perspective'
+  belongs_to  :default_for_shape_set, :class_name => 'ShapeSet',    :foreign_key => 'default_for_shape_set_id'
+  belongs_to  :style_set,             :class_name => 'Perspective'
   belongs_to  :node
-  has_many    :points_of_view, :class_name => 'Perspective', :foreign_key => 'style_set_id', :dependent => :destroy
-  has_many    :own_region_styles, :class_name => 'RegionStyle', :foreign_key => 'perspective_id', :dependent => :destroy
-  has_many    :styled_regions, :through => :own_region_styles, :source => :region
+  has_many    :points_of_view,        :class_name => 'Perspective', :foreign_key => 'style_set_id',   :dependent => :destroy
+  has_many    :own_region_styles,     :class_name => 'RegionStyle', :foreign_key => 'perspective_id', :dependent => :destroy
+  has_many    :styled_regions,        :through    => :own_region_styles, :source => :region
+  has_many    :versions,              :as         => :updated
   
   validates_presence_of :name
   validates_uniqueness_of :name
