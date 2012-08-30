@@ -14,7 +14,13 @@ class RegionDefinition < ActiveRecord::Base
   def version_bump size, description, user
     super
     # should propagate to shape_set as one grade lower
-    # that is... once shape_set has swtiched to this new versioning system
+    if description.is_a? String
+      description = "RegionDefinition<#{region.name}>: #{description}"
+    else
+      description = "RegionDefinition<#{region.name}>"        
+    end
+    size = (size==:major ? :minor : (size==:minor ? :tiny : false))
+    version_bump size, description, user if size
     if size == :major
       # invalidate caches with this region AND shape_set
       JaxData.where(:shape_set_id => shape_set_id).select{|jd| jd.regions.include? region_id }.each { |jd| jd.destroy }

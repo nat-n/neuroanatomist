@@ -1,5 +1,6 @@
 class ShapeSetsController  < Admin::BaseController
   before_filter :find_shape_set, :only => [:show, :edit, :update, :destroy]
+  before_filter :find_or_create_default_perspective, :only => [:create, :update]
   before_filter :update_descriptors, :only => [:update]
   
   include S3Helper
@@ -13,10 +14,10 @@ class ShapeSetsController  < Admin::BaseController
   end
   
   def create
-    @shape_data = params[:shape_set].delete(:shape_data_file)
-    find_default_perspective
+    shape_data = params[:shape_set].delete(:shape_data_file)
+    new_version = params[:version][:shape_set]
     @shape_set = ShapeSet.new(params[:shape_set])
-    if @shape_set.validate_and_save @shape_data
+    if @shape_set.validate_and_save shape_data, new_version, current_user
       @shape_set.save_shape_data
       @shape_set.generate_geometric_descriptions
       @shape_set.copy_region_definitons_from @shape_set.previous_version rescue nil
@@ -37,7 +38,6 @@ class ShapeSetsController  < Admin::BaseController
     
   def update
     notes = params[:shape_set][:notes]
-    find_default_perspective
     if notes and @shape_set.update_attribute :notes, notes
       flash[:notice] = "Shape Set has been updated."
       redirect_to @shape_set
@@ -70,8 +70,9 @@ class ShapeSetsController  < Admin::BaseController
       redirect_to shape_sets_path
     end
     
-    def find_default_perspective
-      params[:shape_set][:default_perspective] = if params[:shape_set][:default_perspective] == "Create new empty perspective"
+    def find_or_create_default_perspective
+      perspective = params[:shape_set].delete :default_perspective
+      @perspective = if perspective == "Create new empty perspective"
         Perspective.create :name => "new perspective #{Time.now.strftime("%Y%m%d%H%M%S%L")}"
       else
         Perspective.where("name = ?", params[:shape_set][:default_perspective]).first

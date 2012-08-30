@@ -5,26 +5,40 @@ class ShapeSet < ActiveRecord::Base
   has_many    :meshes, :through => :shapes, :source => :low_meshes
   has_many    :jax_data
   has_one     :default_perspective_attr, :class_name => 'Perspective', :foreign_key => 'default_for_shape_set_id'
-  validates_presence_of   :subject, :version
-  #validates_uniqueness_of :name, :scope => [:subject, :version]
-  validate    :validate_version
+  validates_presence_of   :subject
+  
+  has_many     :versions, :as => :updated, :dependent => :destroy
+  
+  include VersioningHelper
+    
+  def version_bump size, description, user
+    super
+  end
+    
+  def self.subjects
+    ShapeSet.all.map(&:subject).uniq
+  end
+
+  def self.next_versions
+    Hash[ShapeSet.subjects.map{|s| [s,ShapeSet.newest_version_of(s).version.bump(:major).to_s] }]
+  end
   
   def self.versions_of subject
     ShapeSet.where "subject = ?", subject
   end
 
   def self.newest_version_of subject
-    ShapeSet.versions_of(subject).select(:version).map {|v| Versionomy.parse v.version }.max
+    ShapeSet.versions_of(subject).first#.sort{|a,b| a.version<=>b.version }.last
   end
   
   def previous_version
-    all_versions = ShapeSet.versions_of(self.subject).sort
+    all_versions = ShapeSet.versions_of(subject).sort {|a,b| a.version<=>b.version}
     own_index = all_versions.index(version)
     if own_index
       return nil if own_index == 0
-      own_index-1
+      all_versions[own_index-1]
     else
-      ShapeSet.newest_version_of subject
+      ShapeSet.newest_version_of(subject).version
     end
   end
   
@@ -164,10 +178,24 @@ class ShapeSet < ActiveRecord::Base
     new_perspective.include_regions shape_regions
   end
   
-  def validate_and_save shape_data
+  def validate_and_save shape_data, new_version, user
     """validates that the uploaded datafile is well formed and well typed but not that its contents are valid (e.g. valid indices)"""
+
+    errors.add(:subject, ": Subject must be at least 3 characters long") unless subject and (subject.strip.size>3)
     
+    # validate and create version
+    begin
+      new_version = Versionomy.parse new_version
+    rescue
+      errors.add(:version, ": Invalid version string '#{new_version}'")
+    end
+    max_previous_version = (ShapeSet.newest_version_of(subject).version rescue Versionomy.parse '0.0.0')
+    unless (current_version > max_previous_version rescue true) or self == ShapeSet.where(version: current_version.to_s).first
+      errors.add(:version, "Version string must be higher than previous highest for this subject (#{max_previous_version})")
+    end   
+   
     errors.add(:shape_data_file, ": upload required") unless shape_data and shape_data.tempfile
+    
     return false unless errors.messages.empty?
     
     @shape_data = ActiveSupport::JSON.decode(shape_data.read) rescue errors.add(:shape_data_file, 'data file is not valid JSON')
@@ -242,7 +270,7 @@ class ShapeSet < ActiveRecord::Base
                    datasize: @shape_data["meshes"].to_s.size}
 
     return false unless errors.messages.empty?
-    
+    Version.init_for self, description:"change_log: #{change_log}", user:user, version:new_version
     self.update_attributes new_params    
   end
   
@@ -285,19 +313,5 @@ class ShapeSet < ActiveRecord::Base
                                                        (ortho_bb[:xmin]+half_ranges[1]).round(4),
                                                        (ortho_bb[:xmin]+half_ranges[2]).round(4) ])}"
   end  
-  
-  private
-    def validate_version
-      begin
-        current_version = Versionomy.parse version 
-      rescue 
-        errors.add(:version, ': Invalid version string')
-        return
-      end
-      max_previous_version = ShapeSet.newest_version_of(subject)
-      unless (current_version > max_previous_version rescue true) or self == ShapeSet.where(version: current_version.to_s).first
-        errors.add(:version, "Version string must be higher than previous highest for this subject (#{max_previous_version})")
-      end
-    end
-  
+    
 end

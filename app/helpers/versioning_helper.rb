@@ -4,7 +4,7 @@ module VersioningHelper
   end
   
   def version
-    current_version
+    current_version.version rescue nil
   end
   
   def version_bump size, description, user

@@ -127,6 +127,7 @@ class Perspective < ActiveRecord::Base
   end
   
   def invalidate_caches
+    return false unless defined? shape_set
     JaxData.invalidate_caches_with shape_set: shape_set, perspective: self
   end
   

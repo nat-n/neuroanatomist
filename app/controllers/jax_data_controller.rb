@@ -10,8 +10,9 @@ class JaxDataController < ApplicationController
         render :file => local_file.path#, :content_type => Mime::Type.lookup_by_extension(:json).to_s
       elsif ENV["cache_server"] != "local"
         redirect_to cached_request.uri
+      else
+        cached_request.destroy
       end
-      return cached_request.increment!
     end
     
     ## find shape_set
@@ -36,7 +37,11 @@ class JaxDataController < ApplicationController
     # if there are no requests then respond with the default view or the shape_set if specified
     if !params[:requests]
       if not shape_set
-        throw params['cascade'].downcase
+        if params['cascade']
+          params['cascade'].downcase!
+        else
+          params['cascade'] = 'no'
+        end
         shape_set_hash = @shape_set.hash_partial(['1','true'].include? params['cascade'].downcase)
         render :text => JSON.dump(Hash["default_shape_set" => shape_set_hash.merge(shape_set_hash.delete(:attrs))])
         return

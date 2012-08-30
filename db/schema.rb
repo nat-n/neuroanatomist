@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120829145712) do
+ActiveRecord::Schema.define(:version => 20120829194626) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -246,7 +246,6 @@ ActiveRecord::Schema.define(:version => 20120829145712) do
 
   create_table "shape_sets", :force => true do |t|
     t.string   "subject"
-    t.string   "version"
     t.string   "change_log"
     t.string   "notes"
     t.integer  "mesh_count"
@@ -260,10 +259,10 @@ ActiveRecord::Schema.define(:version => 20120829145712) do
     t.string   "bounding_box"
     t.float    "radius"
     t.string   "center_point"
+    t.boolean  "deploy"
   end
 
   add_index "shape_sets", ["subject"], :name => "index_shape_sets_on_subject"
-  add_index "shape_sets", ["version"], :name => "index_shape_sets_on_version"
 
   create_table "shapes", :force => true do |t|
     t.integer  "volume_value"

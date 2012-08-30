@@ -26,6 +26,10 @@ class Version < ActiveRecord::Base
     Versionomy.parse version_string
   end
   
+  def to_s
+    version_string
+  end
+  
   def bump size, description, user
     return nil unless is_current
     return false unless [:major,:minor,:tiny,:patch].include? size
