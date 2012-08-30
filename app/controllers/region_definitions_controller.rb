@@ -38,6 +38,7 @@ class RegionDefinitionsController  < Admin::BaseController
     end
     
     if @region_definition.save
+      Version.init_for @region_definition, {}
       flash[:notice] = "Region definition has been created."
       redirect_to @region_definition
     else
