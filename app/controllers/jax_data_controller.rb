@@ -3,12 +3,13 @@ class JaxDataController < ApplicationController
   def fetch
     @assets = []
     @request_string = request.fullpath
-        
+    
+    
     if ENV["cache_server"] and (cached_request = JaxData.where(:request_string => @request_string).first)
       if (local_file = cached_request.access_locally)
-        render :file => local_file.path#, :content_type => Mime::Type.lookup_by_extension(:json).to_s
+        return render :file => local_file.path#, :content_type => Mime::Type.lookup_by_extension(:json).to_s
       elsif ENV["cache_server"] != "local"
-        redirect_to cached_request.uri
+        return redirect_to cached_request.uri
       else
         cached_request.destroy
       end
@@ -120,7 +121,7 @@ class JaxDataController < ApplicationController
     def describe_response
       partial_response = Hash[
         included:@included,
-        shape_set: {id: @shape_set.id, subject: @shape_set.subject, version: @shape_set.version}
+        shape_set: {id: @shape_set.id, subject: @shape_set.subject, version: @shape_set.version.to_s }
       ]
       perspectives = []
       regions = []
