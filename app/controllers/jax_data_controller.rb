@@ -1,10 +1,9 @@
 class JaxDataController < ApplicationController
   
-  def fetch    
+  def fetch
     @assets = []
     @request_string = request.fullpath
-    
-    
+        
     if ENV["cache_server"] and (cached_request = JaxData.where(:request_string => @request_string).first)
       if (local_file = cached_request.access_locally)
         render :file => local_file.path#, :content_type => Mime::Type.lookup_by_extension(:json).to_s
@@ -106,6 +105,14 @@ class JaxDataController < ApplicationController
     else
       render :text => JSON.dump({error: "invalid shape_set_id"})
     end
+  end
+  
+  def update
+    
+    render :text => JSON.dump({error: "invalid shape_set_id"}) unless @shape_set = ShapeSet.find(params[:shape_set_id])
+    
+    render :text => JSON.dump(@shape_set.latest)
+    
   end
   
   private

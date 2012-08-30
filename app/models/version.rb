@@ -13,7 +13,7 @@ class Version < ActiveRecord::Base
     return false unless object.versions.empty?
     new_version = Version.new(description:    (params[:description] or ""),
                               user:           (params[:user] or User.admins.first))
-    new_version.version_string = Versionomy.parse((params[:version] or "0.0.1")).to_s
+    new_version.version_string = Versionomy.parse((params[:version].to_s or "0.0.1")).to_s
     object.versions << new_version
     new_version.save :validate => false
   end

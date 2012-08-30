@@ -47,6 +47,7 @@ Neuroanatomist::Application.routes.draw do
   match "/jaxdata(/:shape_set_id)" => "jax_data#fetch", :as => :jax_data
   match "/jaxdata/c/:cache_id" => "jax_data#fetch_partial_response", :as => :jax_data
   match "/jaxdata/i/:shape_set_id" => "jax_data#fetch_shape_set_ids", :as => :jax_data
+  match "/jaxdata/:shape_set_id/update" => "jax_data#update", :as => :jax_data
     
   match "/images/:file" => redirect {|params| "/assets/#{params[:file]}.#{params[:format]}" }
   

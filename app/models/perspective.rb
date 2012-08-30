@@ -88,11 +88,13 @@ class Perspective < ActiveRecord::Base
   end
   
   def description_hash
-    h = Hash[ name: name,
-              description: description,
-              height: height,
-              angle: angle,
-              distance: distance]
+    h = Hash[ id:           id,
+              name:         name,
+              version:      version.to_s,
+              description:  description,
+              height:       height,
+              angle:        angle,
+              distance:     distance]
     if has_external_styles?
       h[:style_set] = style_set 
     else

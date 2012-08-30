@@ -123,6 +123,7 @@ class ShapeSet < ActiveRecord::Base
       attrs: Hash[
         type:                 'shape_set',
         id:                   self.id,
+        version:              self.version.to_s,
         name:                 self.name,
         radius:               self.radius,
         center_point:         (self.center_point or nil),
@@ -131,6 +132,21 @@ class ShapeSet < ActiveRecord::Base
     ]
     hp[:shapes] = self.shapes.map(&:id) if [true,:yes,:partial].include? cascade
     return hp
+  end
+  
+  def latest
+    # produces a hash reporting the latest version of this shape_set and all its region_definitions
+    latest = ShapeSet.newest_version_of(subject)
+    report = Hash[
+      type: 'shape_set_update',
+      this_id: id,
+      this_version: version.to_s,
+      latest_id: latest.id,
+      latest_version: latest.version.to_s,
+      regions: Hash.new
+    ]
+    region_definitions.each { |rd| report[:regions][rd.region.id] = rd.version.to_s }
+    report
   end
   
   def copy_region_definitons_from older_shape_set
