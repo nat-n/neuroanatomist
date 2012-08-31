@@ -2,7 +2,7 @@ class Region < ActiveRecord::Base
   belongs_to  :thing
   has_one :node, :through => :thing
   has_and_belongs_to_many :super_compositions, :class_name => 'Decomposition'
-  has_many :decompositions,     :dependent  => :destroy
+  has_many :decompositions  #,     :dependent  => :destroy
   has_many :region_definitions, :dependent  => :destroy
   has_many :region_styles,      :dependent  => :destroy
   has_many :sub_regions,        :through    => :decompositions

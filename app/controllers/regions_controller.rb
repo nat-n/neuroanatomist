@@ -46,7 +46,10 @@ class RegionsController < Admin::BaseController
   end
   
   def destroy
-    Region.find(params[:id]).destroy
+    # because I decalred a decompositions method for Region
+    @region.decompositions.each {|d| d.destroy }
+    
+    @region.destroy
     flash[:notice] = "Region has been deleted."
     redirect_to regions_path
   end
