@@ -21,13 +21,13 @@ class JaxDataController < ApplicationController
       when "default"; ShapeSet.default
       else            shape_set = true and ShapeSet.find(params[:shape_set_id]) rescue (shape_set = false or ShapeSet.default)
     end
-    
+        
     ## prepare includes array
     params[:included] = params["include"].split(",").map{|x| x.to_i} rescue []
     params[:excluded] = params["exclude"].split(",").map{|x| x.to_i} rescue []
     mesh_ids = (params[:included]+params[:excluded]).map { |id| (@shape_set.mesh_ids.include?(id.to_i) ? id.to_i : nil) }.compact
     @included = (mesh_ids.empty? ? Hash.new {|h,k| h[k]=:yes } : Hash.new {|h,k| h[k]=:no })
-
+    
     if !params[:included].empty?
       @shape_set.mesh_ids.each { |mesh_id| @included[mesh_id] = :yes if mesh_ids.include?(mesh_id) }
     elsif !params[:excluded].empty?
@@ -85,7 +85,7 @@ class JaxDataController < ApplicationController
         render :file => cache_path
         return true
       end
-      
+
       render :action => "response.json"
     end
   end

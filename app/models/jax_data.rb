@@ -64,7 +64,7 @@ class JaxData < ActiveRecord::Base
   
   def destroy_cache
     if ENV["cache_server"] = "local"
-      File.delete data_path
+      File.delete data_path rescue :whatever
     elsif ENV["cache_server"]
       HTTParty.delete "#{ENV["cache_server"]}/#{cache_id}/#{destroy_key}"
     end

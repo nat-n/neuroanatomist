@@ -7,6 +7,10 @@ module VersioningHelper
     current_version.version rescue nil
   end
   
+  def flat_version
+    Versionomy.parse "#{current_version.version.major}.0.0"
+  end
+  
   def version_bump size, description, user
     return false unless (size = Version.do size)
     current_version.bump size, description, user

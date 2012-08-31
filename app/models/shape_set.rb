@@ -84,7 +84,7 @@ class ShapeSet < ActiveRecord::Base
   def data_path
     # should sanitise subject to make sure they're path friendly !!! ***
     #"#{Rails.root}/shape_sets/#{self.subject}/#{self.version}"
-    "#{self.subject}/#{self.version}"
+    "#{self.subject}/#{self.flat_version}"
   end
   
   def bounding_box
