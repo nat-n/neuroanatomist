@@ -15,7 +15,7 @@ class ShapeSetsController  < Admin::BaseController
   
   def create
     shape_data = params[:shape_set].delete(:shape_data_file)
-    new_version = params[:version][:shape_set]
+    new_version = params[:version][:version]
     @shape_set = ShapeSet.new(params[:shape_set])
     if @shape_set.validate_and_save shape_data, new_version, current_user
       @shape_set.save_shape_data
@@ -39,12 +39,14 @@ class ShapeSetsController  < Admin::BaseController
   def update
     notes = params[:shape_set][:notes]
     if notes and @shape_set.update_attribute :notes, notes
+      @shape_set.aggr_update :tiny
       flash[:notice] = "Shape Set has been updated."
       redirect_to @shape_set
     else
       flash[:alert] = "Shape Set has not been updated."
       render :action => "edit"
     end
+    @shape_set.do_versioning @shape_set.notes, current_user
   end
   
   def destroy
@@ -82,8 +84,10 @@ class ShapeSetsController  < Admin::BaseController
     def update_descriptors
       # updates radius center_point
       return unless params[:center_point] and params[:shape_set][:radius]
-      @shape_set.update_attribute :radius, params[:shape_set][:radius].to_f
-      @shape_set.update_attribute :center_point, JSON.dump([params[:center_point][:x].to_f,params[:center_point][:y].to_f,params[:center_point][:z].to_f])
+      if radius != params[:shape_set][:radius].to_f or center_point != JSON.dump([params[:center_point][:x].to_f,params[:center_point][:y].to_f,params[:center_point][:z].to_f])
+        @shape_set.aggr_update :minor
+        @shape_set.update_attribute :radius, params[:shape_set][:radius].to_f
+        @shape_set.update_attribute :center_point, JSON.dump([params[:center_point][:x].to_f,params[:center_point][:y].to_f,params[:center_point][:z].to_f])
     end
     
 end

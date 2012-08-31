@@ -67,10 +67,18 @@ class PerspectivesController  < Admin::BaseController
   end
 
   def update
+    @changes = []
+    (@changes << :description and @perspective.aggr_update :tiny ) if params[:perspective][:description]    != @perspective.description
+    (@changes << :name        and @perspective.aggr_update :tiny ) if params[:perspective][:name]           != @perspective.name
+    (@changes << :params      and @perspective.aggr_update :major) if params[:perspective][:height].to_f    != @perspective.height or
+                                                                    params[:perspective][:angle].to_f     != @perspective.angle or
+                                                                    params[:perspective][:distance].to_f  != @perspective.distance
     update_region_styles
-    
+        
     respond_to do |format|
       if @perspective.update_attributes(params[:perspective])
+        @perspective.do_versioning @changes.to_s, current_user 
+        
         format.html { redirect_to @perspective, notice: 'Perspective was successfully updated.' }
         format.json { head :ok }
       else
@@ -101,7 +109,10 @@ class PerspectivesController  < Admin::BaseController
     end
     def update_region_styles
       # should create, update and disown region styles as required, unless inheritance set
-      if params[:inherit_style_set] != "don't inherit" and (style_set_id = params[:inherit_style_set].to_i)>0
+      
+      @changes << :inheritance and @perspective.aggr_update :major if params[:inherit_style_set].to_i != (@perspective.style_set.id rescue 0)
+      
+      if params[:inherit_style_set] != 0 and (style_set_id = params[:inherit_style_set].to_i)>0
         @perspective.use_external_styles Perspective.find(style_set_id)
         params[:regions].each do |rstr, inclusion|
           @perspective.disown_region_if_styled Region.find(rstr.split("_").last.to_i)
@@ -110,7 +121,15 @@ class PerspectivesController  < Admin::BaseController
         params[:regions].each do |rstr, inclusion|
           region_id = rstr.split("_").last.to_i
           region = Region.find(region_id)
-          if inclusion == "1"
+          
+          
+          
+          if (inclusion == "1" and (!@perspective.style_for(region) or (@perspective.style_for(region) and @perspective.style_for(region).orphaned == true))) or
+              (inclusion == "0" and @perspective.style_for(region) and @perspective.style_for(region).orphaned == false)
+            @changes << :region and @perspective.aggr_update :major
+          end
+          
+          if inclusion == "1" and
             @perspective.update_or_create_region_style :colour       => params[:colour][rstr],
                                                        :transparency => params[:transparency][rstr],
                                                        :label        => params[:label][rstr] == "1",

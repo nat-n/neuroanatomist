@@ -31,7 +31,13 @@ class RegionsController < Admin::BaseController
   end
   
   def update
+    changes = []
+    changes << :description and @region.aggr_update :tiny if params[:region][:description] != @region.description
+    changes << :name and @region.aggr_update params[:update_size] if params[:region][:name] != @region.name
+    changes << :thing and @region.aggr_update :major if params[:region][:thing] != @region.thing
+        
     if @region.update_attributes(params[:region])
+      @region.do_versioning changes.to_s, current_user
       flash[:notice] = 'Region was successfully updated.'
       redirect_to :action => 'show', :id => @region
     else

@@ -31,9 +31,7 @@ class Version < ActiveRecord::Base
   end
   
   def bump size, description, user
-    return nil unless is_current
-    return false unless [:major,:minor,:tiny,:patch].include? size
-    size = :tiny if :size == :patch
+    return nil unless is_current and (size = Version.do size)
     next_version = version.bump(size)
     new_version = Version.new( description:    description,
                                   user:           user,
@@ -55,7 +53,14 @@ class Version < ActiveRecord::Base
   def major_update description, user
     bump :minor, description, user
   end
-    
+  
+  def self.do size
+    size = size.to_sym
+    return false unless [:major,:minor,:tiny,:patch].include? size
+    size = :tiny if :size == :patch
+    size
+  end
+  
   private
     def no_updating
       attributes.each do |k,v|

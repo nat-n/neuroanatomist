@@ -39,6 +39,10 @@ class RegionDefinitionsController  < Admin::BaseController
     
     if @region_definition.save
       Version.init_for @region_definition, {}
+      
+      @region_definition.region.region.aggr_update :tiny
+      @region_definition.region.do_versioning "new definition: #{@region_definition.id}", current_user
+      
       flash[:notice] = "Region definition has been created."
       redirect_to @region_definition
     else
@@ -62,14 +66,25 @@ class RegionDefinitionsController  < Admin::BaseController
   end
   
   def update
+    changes ||= []
+    changes << :notes and @region_definition.aggr_update :tiny if params[:region_definition][:notes] != @region_definition.notes
+    
     params[:region_definition].delete :region
     params[:region_definition].delete :shape_set
+    
     if @region_definition.update_attributes(params[:region_definition])
+      previous_shapes = @region_definition.shapes.map(&:id)
+      
       @region_definition.shapes.clear
       params[:shapes].each do |shape_id, inclusion|
         next unless inclusion == "1" and (shape_id = shape_id.split("_").last.to_i) > 0
         @region_definition.shapes << Shape.find(shape_id)
       end
+      updated_shapes = @region_definition.shapes.map(&:id)
+      changes << :shapes and @region_definition.aggr_update :major if previous_shapes != updated_shapes
+      
+      @region_definition.do_versioning changes.to_s, current_user
+      
       flash[:notice] = 'Region Definition was successfully updated.'
       redirect_to :action => 'show', :id => @region_definition
     else

@@ -62,7 +62,7 @@ class Perspective < ActiveRecord::Base
     if rs = style_for(params[:region])
       params.select! { |k,_| [:colour,:transparency,:label].include? k }
       params[:orphaned] = false
-      rs.update_attributes params
+      rs.update_style params
     else
       region_styles << RegionStyle.create( :colour         => params[:colour],
                                            :transparency   => params[:transparency],

@@ -64,6 +64,6 @@
   </table>
   
   <div class="actions">
-    <%= f.submit %>
+    <%= label :update_size, "Update Significance:" %><%= select_tag :update_size, options_for_select(["minor","major"])%><%= f.submit %>
   </div>
 <% end %>

@@ -33,8 +33,9 @@ Jax.getGlobal().CameraHelper = Jax.Helper.create
     this.camera_moved() if a != @press_position.a or d != @press_position.d or h != @press_position.h
     
   configure_camera: (center_point, radius) ->
-    c = center_point
-    d_min = radius
+    c = center_point if center_point
+    d_min = radius if radius
+    [c,d_min]
     
   camera_position: (ca,ch,cd) -> # expects arguments scaled to 1
     if ca or ca==0

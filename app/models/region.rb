@@ -21,13 +21,15 @@ class Region < ActiveRecord::Base
   
   def version_bump size, description, user
     super
-    perspectives.each { |p| 
-      if description.is_a? String
-        description = "Region<#{name}>: #{description}"
-      else
-        description = "Region<#{name}>"        
-      end
-      p.version_bump size, description, user  }
+    # aggregate versioning
+    description = "Region<#{name}>: #{description}"
+    perspectives.each { |p|  p.version_bump size, description, user }
+    if size == :major
+      region_definitions.each { |rd|  rd.version_bump size, description, user }
+      region_styles.each { |rs|  rs.version_bump size, description, user }
+    end
+    # MINOR or MAJOR updates queue a refresh of all server caches that include this region
+    JaxData.invalidate_caches_with region: self if size == :minor or size == :major
   end
   
   def decompositions

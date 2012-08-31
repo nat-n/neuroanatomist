@@ -22,8 +22,8 @@
     <% end %>
   </div>
   <%= content_tag :div, :id => :versioning, :class => "feild", :data => ShapeSet.next_versions do %>
-    <%= label :version, :shape_set %><br />
-    <%= text_field :version, :shape_set, :disabled=>editing %>
+    <%= label :version, :version %><br />
+    <%= text_field :version, :version, :disabled=>editing %>
   <% end %>
   <div class="field">
     <%= f.label :change_log %><br />
@@ -63,10 +63,10 @@ var update_subject = function() {
   v = $('#existing_subjects').val()
   if(v == 'Create new subject') {
     $('#shape_set_subject').css('display','block').val('');
-    $('#version_shape_set').val('0.0.1');
+    $('#version_version').val('0.0.1');
   } else {
     $('#shape_set_subject').css('display','none').val(v);
-    $('#version_shape_set').val($('#versioning').data(v));
+    $('#version_version').val($('#versioning').data(v));
   }
 }
 $('#existing_subjects').focus(update_subject)
