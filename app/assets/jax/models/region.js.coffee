@@ -1,8 +1,11 @@
 Jax.getGlobal()['Region'] = Jax.Model.create
   after_initialize: ->
     @id = @__unique_id
-    @s3 = window.context.s3  
-    @color = [Math.random(),Math.random(),Math.random(),1]
+    @s3 = window.context.s3
+    @color = false
+    until @color
+      color = Raphael.color r:Math.random(), g:Math.random(), b:Math.random()
+      @color = [color.r,color.g,color.b,1] if color.s > 0.45 and color.v > 0.45 
     
   compose: (shape_set_id, region_id) ->
     @shape_set_id = shape_set_id
