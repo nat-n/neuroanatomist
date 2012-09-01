@@ -58,6 +58,8 @@ class ShapeSetsController  < Admin::BaseController
     #end
     S3Helper.destroy_dir @shape_set.data_path
     
+    @shape_set.jax_data.each {|jd| jd.destroy }
+    
     @shape_set.destroy
     
     flash[:notice] = "Shape Set has been deleted."

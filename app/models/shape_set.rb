@@ -3,15 +3,35 @@ class ShapeSet < ActiveRecord::Base
   has_many    :regions, :through => :region_definitions
   has_many    :shapes, :dependent => :destroy
   has_many    :meshes, :through => :shapes, :source => :low_meshes
-  has_many    :jax_data
   has_one     :default_perspective_attr, :class_name => 'Perspective', :foreign_key => 'default_for_shape_set_id'
   validates_presence_of   :subject
   
   has_many     :versions, :as => :updated, :dependent => :destroy
   
   include VersioningHelper
-    
+  
+  def jax_data # because the has_many doesn't seem to work for this
+    JaxData.where(:shape_set_id => id)
+  end
+  
+  def expire!
+    expired = true
+    is_default = false
+    notes = "#{notes}\n**EXPIRED AT #{Time.now}"
+    save
+    (region_definitions+shapes+meshes+jax_data).each {|dependant| dependant.destroy }
+  end
+  
+  def expired?
+    expired == true
+  end
+
+  def deployed?
+    deploy == true
+  end
+  
   def version_bump size, description, user
+    return false if expired?
     super
   end
     
@@ -55,6 +75,7 @@ class ShapeSet < ActiveRecord::Base
   end
   
   def make_default!
+    return false if expired?
     ShapeSet.update_all(:is_default => false)
     self.update_attribute :is_default, true
     self
@@ -141,6 +162,7 @@ class ShapeSet < ActiveRecord::Base
       type: 'shape_set_update',
       this_id: id,
       this_version: version.to_s,
+      this_status: (expired? ? "expired" : (deployed? ? "deployed" : "pre-deploy"))
       latest_id: latest.id,
       latest_version: latest.version.to_s,
       regions: Hash.new

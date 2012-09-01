@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120829194626) do
+ActiveRecord::Schema.define(:version => 20120901125328) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -260,6 +260,7 @@ ActiveRecord::Schema.define(:version => 20120829194626) do
     t.float    "radius"
     t.string   "center_point"
     t.boolean  "deploy"
+    t.boolean  "expired",                :default => false
   end
 
   add_index "shape_sets", ["subject"], :name => "index_shape_sets_on_subject"
