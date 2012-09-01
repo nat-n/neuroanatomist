@@ -138,21 +138,22 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       clear: () -> 0
     
   
-  perspective2region_descs: (json_data) ->
-    regions = []
-    meshes = {}
-    for region in json_data["regions"]
-      new_region = []
-      shape_vids = (shape["volume_value"] for shape in region["shapes"])
-      for shape in region["shapes"]
-        for mesh in shape["meshes"]
-          bf = mesh["name"].split("-")
-          if (bf[0] in shape_vids) or (bf[1] in shape_vids)
-            mesh_id = parseInt(mesh["id"])
-            meshes[mesh_id] = mesh if mesh["included"] == "yes"
-            new_region.push mesh_id
-      regions.push new_region
-    ((meshes[mesh_id] for mesh_id in region) for region in regions)
+  # not sure if this is needed or belongs here if it is
+  #perspective2region_descs: (json_data) ->
+  #  regions = []
+  #  meshes = {}
+  #  for region in json_data["regions"]
+  #    new_region = []
+  #    shape_vids = (shape["volume_value"] for shape in region["shapes"])
+  #    for shape in region["shapes"]
+  #      for mesh in shape["meshes"]
+  #        bf = mesh["name"].split("-")
+  #        if (bf[0] in shape_vids) or (bf[1] in shape_vids)
+  #          mesh_id = parseInt(mesh["id"])
+  #          meshes[mesh_id] = mesh if mesh["included"] == "yes"
+  #          new_region.push mesh_id
+  #    regions.push new_region
+  #  ((meshes[mesh_id] for mesh_id in region) for region in regions)
   
   fetch_defaults: (callback) ->
     $.ajax

@@ -19,6 +19,7 @@ Jax.Controller.create "Scene", ApplicationController,
     
 	  # load visualisation and node data via url, dom, or ajax
     this.show_loading_spinner($('#visualisation'), true)
+    this.patch_world()
     
     perspective_id =  $('#visualisation').data('perspectiveId')
     shape_set =  $('#visualisation').data('shapeSet')
@@ -53,7 +54,6 @@ Jax.Controller.create "Scene", ApplicationController,
           this.hide_loading_spinner()
     
     this.sc_init_node(node_data)
-    this.patch_world()
         
   helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper, StatusHelper ]
   

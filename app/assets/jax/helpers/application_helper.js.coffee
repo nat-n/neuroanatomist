@@ -6,6 +6,7 @@ Jax.getGlobal().ApplicationHelper = Jax.Helper.create
 
   patch_world: ->    
     Array.prototype.uniq = () ->
+      return this if this.length == 1
       arr = this.sort (a, b) -> a*1 - b*1
       ret = [arr[0]]
       for i in [1..arr.length-1]

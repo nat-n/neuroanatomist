@@ -24,7 +24,11 @@ Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
       (perspective.angle = parseFloat(components[2])) != NaN and
       (perspective.distance = parseFloat(components[3])) != NaN and
       (perspective.height = parseFloat(components[4])) != NaN
-    return false unless (perspective.regions.push(parseInt(r)) and parseInt(r)) != NaN for r in components[5].split(',')
+
+    for r in components[5].split(',')
+      return false unless parseInt(r)
+      perspective.regions.push parseInt(r)
+    perspective.regions = perspective.regions.uniq()
     return perspective
   
   load_perspective: (pid, fire=true) ->
