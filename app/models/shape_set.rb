@@ -162,7 +162,7 @@ class ShapeSet < ActiveRecord::Base
       type: 'shape_set_update',
       this_id: id,
       this_version: version.to_s,
-      this_status: (expired? ? "expired" : (deployed? ? "deployed" : "pre-deploy"))
+      this_status: (expired? ? "expired" : (deployed? ? "deployed" : "pre-deploy")),
       latest_id: latest.id,
       latest_version: latest.version.to_s,
       regions: Hash.new
