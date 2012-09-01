@@ -8,6 +8,155 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     # create jax asset store
     # all meshes are stripped out of the loaded asset and stored here by id, where region can find them later
     @s3 = window.context.s3 = {}
+    @idb = 
+      indexedDB:    window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB
+      keyRange:     window.IDBKeyRange || window.webkitIDBKeyRange
+      db:           "neuroanatomist"
+      ready:        false
+      config:
+        stores:       ["shape_set","shapes","meshes","regions","perspectives","logs"]
+        version:    "0.0.1"
+        key:        "sid"
+      
+      init_version: (version, stores, success, failure, idb) =>
+        return false if @idb.ready
+        if idb
+          missing_stores = (os for os in @idb.config.stores when !idb.objectStoreNames.contains(os))
+          if missing_stores
+            vreq = idb.setVersion version
+            vreq.onsuccess = (e) => 
+              idb.createObjectStore os, { keyPath: @idb.config.key } for os in missing_stores
+              @idb.ready = true
+            vreq.onfailure = () => console.log "ERROR: setVersion failed."; console.log e
+        else
+          req = @idb.indexedDB.open @idb.db
+          req.onsuccess = (e) => @idb.init_version version, stores, success, failure, e.target.result
+          req.onerror = (e) => console.log "ERROR: Unable to open indexedDB"; console.log e
+      
+      get: (os, id, success, failure) =>
+        request = @idb.indexedDB.open @idb.db
+        request.onsuccess = (e) =>
+          idb = e.target.result
+          if idb.objectStoreNames.contains os
+            active_store = idb.transaction([os], "readwrite").objectStore(os)
+            get_request = active_store.get id
+            get_request.onsuccess = (e) =>
+              if e.target.result
+                success e.target.result
+              else failure
+            get_request.onerror = (e) ->
+              console.log "ERROR: Unable to retrieve data"
+              failure
+          else failure
+        request.onerror = (e) ->
+          console.log "ERROR: Unable to open indexedDB"
+          failure
+      
+      
+      put: (os, new_version, data, idb) =>
+        if idb
+          if idb.objectStoreNames.contains os
+            active_store = idb.transaction([os], "readwrite").objectStore(os)
+            put_request = active_store.put data
+            put_request.onsuccess = (e) -> console.log "Data stored in indexedDB"
+            put_request.error = (e) -> console.log "Error putting data"; console.log e
+          else
+            version_request = idb.setVersion new_version
+            version_request.onsuccess = (e) =>
+              active_store = idb.createObjectStore os, { keyPath: "id" }
+              put_request = active_store.put data
+              put_request.onsuccess = (e) -> console.log "Data stored in indexedDB"
+              put_request.error = (e) -> console.log "Error putting data"; console.log e
+            version_request.onblocked = (e) -> console.log "Blocked setting version"; console.log e
+            version_request.onerror = (e) -> console.log "Error setting version"; console.log e
+            version_request.onfailure = (e) -> console.log "Failure setting version"; console.log e
+        else
+          request = @idb.indexedDB.open @idb.db
+          request.onsuccess = (e) =>
+            idb = e.target.result
+            @idb.put os, new_version, data, idb
+          request.onerror = (e) ->
+            console.log "ERROR: Unable to open indexedDB"
+            #failure
+      
+      
+      dump_s3: (ssid, success, failure) =>
+        # cache all assets of the specified shape_set from s3 using a single transaction
+        # use one object store per object type and one object per shape_set
+        req = @idb.indexedDB.open @idb.db
+        req.onsuccess = (e) =>
+          idb = e.target.result
+          stores = (os for os in @idb.config.stores when idb.objectStoreNames.contains(os) and (@s3[ssid][os] or os == "shape_set"))
+          t = idb.transaction(stores, "readwrite")
+          key = @idb.config.key
+          for os in stores
+            active_store = t.objectStore(os)
+            if os == "shape_set"
+              data = {}
+              data[@idb.config.key] = ssid
+              for attr of @s3[ssid]
+                continue if attr in stores
+                data[attr] = @s3[ssid][attr]
+            else if os == "regions" # a region's object cannot be stored in indexedDB so a copy of the region minus is object should be stored instead
+              data = {}
+              data[@idb.config.key] = ssid
+              for r of @s3[ssid][os]
+                data[r] = {}
+                for ri in @s3[ssid][os][r]
+                  data[r][ri] = @s3[ssid][os][r][ri] unless ri == 'object'
+            else
+              data = {}
+              data[@idb.config.key] = ssid
+              $.extend(data, @s3[ssid][os])
+            preq = active_store.put data
+            preq.onsuccess = (e) -> console.log "Data stored in indexedDB"
+            preq.error = (e) -> console.log "Error putting data"; console.log e; failure e if failure
+          success e if success            
+        req.onerror = (e) -> console.log "ERROR: Unable to open indexedDB"; console.log e; failure e if failure
+        undefined          
+      
+      load_s3: (ssid, success, failure) =>
+        # load all items of the given shape_set from idb into s3
+        req = @idb.indexedDB.open @idb.db
+        req.onsuccess = (e) =>
+          idb = e.target.result
+          stores = (os for os in @idb.config.stores when idb.objectStoreNames.contains(os))
+          t = idb.transaction(stores, "readwrite")
+          key = @idb.config.key
+          for os in stores
+            active_store = t.objectStore(os)
+            get_request = active_store.get ssid
+            get_request.onsuccess = (e) =>
+              return false unless result = e.target.result
+              @s3[ssid] ?= {}
+              if os = "shape_set"
+                @s3[ssid][attr] = result[attr] for attr of result
+              else
+                for id of result
+                  @s3[ssid][os][id] ?= {} 
+                  for attr of result[id]
+                    @s3[ssid][os] = result[id][attr]
+            get_request.onerror = (e) -> console.log "ERROR: Unable to retrieve data for " + os
+          success e if success
+        req.onerror = (e) -> console.log "ERROR: Unable to open indexedDB"; console.log e; failure e if failure
+        undefined          
+        
+          
+          
+        
+      clear: () -> 0
+        
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   perspective2region_descs: (json_data) ->
     regions = []
@@ -165,5 +314,4 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
             else
               this.cache_shape_set data[ri]
         callback(data, textStatus, jqXHR)
-        
-
+  
