@@ -114,7 +114,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         # load all items of the given shape_set from idb into s3
         ssid = parseInt(ssid)
         stores = (os for os in @idb.config.stores when @idb.db.objectStoreNames.contains(os) and os != "logs")
-        console.log stores
         t = @idb.db.transaction(stores, "readwrite")
         for os in stores
           active_store = t.objectStore(os)
@@ -136,7 +135,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         success e if success
         undefined          
           
-        
       clear: () -> 0
     
   
