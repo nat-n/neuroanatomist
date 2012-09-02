@@ -14,16 +14,39 @@ Jax.Controller.create "Scene", ApplicationController,
     this.activate_tooltip()
     @history = window.context.history ?= { log: [], back: [], forward: [], previous_url: null }
     @s3 = window.context.s3 ?= {previous_node:null}
+    @activity = (() =>
+      c = 0
+      updated = {}
+      new: ()-> c = (c+1) or 1
+      end: (new_updated, callback) ->
+        setTimeout (() =>
+          for ss of new_updated
+            updated[ss] ?= []
+            updated[ss].push os for os in new_updated[ss]
+            updated[ss].uniq()
+          (c-=1) or ((callback() or true) and updated = {})),
+          500 # wait half a second to make sure no new activities are starting immediately
+      empty: () -> c<1
+      updated: () -> updated
+    )()
     
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
 	  # load visualisation and node data via url, dom, or ajax
-    this.show_loading_spinner($('#visualisation'), true)
     this.patch_world()
-    
+    setTimeout (()=>this.start()), 250
+  
+  helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper, StatusHelper ]
+  
+  start: (tried_loading=false) ->
+    this.show_loading_spinner($('#visualisation'), true)
+    return @loader.idb.load_everything(()=>this.start(true)) unless tried_loading
+
     perspective_id =  $('#visualisation').data('perspectiveId')
     shape_set =  $('#visualisation').data('shapeSet')
     node_data = $('#sup_content').data('node')
+    
+    this.sc_init_node(node_data)
     
     unless this.load_perspective_from_url()
       @loader.cache_shape_set(shape_set) if shape_set
@@ -53,9 +76,7 @@ Jax.Controller.create "Scene", ApplicationController,
           this.update_history()
           this.hide_loading_spinner()
     
-    this.sc_init_node(node_data)
         
-  helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper, StatusHelper ]
   
   activate_shape_set: (shape_set) ->
     @active_shape_set = shape_set

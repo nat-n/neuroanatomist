@@ -1,29 +1,40 @@
 Jax.getGlobal().StatusHelper = Jax.Helper.create
   show_loading_spinner: (target, big) ->
+    return false if @spinner? and @spinner.active
     opts =
-      lines: 13
-      length: 8
-      width: 4
-      radius: 11
+      lines: 11
+      length: 5
+      width: 2
+      radius: 4
       corners: 1
       rotate: 0
       color: '#000'
-      speed: 1
+      speed: 1.6
       trail: 70
       shadow: false
       hwaccel: true
-      className: 'spinner'
+      className: 'small_spinner'
       zIndex: 2e9
-      top: 'auto'
-      left: 'auto'
+      top: '300px'
+      left: '300px'
     if big
       $.extend opts,
-        opts.length = 27
-        opts.width = 8
-        opts.radius = 33
-        opts.className = 'big_spinner'
+        lines: 13
+        length: 27
+        width:  8
+        radius: 33
+        shadow: true
+        className: 'big_spinner'
+        top: 'auto'
+        left: 'auto'
     @spinner = target.spin(opts)
+    @spinner.active = true
   
+  hide_loading_spinner: () ->
+    @spinner.spin(false)
+    @spinner.active = false
+    this.intialisation_complete()
+
   update_mode_from_url: () ->
     @mode = window.location.href.split('#')[1]
     switch @mode
@@ -49,10 +60,6 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     new_url += '#'+@mode if @mode
     window.history.pushState state_object, new_title, new_url
     @history.previous_url = new_url
-  
-  hide_loading_spinner: () ->
-    @spinner.spin(false)
-    this.intialisation_complete()
   
   load_state_from_url: () ->
     this.load_perspective_from_url this.get_param('p'), false
