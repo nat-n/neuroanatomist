@@ -3,9 +3,6 @@ Jax.getGlobal()['Region'] = Jax.Model.create
     @id = @__unique_id
     @s3 = window.context.s3
     @color = false
-    until @color
-      color = Raphael.color r:Math.random(), g:Math.random(), b:Math.random()
-      @color = [color.r,color.g,color.b,1] if color.s > 0.45 and color.v > 0.45 
     
   compose: (shape_set_id, region_id) ->
     @shape_set_id = shape_set_id
@@ -16,6 +13,9 @@ Jax.getGlobal()['Region'] = Jax.Model.create
     @name = region_def.name
     @decompositions = region_def.decompositions
     @thing = region_def.thing
+    until @color
+      color = Raphael.color r:Math.random(), g:Math.random(), b:Math.random()
+      @color = [color.r,color.g,color.b,1] if color.s > 0.45 and color.v > 0.45 
     model_data = borders: {}, faces: [], vertex_normals: [], vertex_positions: []
     @mesh = new Jax.Mesh
       material: "scene"
