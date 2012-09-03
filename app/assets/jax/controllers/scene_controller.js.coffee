@@ -62,17 +62,17 @@ Jax.Controller.create "Scene", ApplicationController,
       
       unless perspective_id and shape_set_id
         @loader.fetch_defaults (data, textStatus, jqXHR) =>
-          this.activate_shape_set (shape_set_id or data.default_shape_set.id)
-          init_params.shape_set = (shape_set_id or data.default_shape_set.id)
-          init_params.requests.id = (perspective_id or data.default_shape_set.default_perspective)
-          @loader.fetch init_params, (data, textStatus, jqXHR) => 
-            this.load_perspective(data[0].id, false)
+          shape_set_id    = shape_set_id or data.default_shape_set.id
+          perspective_id  = perspective_id or data.default_shape_set.default_perspective
+          this.activate_shape_set shape_set_id
+          @loader.fetch_perspective shape_set_id, perspective_id, (data, textStatus, jqXHR) => 
+            this.load_perspective(perspective_id, false)
             this.update_history()
             this.hide_loading_spinner()
       else
-        this.activate_shape_set shape_set.id
-        @loader.fetch init_params, (data, textStatus, jqXHR) =>
-          this.load_perspective(data[0].id, false)
+        this.activate_shape_set shape_set_id
+        @loader.fetch_perspective shape_set_id, perspective_id, (data, textStatus, jqXHR) =>
+          this.load_perspective(perspective_id, false)
           this.update_history()
           this.hide_loading_spinner()
     

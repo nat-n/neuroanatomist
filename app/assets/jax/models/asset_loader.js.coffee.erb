@@ -17,7 +17,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       ready:        false
       loaded:       false
       config:
-        stores:     ["shape_set","shapes","meshes","regions","perspectives","logs"]
+        stores:     ["shape_set","meshes","shapes","regions","perspectives","logs"]
         name:       "neuroanatomist"
         version:    "0.0.1"
         key:        "sid"
@@ -89,9 +89,12 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         # cache all assets of the specified shape_set from s3 using a single transaction
         # use one object store per object type and one object per shape_set
         return false unless @s3[ssid = parseInt(ssid)]
+        console.log stores
         stores = null unless stores.length
         stores = (os for os in (stores or @idb.config.stores) when @idb.db.objectStoreNames.contains(os) and @s3[ssid][os])
         stores = stores.concat ["shape_set"], stores
+        console.log "dumping"
+        console.log stores
         t = @idb.db.transaction(stores, "readwrite")
         for os in stores
           active_store = t.objectStore(os)
@@ -103,6 +106,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
               continue if attr in stores
               data[attr] = @s3[ssid][attr]
           else if os == "regions" # a region's object cannot be stored in indexedDB so a copy of the region minus is object should be stored instead
+            console.log "dumping region"
             for r of @s3[ssid][os]
               data[r] = {}
               for ri of @s3[ssid][os][r]
@@ -116,12 +120,13 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         undefined        
       
       
-      load_s3: (ssid, callback) =>
+      load_s3: (ssid, callback, determined=true) =>
         # load all items of the given shape_set from idb into s3
         ssid = parseInt(ssid)
         stores = (os for os in @idb.config.stores when @idb.db.objectStoreNames.contains(os) and os != "logs")
         t = @idb.db.transaction(stores, "readwrite")
         t.oncomplete = callback if callback
+        t.onerror = @idb.load_s3(ssid, callback, false) if callback and determined
         for os in stores
           active_store = t.objectStore(os)
           greq = active_store.get ssid
@@ -142,11 +147,12 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
           greq.onerror = (e) -> console.log "ERROR: Unable to retrieve data for " + os
         undefined          
       
-      load_everything: (callback) =>
+      load_everything: (callback, determined=true) =>
         return false if @idb.loaded
         stores = (os for os in @idb.config.stores when @idb.db.objectStoreNames.contains(os) and os != "logs" and os != "shape_set")
         shape_sets = []
         t = @idb.db.transaction(stores.concat(["shape_set"]), "readwrite")
+        t.onerror = @idb.load_everything(callback, false) if callback and determined # seems to skirt random errors, not sure why.
         t.oncomplete = () =>
           @idb.loaded = true
           # this is quite a clever pattern if i may say so myself
@@ -223,6 +229,11 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       cascade: cascade or "no"
     this.fetch params, callback
   
+  fetch_perspective: (shape_set_id, perspective_id, callback) ->
+    # should fetch the perspective minus regions then request any regions that aren't already cached
+    
+    
+    
   fetch_regions: (shape_set_id, region_ids, callback) ->
 	  # should compose the params to fetch the requested regions, excluding already aquired meshes
     params =
