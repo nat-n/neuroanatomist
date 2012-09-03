@@ -42,14 +42,7 @@ Jax.Controller.create "Scene", ApplicationController,
   start: (tried_loading=false) ->
     this.show_loading_spinner($('#visualisation'), true)
     
-    #console.log tried_loading
-    #return @loader.idb.load_everything(()=>
-    #  alert "call me!"
-    #  this.start(true)
-    #  ) unless tried_loading
-    #console.log "tried loading"
-    #console.log @s3
-    #return false
+    return @loader.idb.load_everything(()=>this.start(true)) unless tried_loading
     
     perspective_id =  $('#visualisation').data('perspectiveId')
     shape_set =  $('#visualisation').data('shapeSet')

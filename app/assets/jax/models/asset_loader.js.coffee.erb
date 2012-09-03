@@ -40,6 +40,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         req.onerror = (e) => console.log "ERROR: Unable to open indexedDB"; console.log e
         @idb.init = { request: () -> req } # effectively making this an anomymous wrapper function but with a callback, because sometimes chrome is weird.
               
+      ###
       get: (os, id, success, failure) =>
         request = @idb.indexedDB.open @idb.db
         request.onsuccess = (e) =>
@@ -58,7 +59,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         request.onerror = (e) ->
           console.log "ERROR: Unable to open indexedDB"
           failure
-      
       
       put: (os, new_version, data, idb) =>
         if idb
@@ -80,23 +80,17 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         else
           request = @idb.indexedDB.open @idb.db
           request.onsuccess = (e) =>
-            idb = e.target.result
-            @idb.put os, new_version, data, idb
-          request.onerror = (e) ->
-            console.log "ERROR: Unable to open indexedDB"
-            #failure
-      
+            @idb.put os, new_version, data, e.target.result
+          request.onerror = (e) -> console.log "ERROR: Unable to open indexedDB"
+      ###
       
       dump_s3: (ssid, stores, success, failure) =>
         # cache all assets of the specified shape_set from s3 using a single transaction
         # use one object store per object type and one object per shape_set
         return false unless @s3[ssid = parseInt(ssid)]
-        console.log stores
         stores = null unless stores.length
         stores = (os for os in (stores or @idb.config.stores) when @idb.db.objectStoreNames.contains(os) and @s3[ssid][os])
-        stores = stores.concat ["shape_set"], stores
-        console.log "dumping"
-        console.log stores
+        stores = (stores.concat ["shape_set"], stores).uniq()
         t = @idb.db.transaction(stores, "readwrite")
         for os in stores
           active_store = t.objectStore(os)
@@ -108,7 +102,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
               continue if attr in stores
               data[attr] = @s3[ssid][attr]
           else if os == "regions" # a region's object cannot be stored in indexedDB so a copy of the region minus is object should be stored instead
-            console.log "dumping region"
             for r of @s3[ssid][os]
               data[r] = {}
               for ri of @s3[ssid][os][r]
@@ -124,7 +117,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       
       load_s3: (ssid, callback, determined=true) =>
         # load all items of the given shape_set from idb into s3
-        console.log "in load now"
         ssid = parseInt(ssid)
         stores = (os for os in @idb.config.stores when @idb.db.objectStoreNames.contains(os) and os != "logs")
         t = @idb.db.transaction(stores, "readwrite")
@@ -151,8 +143,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         undefined          
       
       load_everything: (callback, determined=true) =>
-        console.log "loading everything now"
-        console.log @idb.loaded
         return false if @idb.loaded
         stores = (os for os in @idb.config.stores when @idb.db.objectStoreNames.contains(os) and os != "logs" and os != "shape_set")
         shape_sets = []
@@ -171,21 +161,13 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
             stack.pop() cb
           
           ssids = (ssid for ssid of @s3)
-          
-          
-          console.log "creating stack"
-          
-          window.my_new_favourite_function = @idb.load_s3
-          
+
           stack = [callback]
+          
+          # something truly bizare happens around here somewhere, but it doesn't seem to matter !?!?!
           for ssid of @s3
-            new_func =  ((cb) => @idb.load_s3(ssids.shift(),cb))
-            console.log new_func
+            new_func = ((cb) => @idb.load_s3(ssids.shift(),cb))
             stack.push new_func
-            console.log stack
-          
-          
-          console.log "stack done"
           
           exec_cb_stack stack
 
@@ -305,7 +287,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   
   fetch: (params, callback) ->
     # params = {shape_set: #, include:[], exclude:[], cascade:flag, requests: {}}
-    #this.fetch_start()
+    this.fetch_start()
     shape_set_id = params.shape_set
     updated = []
     this.init_ss(shape_set_id)
@@ -374,7 +356,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
                   
         unless "default_shape_set" of data # not sure if this is necccessary
           for ri of data
-            console.log data
             if params.requests and "type" of params.requests[ri]
               switch params.requests[ri].type
                 when "perspective"                  
@@ -387,7 +368,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
                   mesh_proc(shape_set_id, data[ri])
             else
               this.cache_shape_set data[ri]
-        console.log @s3
-        #this.fetch_end(shape_set_id, updated)
+        this.fetch_end(shape_set_id, updated)
         callback(data, textStatus, jqXHR)
   

@@ -67,7 +67,7 @@ class JaxDataController < ApplicationController
           when "r"; "region"
           else; v
           end
-          req[key] = val
+          request[key] = val
         end
         
         missing_required_feilds = !(required_feilds-request.keys).empty?
