@@ -63,9 +63,8 @@ class JaxDataController < ApplicationController
           end
           val = case v
           when "ss"; "shape_set"
-          when "p";  "perspective"
-          when "r";  "region"
-          when "y";  "yes"
+          when "p"; "perspective"
+          when "r"; "region"
           else; v
           end
           request[key] = val
