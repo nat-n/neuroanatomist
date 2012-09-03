@@ -147,7 +147,9 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         stores = (os for os in @idb.config.stores when @idb.db.objectStoreNames.contains(os) and os != "logs" and os != "shape_set")
         shape_sets = []
         t = @idb.db.transaction(stores.concat(["shape_set"]), "readwrite")
-        #t.onerror = @idb.load_everything(callback, false) if callback and determined # seems to skirt random errors, not sure why.
+        t.onerror = if callback and determined # seems to skirt random errors, not entirely sure why, maybe chrome's memory management.
+            () => setTimeout (()=>@idb.load_everything(callback, false)), 100
+          else callback
         t.oncomplete = () =>
           @idb.loaded = true
           # this is quite a clever pattern if i may say so myself
