@@ -241,7 +241,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     this.fetch
       shape_set: shape_set_id
       requests: [
-        type:"perspective"
+        t:"p"
         id: perspective_id
         cascade:"no" ]
       (data) =>
@@ -269,7 +269,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       requests: []
     for rid in region_ids
       params.requests.push
-        type:"region"
+        t:"r"
         id: rid
         cascade:"yes"
     if @s3[shape_set_id].meshes.length
@@ -356,11 +356,17 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
                   
         unless "default_shape_set" of data # not sure if this is necccessary
           for ri of data
-            if params.requests and "type" of params.requests[ri]
+            if ("t" of params.requests[ri]) and !("type" of params.requests[ri])
+              params.requests[ri].type = params.requests[ri].t
+            if params.requests and ("type" of params.requests[ri])
               switch params.requests[ri].type
                 when "perspective"                  
                   perspective_proc(shape_set_id, data[ri], region_proc, shape_proc, mesh_proc)
+                when "p"                  
+                  perspective_proc(shape_set_id, data[ri], region_proc, shape_proc, mesh_proc)
                 when "region"
+                  region_proc(shape_set_id, data[ri], shape_proc, mesh_proc)
+                when "r"
                   region_proc(shape_set_id, data[ri], shape_proc, mesh_proc)
                 when "shape"
                   shape_proc(shape_set_id, data[ri], shape_proc, mesh_proc)
