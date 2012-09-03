@@ -34,14 +34,23 @@ Jax.Controller.create "Scene", ApplicationController,
     
 	  # load visualisation and node data via url, dom, or ajax
     this.patch_world()
-    setTimeout (()=>this.start()), 250
+    
+    setTimeout (()=>@loader.idb.init(()=>setTimeout((()=>this.start()), 100))), 200
   
   helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper, StatusHelper ]
   
   start: (tried_loading=false) ->
     this.show_loading_spinner($('#visualisation'), true)
-    return @loader.idb.load_everything(()=>this.start(true)) unless tried_loading
-
+    
+    #console.log tried_loading
+    #return @loader.idb.load_everything(()=>
+    #  alert "call me!"
+    #  this.start(true)
+    #  ) unless tried_loading
+    #console.log "tried loading"
+    #console.log @s3
+    #return false
+    
     perspective_id =  $('#visualisation').data('perspectiveId')
     shape_set =  $('#visualisation').data('shapeSet')
     node_data = $('#sup_content').data('node')

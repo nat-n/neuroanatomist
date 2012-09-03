@@ -76,6 +76,7 @@ class Perspective < ActiveRecord::Base
     hp = Hash[
       attrs: Hash[
         id:         self.id,
+        version:    self.version.to_s,
         name:       self.name,
         style_set:  (self.has_external_styles? ? self.style_set.id : false),
         height:     self.height,

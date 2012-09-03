@@ -52,7 +52,24 @@ class JaxDataController < ApplicationController
       request_types = ["perspective", "region", "shape", "mesh"] # to request a shape_set: exclude type & id and include cascade
       required_feilds = ["type", "id"] # optional: "cascade", "included", "excluded"
       
-      JSON.parse(params[:requests]).each do |request|
+      [*JSON.parse(params[:requests])].each do |req|
+        # copy request with full versions of abbreviated keys and values
+        request = Hash.new
+        req.each do |k,v|
+          key = case k
+          when "t"; "type"
+          when "c"; "cascade"
+          else; k
+          end
+          val = case v
+          when "ss"; "shape_set"
+          when "p"; "perspective"
+          when "r"; "region"
+          else; v
+          end
+          req[key] = val
+        end
+        
         missing_required_feilds = !(required_feilds-request.keys).empty?
         if missing_required_feilds and request["cascade"]
           @assets << describe_shape_set(request)
