@@ -99,7 +99,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
           data.type = os
           if os == "shape_set"
             for attr of @s3[ssid]
-              continue if attr in stores
+              continue if attr in @idb.config.stores
               data[attr] = @s3[ssid][attr]
           else if os == "regions" # a region's object cannot be stored in indexedDB so a copy of the region minus is object should be stored instead
             for r of @s3[ssid][os]
@@ -253,8 +253,12 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       (data) =>
         # check if any additional resources are required to load this perspective
         missing_regions = []
-        for r in data[0].regions
-          missing_regions.push r.id unless (r.id of @s3[shape_set_id].regions) and this.verify_region(shape_set_id, r.id)
+        if typeof(data[0].regions[0]) is 'number'
+          for rid in data[0].regions
+            missing_regions.push rid unless (rid of @s3[shape_set_id].regions) and this.verify_region(shape_set_id, rid)
+        else
+          for r in data[0].regions
+            missing_regions.push r.id unless (r.id of @s3[shape_set_id].regions) and this.verify_region(shape_set_id, r.id)
         return callback() unless missing_regions.length
         this.fetch_regions shape_set_id, missing_regions, callback
     

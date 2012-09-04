@@ -27,5 +27,6 @@ Jax.getGlobal().GeneralEventRoutingHelper = Jax.Helper.create
     updated[shape_set_id] = stores
     @activity.end updated, () =>
       this.hide_loading_spinner()
-      @loader.idb.dump_s3 ssid,  @activity.updated()[ssid] for ssid of @activity.updated()
+      for ssid of @activity.updated()
+        @loader.idb.dump_s3 ssid,  @activity.updated()[ssid] 
     
