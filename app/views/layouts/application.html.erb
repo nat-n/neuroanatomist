@@ -1,10 +1,15 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
+
+<%= render :partial => "layouts/admin_sub_header" if @admin_layout and current_user.try(:admin?) %>
+<%= render :partial => "layouts/ontology_sub_header" if @ontology_layout %>
+
 <head>
   <title>Neuroanatomist</title>
   <%= stylesheet_link_tag "application" %>
   <%= stylesheet_link_tag "jquery_ui/jquery.ui.all.css" %>
-  <%= stylesheet_link_tag "admin_areas" if @admin_layout and current_user.try(:admin?) %>
+
+  <%= yield :head %>
   
   <%= javascript_include_tag "application" %>
   <%= javascript_include_tag "jax/application" %>
@@ -19,34 +24,7 @@
   <div id="content_wrapper">
     <div class="header_push"></div>
     
-    <% if @admin_layout and current_user.try(:admin?) %>
-      <nav id="admin_nav">
-        <%= link_to "Users", admin_users_path %>
-        <%= link_to "Ontology", "/ontology" %>
-        <%= link_to "Perspectives", perspectives_path %>
-        <%= link_to "Shape Sets", shape_sets_path %>
-        <%= link_to "Regions", regions_path %>
-        <%= link_to "Nodes", nodes_path %>
-        <%= link_to "Tags", tags_path %>
-      </nav>      
-    <%= javascript_tag "
-      $(function() {
-        $('p[contenteditable~=true]').bind('input',function(){
-          this.style['border-style']='inset';
-          this.style['border-width']='1px';
-          this.style['background-color']='#ceedff';
-          if($('#'+this.title).length) $('#'+this.title).val(this.innerHTML);
-        });
-      });" %>
-    <% end %>
-    <% if @ontology_layout %>
-      <nav id="ontology_nav">
-        <%= link_to "Types", "/ontology/types" %>
-        <%= link_to "Things", "/ontology/things" %>
-        <%= link_to "Relations", "/ontology/relations" %>
-        <%= link_to "Facts", "/ontology/facts" %>
-        </nav>
-    <% end %>
+    <%= yield :sub_header %>
     
     <% unless flash.keys.empty? %>
     <div id="notice_area">

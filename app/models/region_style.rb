@@ -8,12 +8,23 @@ class RegionStyle < ActiveRecord::Base
     self.update_attributes :orphaned => true
   end
   
+  def version_bump size, description, user
+    perspective.version_bump size, description, user
+  end
+  
   def update_style params
     updatable = Hash.new
     updatable[:orphaned] = false
     updatable[:colour]       = params[:colour] if params.has_key? :colour
     updatable[:transparency] = params[:transparency] if params.has_key? :transparency
     updatable[:label]        = params[:label] if params.has_key? :label
+    
+    unless (!updatable.has_key? :orphaned or orphaned == updatable[:orphaned]) and 
+        colour == updatable[:colour] and 
+        transparency == updatable[:transparency].to_i and
+        label == updatable[:label]
+      version_bump (params[:size] or :minor), "RS<#{id}>", User.first 
+    end
     self.update_attributes updatable
   end
   

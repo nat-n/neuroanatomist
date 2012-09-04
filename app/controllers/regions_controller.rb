@@ -14,6 +14,7 @@ class RegionsController < Admin::BaseController
     @region = Region.new(params[:region])
     
     if @region.save
+      Version.init_for @region, {}
       flash[:notice] = "Region has been created."
       redirect_to @region
     else
@@ -30,7 +31,13 @@ class RegionsController < Admin::BaseController
   end
   
   def update
+    changes = []
+    changes << :description and @region.aggr_update :tiny if params[:region][:description] != @region.description
+    changes << :name and @region.aggr_update params[:update_size] if params[:region][:name] != @region.name
+    changes << :thing and @region.aggr_update :major if params[:region][:thing] != @region.thing
+        
     if @region.update_attributes(params[:region])
+      @region.do_versioning changes.to_s, current_user
       flash[:notice] = 'Region was successfully updated.'
       redirect_to :action => 'show', :id => @region
     else
@@ -39,7 +46,10 @@ class RegionsController < Admin::BaseController
   end
   
   def destroy
-    Region.find(params[:id]).destroy
+    # because I decalred a decompositions method for Region
+    @region.decompositions.each {|d| d.destroy }
+    
+    @region.destroy
     flash[:notice] = "Region has been deleted."
     redirect_to regions_path
   end

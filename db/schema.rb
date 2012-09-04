@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120825122038) do
+ActiveRecord::Schema.define(:version => 20120901125328) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -94,8 +94,9 @@ ActiveRecord::Schema.define(:version => 20120825122038) do
     t.string   "name"
     t.string   "introduction"
     t.integer  "thing_id"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
+    t.boolean  "is_default",   :default => false
   end
 
   add_index "nodes", ["name"], :name => "index_nodes_on_name", :unique => true
@@ -120,9 +121,11 @@ ActiveRecord::Schema.define(:version => 20120825122038) do
     t.datetime "created_at",               :null => false
     t.datetime "updated_at",               :null => false
     t.integer  "default_for_shape_set_id"
+    t.integer  "node_id"
   end
 
   add_index "perspectives", ["name"], :name => "index_perspectives_on_name"
+  add_index "perspectives", ["node_id"], :name => "index_perspectives_on_node_id"
   add_index "perspectives", ["style_set_id"], :name => "index_perspectives_on_style_set_id"
 
   create_table "ratings", :force => true do |t|
@@ -243,7 +246,6 @@ ActiveRecord::Schema.define(:version => 20120825122038) do
 
   create_table "shape_sets", :force => true do |t|
     t.string   "subject"
-    t.string   "version"
     t.string   "change_log"
     t.string   "notes"
     t.integer  "mesh_count"
@@ -257,10 +259,11 @@ ActiveRecord::Schema.define(:version => 20120825122038) do
     t.string   "bounding_box"
     t.float    "radius"
     t.string   "center_point"
+    t.boolean  "deploy"
+    t.boolean  "expired",                :default => false
   end
 
   add_index "shape_sets", ["subject"], :name => "index_shape_sets_on_subject"
-  add_index "shape_sets", ["version"], :name => "index_shape_sets_on_version"
 
   create_table "shapes", :force => true do |t|
     t.integer  "volume_value"
@@ -335,5 +338,22 @@ ActiveRecord::Schema.define(:version => 20120825122038) do
   add_index "users", ["alias"], :name => "index_users_on_alias", :unique => true
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
+
+  create_table "versions", :force => true do |t|
+    t.string   "version_string"
+    t.string   "description"
+    t.integer  "user_id"
+    t.integer  "updated_id"
+    t.string   "updated_type"
+    t.boolean  "is_current",     :default => true
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
+  end
+
+  add_index "versions", ["is_current"], :name => "index_versions_on_is_current"
+  add_index "versions", ["updated_id"], :name => "index_versions_on_updated_id"
+  add_index "versions", ["updated_type"], :name => "index_versions_on_updated_type"
+  add_index "versions", ["user_id"], :name => "index_versions_on_user_id"
+  add_index "versions", ["version_string"], :name => "index_versions_on_version_string"
 
 end

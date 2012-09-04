@@ -1,14 +1,23 @@
 class Perspective < ActiveRecord::Base
-  belongs_to  :default_for_shape_set, :class_name => 'ShapeSet', :foreign_key => 'default_for_shape_set_id'
-  belongs_to  :style_set, :class_name => 'Perspective'
-  has_many    :points_of_view, :class_name => 'Perspective', :foreign_key => 'style_set_id', :dependent => :destroy
-  has_many    :own_region_styles, :class_name => 'RegionStyle', :foreign_key => 'perspective_id', :dependent => :destroy
-  has_many    :styled_regions, :through => :own_region_styles, :source => :region
+  belongs_to  :default_for_shape_set, :class_name => 'ShapeSet',    :foreign_key => 'default_for_shape_set_id'
+  belongs_to  :style_set,             :class_name => 'Perspective'
+  belongs_to  :node
+  has_many    :points_of_view,        :class_name => 'Perspective', :foreign_key => 'style_set_id',   :dependent => :destroy
+  has_many    :own_region_styles,     :class_name => 'RegionStyle', :foreign_key => 'perspective_id', :dependent => :destroy
+  has_many    :styled_regions,        :through    => :own_region_styles, :source => :region
+  has_many    :versions,              :as         => :updated, :dependent => :destroy
   
   validates_presence_of :name
   validates_uniqueness_of :name
   
   after_update :invalidate_caches
+  
+  include VersioningHelper
+  
+  def version_bump size, description, user
+    super
+    JaxData.invalidate_caches_with :perspective => self, :shape_sets => ShapeSet.all
+  end
   
   def regions
     has_external_styles? ? style_set.regions : styled_regions
@@ -58,7 +67,7 @@ class Perspective < ActiveRecord::Base
     if rs = style_for(params[:region])
       params.select! { |k,_| [:colour,:transparency,:label].include? k }
       params[:orphaned] = false
-      rs.update_attributes params
+      rs.update_style params
     else
       region_styles << RegionStyle.create( :colour         => params[:colour],
                                            :transparency   => params[:transparency],
@@ -72,6 +81,7 @@ class Perspective < ActiveRecord::Base
     hp = Hash[
       attrs: Hash[
         id:         self.id,
+        version:    self.version.to_s,
         name:       self.name,
         style_set:  (self.has_external_styles? ? self.style_set.id : false),
         height:     self.height,
@@ -79,16 +89,18 @@ class Perspective < ActiveRecord::Base
         distance:   self.distance
       ]
     ]
-    hp[:regions] = self.active_regions.map {|ar| ar.hash_partial(shape_set,cascade)} if cascade
+    hp[:regions] = (cascade and cascade!=:no) ? self.active_regions.map {|ar| ar.hash_partial(shape_set,cascade)} : self.active_regions.map(&:id)
     return hp
   end
   
   def description_hash
-    h = Hash[ name: name,
-              description: description,
-              height: height,
-              angle: angle,
-              distance: distance]
+    h = Hash[ id:           id,
+              name:         name,
+              version:      version.to_s,
+              description:  description,
+              height:       height,
+              angle:        angle,
+              distance:     distance]
     if has_external_styles?
       h[:style_set] = style_set 
     else
@@ -123,6 +135,7 @@ class Perspective < ActiveRecord::Base
   end
   
   def invalidate_caches
+    return false unless defined? shape_set
     JaxData.invalidate_caches_with shape_set: shape_set, perspective: self
   end
   

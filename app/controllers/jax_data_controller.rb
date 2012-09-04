@@ -1,17 +1,18 @@
 class JaxDataController < ApplicationController
   
-  def fetch    
+  def fetch
     @assets = []
     @request_string = request.fullpath
     
     
     if ENV["cache_server"] and (cached_request = JaxData.where(:request_string => @request_string).first)
       if (local_file = cached_request.access_locally)
-        render :file => local_file.path#, :content_type => Mime::Type.lookup_by_extension(:json).to_s
+        return render :file => local_file.path#, :content_type => Mime::Type.lookup_by_extension(:json).to_s
       elsif ENV["cache_server"] != "local"
-        redirect_to cached_request.uri
+        return redirect_to cached_request.uri
+      else
+        cached_request.destroy
       end
-      return cached_request.increment!
     end
     
     ## find shape_set
@@ -20,13 +21,13 @@ class JaxDataController < ApplicationController
       when "default"; ShapeSet.default
       else            shape_set = true and ShapeSet.find(params[:shape_set_id]) rescue (shape_set = false or ShapeSet.default)
     end
-    
+        
     ## prepare includes array
     params[:included] = params["include"].split(",").map{|x| x.to_i} rescue []
     params[:excluded] = params["exclude"].split(",").map{|x| x.to_i} rescue []
     mesh_ids = (params[:included]+params[:excluded]).map { |id| (@shape_set.mesh_ids.include?(id.to_i) ? id.to_i : nil) }.compact
     @included = (mesh_ids.empty? ? Hash.new {|h,k| h[k]=:yes } : Hash.new {|h,k| h[k]=:no })
-
+    
     if !params[:included].empty?
       @shape_set.mesh_ids.each { |mesh_id| @included[mesh_id] = :yes if mesh_ids.include?(mesh_id) }
     elsif !params[:excluded].empty?
@@ -36,18 +37,39 @@ class JaxDataController < ApplicationController
     # if there are no requests then respond with the default view or the shape_set if specified
     if !params[:requests]
       if not shape_set
-        shape_set_hash = @shape_set.hash_partial(@cascade)
+        if params['cascade']
+          params['cascade'].downcase!
+        else
+          params['cascade'] = 'no'
+        end
+        shape_set_hash = @shape_set.hash_partial(['1','true'].include? params['cascade'].downcase)
         render :text => JSON.dump(Hash["default_shape_set" => shape_set_hash.merge(shape_set_hash.delete(:attrs))])
         return
       end
-      
       @assets << describe_shape_set(request)
       
     else ## prepare descriptions of requested assets
       request_types = ["perspective", "region", "shape", "mesh"] # to request a shape_set: exclude type & id and include cascade
       required_feilds = ["type", "id"] # optional: "cascade", "included", "excluded"
       
-      JSON.parse(params[:requests]).each do |request|
+      [*JSON.parse(params[:requests])].each do |req|
+        # copy request with full versions of abbreviated keys and values
+        request = Hash.new
+        req.each do |k,v|
+          key = case k
+          when "t"; "type"
+          when "c"; "cascade"
+          else; k
+          end
+          val = case v
+          when "ss"; "shape_set"
+          when "p"; "perspective"
+          when "r"; "region"
+          else; v
+          end
+          request[key] = val
+        end
+        
         missing_required_feilds = !(required_feilds-request.keys).empty?
         if missing_required_feilds and request["cascade"]
           @assets << describe_shape_set(request)
@@ -80,7 +102,7 @@ class JaxDataController < ApplicationController
         render :file => cache_path
         return true
       end
-      
+
       render :action => "response.json"
     end
   end
@@ -103,12 +125,20 @@ class JaxDataController < ApplicationController
     end
   end
   
+  def update
+    
+    render :text => JSON.dump({error: "invalid shape_set_id"}) unless @shape_set = ShapeSet.find(params[:shape_set_id])
+    
+    render :text => JSON.dump(@shape_set.latest)
+    
+  end
+  
   private
   
     def describe_response
       partial_response = Hash[
         included:@included,
-        shape_set: {id: @shape_set.id, subject: @shape_set.subject, version: @shape_set.version}
+        shape_set: {id: @shape_set.id, subject: @shape_set.subject, version: @shape_set.version.to_s }
       ]
       perspectives = []
       regions = []
@@ -120,7 +150,11 @@ class JaxDataController < ApplicationController
         when :perspective
           partial_response[i] = Hash[t:"p", cascade:asset[:cascade]].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
           perspectives << asset[:object].id if asset[:object].id
-          regions += partial_response[i][:regions].map{|r| r[:attrs][:id]} if partial_response[i][:regions]
+          if asset[:cascade] and asset[:cascade] != :no
+            regions += partial_response[i][:regions].map{|r| r[:attrs][:id]} if partial_response[i][:regions]
+          else
+            partial_response[i][:attrs][:regions] = partial_response[i].delete(:regions)
+          end
         when :region
          partial_response[i] = Hash[ t:"r", cascade:asset[:cascade]].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
          regions << asset[:object].id if asset[:object].id
@@ -167,7 +201,7 @@ class JaxDataController < ApplicationController
     end
     
     def describe_shape_set request
-      { :type => :shape_set, :id => @shape_set, :cascade => encode_cascade(request["cascade"]) }
+      { :type => :shape_set, :id => @shape_set, :cascade => encode_cascade((request["cascade"] or params["cascade"])) }
     end
     
     def encode_cascade cascade
