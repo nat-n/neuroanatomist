@@ -46,6 +46,9 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
       About: () -> 
         window.context.current_controller.sc_load_node(window.context.current_controller.tooltip.hovered_region.thing)
         window.context.current_controller.tooltip.clear()
+      "Pick Colour": () ->
+        window.context.current_controller.color_.show_at(730,350,window.context.current_controller.tooltip.hovered_region)
+        window.context.current_controller.tooltip.clear()
     
     @box.set = @paper.set @paper.path(@box.path(@label.h)).attr(@box.style),
       @label.el = @paper.text(@box.offset.x+@box.w/2,@label.h/2,"").attr(@label.text.style)
@@ -60,6 +63,9 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
     unless @dragging
       this.clear()
     @dragging = true
+  
+  mouse_scrolled: (event) ->
+    this.clear()
   
   mouse_released: (pageX,pageY,region) ->
     if @menu.active

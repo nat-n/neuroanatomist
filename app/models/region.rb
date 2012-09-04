@@ -2,12 +2,13 @@ class Region < ActiveRecord::Base
   belongs_to  :thing
   has_one :node, :through => :thing
   has_and_belongs_to_many :super_compositions, :class_name => 'Decomposition'
-  has_many :decompositions,     :dependent => :destroy
-  has_many :region_definitions, :dependent => :destroy
-  has_many :region_styles,      :dependent => :destroy
-  has_many :sub_regions,        :through => :decompositions
-  has_many :shape_sets,         :through => :region_definitions
-  has_many :perspectives,       :through => :region_styles
+  has_many :decompositions  #,     :dependent  => :destroy
+  has_many :region_definitions, :dependent  => :destroy
+  has_many :region_styles,      :dependent  => :destroy
+  has_many :sub_regions,        :through    => :decompositions
+  has_many :shape_sets,         :through    => :region_definitions
+  has_many :perspectives,       :through    => :region_styles
+  has_many :versions,           :as         => :updated,            :dependent => :destroy
   
   validates_uniqueness_of :name
   validates_presence_of :name
@@ -15,6 +16,21 @@ class Region < ActiveRecord::Base
   after_update :invalidate_caches
   
   alias :definitions :region_definitions
+  
+  include VersioningHelper
+  
+  def version_bump size, description, user
+    super
+    # aggregate versioning
+    description = "Region<#{name}>: #{description}"
+    perspectives.each { |p|  p.version_bump size, description, user }
+    if size == :major
+      region_definitions.each { |rd|  rd.version_bump size, description, user }
+      region_styles.each { |rs|  rs.version_bump size, description, user }
+    end
+    # MINOR or MAJOR updates queue a refresh of all server caches that include this region
+    JaxData.invalidate_caches_with region: self if size == :minor or size == :major
+  end
   
   def decompositions
     # position any unranked decompositions at end of ranking preserving order
@@ -33,15 +49,17 @@ class Region < ActiveRecord::Base
   end
   
   def hash_partial shape_set, cascade
+    definition = self.definition_for(shape_set)
     hp = Hash[
       attrs: Hash[
         id:             self.id,
+        version:        definition.version.to_s,
         name:           self.name,
         thing:          (self.thing ? self.thing.id : nil),
         decompositions: self.decompositions.map(&:hash_partial)
       ]
     ]
-    hp[:shapes] = self.definition_for(shape_set).shapes.map(&:id) if cascade
+    hp[:shapes] = definition.shapes.map(&:id) if cascade
     return hp
   end
   

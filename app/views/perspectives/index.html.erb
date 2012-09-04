@@ -7,6 +7,7 @@
     <th>Height</th>
     <th>Angle</th>
     <th>Distance</th>
+    <th>Included Regions</th>
     <th>Inherits from</th>
     <th></th>
     <th></th>
@@ -21,6 +22,7 @@
     <td><%= perspective.height %></td>
     <td><%= perspective.angle %></td>
     <td><%= perspective.distance %></td>
+    <td><%= perspective.region_styles.size %></td>
     <td><%= perspective.has_external_styles? ? perspective.style_set.name : "-" %></td>
     <td><%= link_to "Export", perspective_path(perspective, :format => :json) %></td>
     <td><%= link_to 'Show', perspective %></td>

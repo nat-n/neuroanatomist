@@ -23,6 +23,7 @@ time,mark,audio,video{
 
 html, body {
 	height: 100%;
+	background-color: #fafafa;
 }
 
 div#page {
@@ -174,19 +175,29 @@ footer.page, .footer_push {
 
 /* @group content */
 
+.small_spinner {
+	left: 625px;
+	top: 560px;
+}
+
 /* @group vis controls */
 
 #vis_controls {
 	border-radius: 8px;
 	box-shadow:inset 1px 1px 3px #222;
-	background-color: #696969;
 	padding: 3px 10px 5px;
 	margin: 2px 2px 3px;
+	background: #303030 url(/assets/controls_bg.png) repeat-x 0 -45px;
+	font-weight: bold;
+	text-shadow: #000 0 0 4px;
+	color: #f3f3f3;
 }
 
 #controls_title {
 	color: #ff9430;
-	font-size: 1em;
+	text-shadow: #000000 0px 0px 5px;
+	letter-spacing: 0.1em;
+	font-size: 1.1em;
 }
 
 #vis_controls div {
@@ -230,7 +241,6 @@ div#content {
 }
 
 #visualisation {
-	overflow: auto;
 }
 
 #vis_controls {
@@ -314,6 +324,10 @@ textarea#node_introduction {
 	color: #e0e0e0;
 	display: none;
 	color: #f0f0f0;
+}
+
+#node_edit.active {
+	display: block;
 }
 
 #node_edit label{

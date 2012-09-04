@@ -3,33 +3,67 @@ class ShapeSet < ActiveRecord::Base
   has_many    :regions, :through => :region_definitions
   has_many    :shapes, :dependent => :destroy
   has_many    :meshes, :through => :shapes, :source => :low_meshes
-  has_many    :jax_data
   has_one     :default_perspective_attr, :class_name => 'Perspective', :foreign_key => 'default_for_shape_set_id'
-  validates_presence_of   :subject, :version
-  #validates_uniqueness_of :name, :scope => [:subject, :version]
-  validate    :validate_version
+  validates_presence_of   :subject
+  
+  has_many     :versions, :as => :updated, :dependent => :destroy
+  
+  include VersioningHelper
+  
+  def jax_data # because the has_many doesn't seem to work for this
+    JaxData.where(:shape_set_id => id)
+  end
+  
+  def expire!
+    expired = true
+    is_default = false
+    notes = "#{notes}\n**EXPIRED AT #{Time.now}"
+    save
+    (region_definitions+shapes+meshes+jax_data).each {|dependant| dependant.destroy }
+  end
+  
+  def expired?
+    expired == true
+  end
+
+  def deployed?
+    deploy == true
+  end
+  
+  def version_bump size, description, user
+    return false if expired?
+    super
+  end
+    
+  def self.subjects
+    ShapeSet.all.map(&:subject).uniq
+  end
+
+  def self.next_versions
+    Hash[ShapeSet.subjects.map{|s| [s,ShapeSet.newest_version_of(s).version.bump(:major).to_s] }]
+  end
   
   def self.versions_of subject
     ShapeSet.where "subject = ?", subject
   end
 
   def self.newest_version_of subject
-    ShapeSet.versions_of(subject).select(:version).map {|v| Versionomy.parse v.version }.max
+    ShapeSet.versions_of(subject).first#.sort{|a,b| a.version<=>b.version }.last
   end
   
   def previous_version
-    all_versions = ShapeSet.versions_of(self.subject).sort
+    all_versions = ShapeSet.versions_of(subject).sort {|a,b| a.version<=>b.version}
     own_index = all_versions.index(version)
     if own_index
       return nil if own_index == 0
-      own_index-1
+      all_versions[own_index-1]
     else
-      ShapeSet.newest_version_of subject
+      ShapeSet.newest_version_of(subject).version
     end
   end
   
   def self.default
-    defaults = ShapeSet.where("is_default")
+    defaults = ShapeSet.where(:is_default => true)
     case defaults.size
     when 1
       return defaults.first
@@ -41,6 +75,7 @@ class ShapeSet < ActiveRecord::Base
   end
   
   def make_default!
+    return false if expired?
     ShapeSet.update_all(:is_default => false)
     self.update_attribute :is_default, true
     self
@@ -70,7 +105,7 @@ class ShapeSet < ActiveRecord::Base
   def data_path
     # should sanitise subject to make sure they're path friendly !!! ***
     #"#{Rails.root}/shape_sets/#{self.subject}/#{self.version}"
-    "#{self.subject}/#{self.version}"
+    "#{self.subject}/#{self.flat_version}"
   end
   
   def bounding_box
@@ -107,15 +142,33 @@ class ShapeSet < ActiveRecord::Base
   def hash_partial cascade
     hp = Hash[
       attrs: Hash[
+        type:                 'shape_set',
         id:                   self.id,
+        version:              self.version.to_s,
         name:                 self.name,
         radius:               self.radius,
         center_point:         (self.center_point or nil),
         default_perspective:  (self.default_perspective.id or nil rescue nil)
       ]
     ]
-    hp[:shapes] = self.shapes.map(&:id) if cascade
+    hp[:shapes] = self.shapes.map(&:id) if [true,:yes,:partial].include? cascade
     return hp
+  end
+  
+  def latest
+    # produces a hash reporting the latest version of this shape_set and all its region_definitions
+    latest = ShapeSet.newest_version_of(subject)
+    report = Hash[
+      type: 'shape_set_update',
+      this_id: id,
+      this_version: version.to_s,
+      this_status: (expired? ? "expired" : (deployed? ? "deployed" : "pre-deploy")),
+      latest_id: latest.id,
+      latest_version: latest.version.to_s,
+      regions: Hash.new
+    ]
+    region_definitions.each { |rd| report[:regions][rd.region.id] = rd.version.to_s }
+    report
   end
   
   def copy_region_definitons_from older_shape_set
@@ -163,10 +216,24 @@ class ShapeSet < ActiveRecord::Base
     new_perspective.include_regions shape_regions
   end
   
-  def validate_and_save shape_data
+  def validate_and_save shape_data, new_version, user
     """validates that the uploaded datafile is well formed and well typed but not that its contents are valid (e.g. valid indices)"""
+
+    errors.add(:subject, ": Subject must be at least 3 characters long") unless subject and (subject.strip.size>3)
     
+    # validate and create version
+    begin
+      new_version = Versionomy.parse new_version
+    rescue
+      errors.add(:version, ": Invalid version string '#{new_version}'")
+    end
+    max_previous_version = (ShapeSet.newest_version_of(subject).version rescue Versionomy.parse '0.0.0')
+    unless (current_version > max_previous_version rescue true) or self == ShapeSet.where(version: current_version.to_s).first
+      errors.add(:version, "Version string must be higher than previous highest for this subject (#{max_previous_version})")
+    end   
+   
     errors.add(:shape_data_file, ": upload required") unless shape_data and shape_data.tempfile
+    
     return false unless errors.messages.empty?
     
     @shape_data = ActiveSupport::JSON.decode(shape_data.read) rescue errors.add(:shape_data_file, 'data file is not valid JSON')
@@ -241,7 +308,7 @@ class ShapeSet < ActiveRecord::Base
                    datasize: @shape_data["meshes"].to_s.size}
 
     return false unless errors.messages.empty?
-    
+    Version.init_for self, description:"change_log: #{change_log}", user:user, version:new_version
     self.update_attributes new_params    
   end
   
@@ -284,19 +351,5 @@ class ShapeSet < ActiveRecord::Base
                                                        (ortho_bb[:xmin]+half_ranges[1]).round(4),
                                                        (ortho_bb[:xmin]+half_ranges[2]).round(4) ])}"
   end  
-  
-  private
-    def validate_version
-      begin
-        current_version = Versionomy.parse version 
-      rescue 
-        errors.add(:version, ': Invalid version string')
-        return
-      end
-      max_previous_version = ShapeSet.newest_version_of(subject)
-      unless (current_version > max_previous_version rescue true) or self == ShapeSet.where(version: current_version.to_s).first
-        errors.add(:version, "Version string must be higher than previous highest for this subject (#{max_previous_version})")
-      end
-    end
-  
+    
 end

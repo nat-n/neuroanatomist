@@ -14,12 +14,17 @@
 
   <div class="field">
     <%= f.label :subject %><br />
-    <%= f.text_field :subject, :disabled=>editing %>
+    <% if editing %>
+    <%= f.text_field :subject, :disabled=>true %>
+    <% else %>
+    <%= select_tag :existing_subjects, options_for_select(ShapeSet.subjects << "Create new subject") %>
+    <%= f.text_field :subject, :style=>"display:none" %>
+    <% end %>
   </div>
-  <div class="field">
-    <%= f.label :version %><br />
-    <%= f.text_field :version, :disabled=>editing %>
-  </div>
+  <%= content_tag :div, :id => :versioning, :class => "feild", :data => ShapeSet.next_versions do %>
+    <%= label :version, :version %><br />
+    <%= text_field :version, :version, :disabled=>editing %>
+  <% end %>
   <div class="field">
     <%= f.label :change_log %><br />
     <%= f.text_area :change_log, :size => "33x6", :disabled=>editing %>
@@ -31,7 +36,7 @@
   <div class="field">
     <%= f.label :default_perspective %><br />
     <%= f.select :default_perspective, 
-                 ["Create new empty perspective", *Perspective.all.select{|pers| !pers.default_for_shape_set or pers.default_for_shape_set.id == @shape_set.id }.map(&:name)],
+                 ["Create new empty perspective", *Perspective.all.map(&:name)],
                  :selected => @shape_set.default_perspective.name %>
   </div>
   <% if editing %>
@@ -53,3 +58,18 @@
     <%= f.submit %>
   </div>
 <% end %>
+<%= javascript_tag "
+var update_subject = function() {
+  v = $('#existing_subjects').val()
+  if(v == 'Create new subject') {
+    $('#shape_set_subject').css('display','block').val('');
+    $('#version_version').val('0.0.1');
+  } else {
+    $('#shape_set_subject').css('display','none').val(v);
+    $('#version_version').val($('#versioning').data(v));
+  }
+}
+$('#existing_subjects').focus(update_subject)
+$('#existing_subjects').change(update_subject)
+update_subject()
+"%>

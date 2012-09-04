@@ -2,11 +2,28 @@ class RegionDefinition < ActiveRecord::Base
   has_and_belongs_to_many :shapes
   belongs_to  :shape_set
   belongs_to  :region
+  has_many :versions, :as => :updated, :dependent => :destroy
   
   validates_presence_of :shape_set, :region
   validate    :only_one_definition_per_region, :message => "A region may be defined only once per shape set"
   
   after_update :invalidate_caches
+  
+  include VersioningHelper
+  
+  def version_bump size, description, user
+    super
+    if size == :major
+      # invalidate caches with this region AND shape_set
+      JaxData.where(:shape_set_id => shape_set_id).select{|jd| jd.regions.include? region_id }.each { |jd| jd.destroy }
+    end
+    if size != :tiny
+      # should propagate to shape_set as one grade lower
+      size = (size==:major ? :minor : (size==:minor ? :tiny : false)) # downsize
+      description = "RegionDefinition<#{region.name}>: #{description}"
+      shape_set.version_bump size, description, user
+    end
+  end
   
   def self.all_definitions_for_shape_set shape_set
     RegionDefinition.where("shape_set_id = ? and orphaned = ?", shape_set.id, false)

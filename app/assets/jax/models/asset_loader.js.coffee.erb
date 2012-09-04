@@ -1,4 +1,6 @@
 Jax.getGlobal()['AssetLoader'] = Jax.Model.create
+  fetch_start: () -> window.context.current_controller.started_fetching_data()
+  fetch_end: (shape_set_id, stores) -> window.context.current_controller.finished_fetching_data(shape_set_id, stores)
   after_initialize: ->
     # this model is responsible for finding, fetching and returning requested meshes, regions, descriptions, indexes etc
     # particularly in service of scene and region
@@ -8,22 +10,207 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     # create jax asset store
     # all meshes are stripped out of the loaded asset and stored here by id, where region can find them later
     @s3 = window.context.s3 = {}
+    @idb = 
+      indexedDB:    window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB
+      keyRange:     window.IDBKeyRange || window.webkitIDBKeyRange
+      db:           null
+      ready:        false
+      loaded:       false
+      config:
+        stores:     ["shape_set","meshes","shapes","regions","perspectives","logs"]
+        name:       "neuroanatomist"
+        version:    "0.0.1"
+        key:        "sid"
+    $.extend @idb,
+      init: (callback) =>
+        req = @idb.indexedDB.open @idb.config.name
+        req.onsuccess = (e) => 
+          @idb.db = idb = e.target.result
+          missing_stores = (os for os in @idb.config.stores when !idb.objectStoreNames.contains(os))
+          if missing_stores
+            vreq = idb.setVersion @idb.config.version
+            vreq.onsuccess = (e) => 
+              idb.createObjectStore os, { keyPath: @idb.config.key } for os in missing_stores
+              @idb.ready = true
+              callback()
+            vreq.onfailure = () => console.log "ERROR: setVersion failed."; console.log e
+          else 
+            @idb.ready = true
+            callback()
+        req.onerror = (e) => console.log "ERROR: Unable to open indexedDB"; console.log e
+        @idb.init = { request: () -> req } # effectively making this an anomymous wrapper function but with a callback, because sometimes chrome is weird.
+              
+      ###
+      get: (os, id, success, failure) =>
+        request = @idb.indexedDB.open @idb.db
+        request.onsuccess = (e) =>
+          idb = e.target.result
+          if idb.objectStoreNames.contains os
+            active_store = idb.transaction([os], "readwrite").objectStore(os)
+            get_request = active_store.get id
+            get_request.onsuccess = (e) =>
+              if e.target.result
+                success e.target.result
+              else failure
+            get_request.onerror = (e) ->
+              console.log "ERROR: Unable to retrieve data"
+              failure
+          else failure
+        request.onerror = (e) ->
+          console.log "ERROR: Unable to open indexedDB"
+          failure
+      
+      put: (os, new_version, data, idb) =>
+        if idb
+          if idb.objectStoreNames.contains os
+            active_store = idb.transaction([os], "readwrite").objectStore(os)
+            put_request = active_store.put data
+            put_request.onsuccess = (e) -> console.log "Data stored in indexedDB"
+            put_request.error = (e) -> console.log "Error putting data"; console.log e
+          else
+            version_request = idb.setVersion new_version
+            version_request.onsuccess = (e) =>
+              active_store = idb.createObjectStore os, { keyPath: "id" }
+              put_request = active_store.put data
+              put_request.onsuccess = (e) -> console.log "Data stored in indexedDB"
+              put_request.error = (e) -> console.log "Error putting data"; console.log e
+            version_request.onblocked = (e) -> console.log "Blocked setting version"; console.log e
+            version_request.onerror = (e) -> console.log "Error setting version"; console.log e
+            version_request.onfailure = (e) -> console.log "Failure setting version"; console.log e
+        else
+          request = @idb.indexedDB.open @idb.db
+          request.onsuccess = (e) =>
+            @idb.put os, new_version, data, e.target.result
+          request.onerror = (e) -> console.log "ERROR: Unable to open indexedDB"
+      ###
+      
+      dump_s3: (ssid, stores, success, failure) =>
+        # cache all assets of the specified shape_set from s3 using a single transaction
+        # use one object store per object type and one object per shape_set
+        return false unless @s3[ssid = parseInt(ssid)]
+        stores = null unless stores.length
+        stores = (os for os in (stores or @idb.config.stores) when @idb.db.objectStoreNames.contains(os) and @s3[ssid][os])
+        stores = (stores.concat ["shape_set"], stores).uniq()
+        t = @idb.db.transaction(stores, "readwrite")
+        for os in stores
+          active_store = t.objectStore(os)
+          data = {}
+          data[@idb.config.key] = ssid
+          data.type = os
+          if os == "shape_set"
+            for attr of @s3[ssid]
+              continue if attr in @idb.config.stores
+              data[attr] = @s3[ssid][attr]
+          else if os == "regions" # a region's object cannot be stored in indexedDB so a copy of the region minus is object should be stored instead
+            for r of @s3[ssid][os]
+              data[r] = {}
+              for ri of @s3[ssid][os][r]
+                data[r][ri] = @s3[ssid][os][r][ri] unless ri == 'object'
+          else 
+            $.extend(data, @s3[ssid][os])
+          preq = active_store.put data
+          preq.onsuccess = (e) -> console.log "Data stored in indexedDB"
+          preq.error = (e) -> console.log "Error putting data"; console.log e; failure e if failure
+        success e if success            
+        undefined        
+      
+      
+      load_s3: (ssid, callback, determined=true) =>
+        # load all items of the given shape_set from idb into s3
+        ssid = parseInt(ssid)
+        stores = (os for os in @idb.config.stores when @idb.db.objectStoreNames.contains(os) and os != "logs")
+        t = @idb.db.transaction(stores, "readwrite")
+        t.oncomplete = callback if callback
+        t.onerror = @idb.load_s3(ssid, callback, false) if callback and determined
+        for os in stores
+          active_store = t.objectStore(os)
+          greq = active_store.get ssid
+          greq.onsuccess = (e) =>
+            return false unless result = e.target.result
+            this.init_ss(ssid)
+            os = result.type
+            delete result['type']
+            delete result['ssid']
+            if os == "shape_set"
+              @s3[ssid][attr] = result[attr] for attr of result
+            else
+              for id of result
+                continue if id == 'sid'
+                @s3[ssid][os][id] ?= {} 
+                for attr of result[id]
+                  @s3[ssid][os][id][attr] = result[id][attr]
+          greq.onerror = (e) -> console.log "ERROR: Unable to retrieve data for " + os
+        undefined          
+      
+      load_everything: (callback, determined=true) =>
+        return false if @idb.loaded
+        stores = (os for os in @idb.config.stores when @idb.db.objectStoreNames.contains(os) and os != "logs" and os != "shape_set")
+        shape_sets = []
+        t = @idb.db.transaction(stores.concat(["shape_set"]), "readwrite")
+        callback = callback or (()->null)
+        if determined # seems to skirt random errors, not entirely sure why, maybe chrome's memory management.
+          console.log "first time"
+          t.onerror = (e) => 
+            setTimeout (()=>@idb.load_everything(callback, false)), 100
+            console.log "caught error:"; console.log e
+        else 
+          console.log "second time"
+          t.onerror = (e) =>
+            console.log "caught error:"; console.log e
+            callback()
+        t.oncomplete = () =>
+          @idb.loaded = true
+          # this is quite a clever pattern if i may say so myself
+          return false unless callback
+          
+          exec_cb_stack = (stack) =>
+            cb = () =>
+              next = stack.pop()
+              if stack.length > 1 then next(cb)
+              else next stack.pop()
+            stack.pop() cb
+          
+          ssids = (ssid for ssid of @s3)
+
+          stack = [callback]
+          
+          # something truly bizare happens around here somewhere, but it doesn't seem to matter !?!?!
+          for ssid of @s3
+            new_func = ((cb) => @idb.load_s3(ssids.shift(),cb))
+            stack.push new_func
+          
+          exec_cb_stack stack
+
+        creq = t.objectStore("shape_set").openCursor()
+        creq.onsuccess = (e) =>
+          csr = e.target.result
+          if csr and (ssid = csr.key) and (result = csr.value)
+            this.init_ss(ssid)
+            os = result.type
+            delete result['type']
+            delete result['ssid']
+            @s3[ssid][attr] = result[attr] for attr of result
+            csr.continue()
+      
+      clear: () -> 0
+    
   
-  perspective2region_descs: (json_data) ->
-    regions = []
-    meshes = {}
-    for region in json_data["regions"]
-      new_region = []
-      shape_vids = (shape["volume_value"] for shape in region["shapes"])
-      for shape in region["shapes"]
-        for mesh in shape["meshes"]
-          bf = mesh["name"].split("-")
-          if (bf[0] in shape_vids) or (bf[1] in shape_vids)
-            mesh_id = parseInt(mesh["id"])
-            meshes[mesh_id] = mesh if mesh["included"] == "yes"
-            new_region.push mesh_id
-      regions.push new_region
-    ((meshes[mesh_id] for mesh_id in region) for region in regions)
+  # not sure if this is needed or belongs here if it is
+  #perspective2region_descs: (json_data) ->
+  #  regions = []
+  #  meshes = {}
+  #  for region in json_data["regions"]
+  #    new_region = []
+  #    shape_vids = (shape["volume_value"] for shape in region["shapes"])
+  #    for shape in region["shapes"]
+  #      for mesh in shape["meshes"]
+  #        bf = mesh["name"].split("-")
+  #        if (bf[0] in shape_vids) or (bf[1] in shape_vids)
+  #          mesh_id = parseInt(mesh["id"])
+  #          meshes[mesh_id] = mesh if mesh["included"] == "yes"
+  #          new_region.push mesh_id
+  #    regions.push new_region
+  #  ((meshes[mesh_id] for mesh_id in region) for region in regions)
   
   fetch_defaults: (callback) ->
     $.ajax
@@ -31,13 +218,63 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       dataType: 'json'
       error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: " + textStatus
       success: (data, textStatus, jqXHR) =>
-        shape_set = data.default_shape_set        
-        @s3[shape_set.id] ?= {}
-        @s3[shape_set.id].id ?= shape_set.id
-        @s3[shape_set.id].name ?= shape_set.name
-        @s3[shape_set.id].radius ?= shape_set.radius
-        @s3[shape_set.id].center_point ?= shape_set.center_point
+        this.cache_shape_set data.default_shape_set        
         callback(data, textStatus, jqXHR)
+  
+  cache_shape_set: (ss) ->
+    this.init_ss(ss.id)
+    @s3[ss.id].id ?= ss.id
+    @s3[ss.id].name ?= ss.name
+    @s3[ss.id].radius ?= ss.radius
+    @s3[ss.id].center_point ?= ss.center_point  
+  
+  cache_perspective: (p,ss) ->
+    p_def = 
+      id: p.id or 'lp'+Date.now() # loaded perspective
+      name: p.name
+      style_set: p.style_set
+      height: p.height
+      angle: p.angle
+      distance: p.distance
+      regions: p.regions
+    @s3[ss].perspectives[p_def.id] = p_def
+    return p_def.id
+  
+  fetch_shape_set: (ss,callback,cascade) ->
+    params =
+      shape_set: ss
+      cascade: cascade or "no"
+    this.fetch params, callback
+  
+  fetch_perspective: (shape_set_id, perspective_id, callback) ->
+    # should fetch the perspective minus regions then request any regions that aren't already cached
+    this.fetch
+      shape_set: shape_set_id
+      requests: [
+        type:"perspective"
+        id: perspective_id
+        cascade:"no" ]
+      (data) =>
+        # check if any additional resources are required to load this perspective
+        missing_regions = []
+        if typeof(data[0].regions[0]) is 'number'
+          for rid in data[0].regions
+            missing_regions.push rid unless (rid of @s3[shape_set_id].regions) and this.verify_region(shape_set_id, rid)
+        else
+          for r in data[0].regions
+            missing_regions.push r.id unless (r.id of @s3[shape_set_id].regions) and this.verify_region(shape_set_id, r.id)
+        return callback() unless missing_regions.length
+        this.fetch_regions shape_set_id, missing_regions, callback
+    
+  verify_region: (shape_set_id, region_id) ->
+    return false unless @s3 and @s3[shape_set_id] and @s3[shape_set_id].regions and 
+      @s3[shape_set_id].shapes and @s3[shape_set_id].meshes and @s3[shape_set_id].regions[region_id] and 
+      @s3[shape_set_id].regions[region_id].id and @s3[shape_set_id].regions[region_id].shapes
+    for shape_id in @s3[shape_set_id].regions[region_id].shapes
+      return false unless @s3[shape_set_id].shapes[shape_id] and @s3[shape_set_id].shapes[shape_id].meshes
+      for mesh_id in @s3[shape_set_id].shapes[shape_id].meshes
+        return false unless @s3[shape_set_id].meshes[mesh_id]
+    true
   
   fetch_regions: (shape_set_id, region_ids, callback) ->
 	  # should compose the params to fetch the requested regions, excluding already aquired meshes
@@ -54,20 +291,27 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       params.exclude.push mesh_id for mesh_id of @s3.meshes
     this.fetch params, callback
 	
+  init_ss: (ssid) ->
+    @s3[ssid] ?= {}
+    @s3[ssid].perspectives ?= {}
+    @s3[ssid].meshes ?= {}
+    @s3[ssid].shapes ?= {}
+    @s3[ssid].regions ?= {}
+    
+  
   fetch: (params, callback) ->
     # params = {shape_set: #, include:[], exclude:[], cascade:flag, requests: {}}
-    @s3[params.shape_set] ?= {}
-    @s3[params.shape_set].perspectives ?= {}
-    @s3[params.shape_set].meshes ?= {}
-    @s3[params.shape_set].shapes ?= {}
-    @s3[params.shape_set].regions ?= {}
+    this.fetch_start()
+    shape_set_id = params.shape_set
+    updated = []
+    this.init_ss(shape_set_id)
     url = @jax_data_path
-    url += "/" + params.shape_set if params.shape_set
+    url += "/" + shape_set_id if shape_set_id
     url += "?" if params.include or params.exclude or params.requests or params.cascade
     if params.include and params.include.length
-      url += "include=" + params.include + "&"
+      url += "include=" + params.include.uniq() + "&"
     else if params.exclude and params.exclude.length
-      url += "exclude=" + params.exclude + "&"
+      url += "exclude=" + params.exclude.uniq() + "&"
     if params.requests
       url += "requests=" + encodeURIComponent(JSON.stringify(params.requests))
     else if params.cascade
@@ -78,72 +322,70 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       dataType: 'json'
       error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: " + textStatus
       success: (data, textStatus, jqXHR) =>
-        perspective_proc = (shape_set_id, perspective, region_proc, shape_proc, mesh_proc) =>
-          perspective_def = 
-            id: perspective.id
-            name: perspective.name
-            style_set: perspective.style_set
-            height: perspective.height
-            angle: perspective.angle
-            distance: perspective.distance
-            regions: []
+        
+        perspective_proc = (shape_set_id, perspective, region_proc, shape_proc, mesh_proc, cascade) =>
+          updated.push "perspectives" unless "perspectives" in updated
+          @s3[shape_set_id].perspectives[perspective.id]  ?= {}
+          
+          for attr in ['id', 'name', 'version', 'style_set', 'height', 'angle', 'distance']
+            @s3[shape_set_id].perspectives[perspective.id][attr] = perspective[attr]
           
           if "regions" of perspective
-            for region in perspective.regions
-              perspective_def.regions.push region.id
-              region_proc(shape_set_id, region, shape_proc, mesh_proc)
-          @s3[shape_set_id].perspectives[perspective.id] = perspective_def 
+            @s3[shape_set_id].perspectives[perspective.id].regions = []
+            if typeof(perspective.regions[0]) is 'number'
+              for region in perspective.regions
+                @s3[shape_set_id].perspectives[perspective.id].regions.push region
+            else
+              for region in perspective.regions
+                @s3[shape_set_id].perspectives[perspective.id].regions.push region.id
+                region_proc(shape_set_id, region, shape_proc, mesh_proc)
         
         region_proc = (shape_set_id, region, shape_proc, mesh_proc) =>
-          region_def = 
-            id: region.id
-            name: region.name
-            decompositions: region.decompositions
-            thing: region.thing
-            shapes: []
+          updated.push "regions" unless "regions" in updated
+          @s3[shape_set_id].regions[region.id] ?= {}
+
+          for attr in ['id', 'name', 'version', 'decompositions', 'thing']
+            @s3[shape_set_id].regions[region.id][attr] = region[attr]
+
           if "shapes" of region
+            @s3[shape_set_id].regions[region.id].shapes = []
             for shape in region.shapes
-              region_def.shapes.push shape.id
+              @s3[shape_set_id].regions[region.id].shapes.push shape.id
               shape_proc(shape_set_id, shape, mesh_proc)
-          @s3[shape_set_id].regions[region.id] = region_def 
         
         shape_proc = (shape_set_id, shape, mesh_proc) =>
-          shape_def =
-            id: shape.id
-            volume_value: shape.volume_value
-            name: shape.name
-            meshes: []
+          updated.push "shapes" unless "shapes" in updated
+          @s3[shape_set_id].shapes[shape.id] ?= {}
+          for attr in ['id','volume_value', 'name']
+            @s3[shape_set_id].shapes[shape.id][attr] = shape[attr]
           if "meshes" of shape
+            @s3[shape_set_id].shapes[shape.id].meshes = [] # have to overwrite here for avoid duplication!
             for mesh in shape["meshes"]
-              if mesh.included == "yes" or mesh.included == "elsewhere" # not entirely sure why this is neccessary ?
-                shape_def.meshes.push mesh.id
+              if mesh.included == "yes" or mesh.included == "elsewhere" # maybe should remove this line actually??
+                @s3[shape_set_id].shapes[shape.id].meshes.push mesh.id
               if mesh.included == "yes"
                 mesh_proc(shape_set_id, mesh)
-          @s3[shape_set_id].shapes[shape.id] = shape_def
         
         mesh_proc = (shape_set_id, mesh) =>
-          @s3[shape_set_id].meshes[mesh.id] =
-            id: mesh.id
-            name: mesh.name
-            vertex_positions: mesh.vertex_positions
-            vertex_normals: mesh.vertex_normals
-            faces: mesh.faces
-            borders: mesh.borders
-        
+          updated.push "meshes" unless "meshes" in updated
+          @s3[shape_set_id].meshes[mesh.id] ?= {}
+          for attr in ['id', 'name', 'vertex_positions', 'vertex_normals', 'faces', 'borders']
+            @s3[shape_set_id].meshes[mesh.id][attr] = mesh[attr]
+                  
         unless "default_shape_set" of data # not sure if this is necccessary
           for ri of data
-            if "type" of params.requests[ri]
+            if params.requests and "type" of params.requests[ri]
               switch params.requests[ri].type
                 when "perspective"                  
-                  perspective_proc(params.shape_set, data[ri], region_proc, shape_proc, mesh_proc)
+                  perspective_proc(shape_set_id, data[ri], region_proc, shape_proc, mesh_proc)
                 when "region"
-                  region_proc(params.shape_set, data[ri], shape_proc, mesh_proc)
+                  region_proc(shape_set_id, data[ri], shape_proc, mesh_proc)
                 when "shape"
-                  shape_proc(params.shape_set, data[ri], shape_proc, mesh_proc)
+                  shape_proc(shape_set_id, data[ri], shape_proc, mesh_proc)
                 when "mesh"
-                  mesh_proc(params.shape_set, data[ri])
+                  mesh_proc(shape_set_id, data[ri])
             else
-              null # it's a shape_set
+              this.cache_shape_set data[ri]
+        this.fetch_end(shape_set_id, updated)
         callback(data, textStatus, jqXHR)
-        
-
+  

@@ -37,6 +37,8 @@ class DecompositionsController < Admin::BaseController
     
     respond_to do |format|
       if @decomposition.save
+        @decomposition.super_region.aggr_update(params[:update_size])
+        @decomposition.super_region.do_versioning @decomposition.super_region.description, current_user
         format.html { redirect_to @decomposition, notice: 'Decomposition was successfully created.' }
         format.json { render json: @decomposition, status: :created, location: @decomposition }
       else
@@ -47,6 +49,7 @@ class DecompositionsController < Admin::BaseController
   end
 
   def update
+    @decomposition.super_region.aggr_update(params[:update_size])
     update_sub_regions
     respond_to do |format|
       if @decomposition.update_attributes(params[:decomposition])
@@ -57,9 +60,11 @@ class DecompositionsController < Admin::BaseController
         format.json { render json: @decomposition.errors, status: :unprocessable_entity }
       end
     end
+    @decomposition.super_region.do_versioning @decomposition.super_region.description, current_user
   end
 
   def destroy
+    @decomposition.super_region.version_bump :major
     @decomposition.destroy
 
     respond_to do |format|
