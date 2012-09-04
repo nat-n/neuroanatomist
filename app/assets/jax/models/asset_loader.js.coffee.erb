@@ -148,8 +148,12 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         shape_sets = []
         t = @idb.db.transaction(stores.concat(["shape_set"]), "readwrite")
         t.onerror = if callback and determined # seems to skirt random errors, not entirely sure why, maybe chrome's memory management.
-            () => setTimeout (()=>@idb.load_everything(callback, false)), 100
-          else callback
+            (e) => 
+              setTimeout (()=>@idb.load_everything(callback, false)), 100
+              console.log "caught error:"; console.log e
+          else (e) =>
+            console.log "caught error:"; console.log e
+            callback()
         t.oncomplete = () =>
           @idb.loaded = true
           # this is quite a clever pattern if i may say so myself
@@ -311,7 +315,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: " + textStatus
       success: (data, textStatus, jqXHR) =>
         
-        perspective_proc = (shape_set_id, perspective, region_proc, shape_proc, mesh_proc) =>
+        perspective_proc = (shape_set_id, perspective, region_proc, shape_proc, mesh_proc, cascade) =>
           updated.push "perspectives" unless "perspectives" in updated
           @s3[shape_set_id].perspectives[perspective.id]  ?= {}
           
@@ -320,15 +324,19 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
           
           if "regions" of perspective
             @s3[shape_set_id].perspectives[perspective.id].regions = []
-            for region in perspective.regions
-              @s3[shape_set_id].perspectives[perspective.id].regions.push region.id
-              region_proc(shape_set_id, region, shape_proc, mesh_proc)
+            if typeof(perspective.regions[0]) is 'number'
+              for region in perspective.regions
+                @s3[shape_set_id].perspectives[perspective.id].regions.push region
+            else
+              for region in perspective.regions
+                @s3[shape_set_id].perspectives[perspective.id].regions.push region.id
+                region_proc(shape_set_id, region, shape_proc, mesh_proc)
         
         region_proc = (shape_set_id, region, shape_proc, mesh_proc) =>
           updated.push "regions" unless "regions" in updated
           @s3[shape_set_id].regions[region.id] ?= {}
 
-          for attr in ['id', 'name', 'version', 'decompositions']
+          for attr in ['id', 'name', 'version', 'decompositions', 'thing']
             @s3[shape_set_id].regions[region.id][attr] = region[attr]
 
           if "shapes" of region

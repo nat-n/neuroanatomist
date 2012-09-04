@@ -150,7 +150,11 @@ class JaxDataController < ApplicationController
         when :perspective
           partial_response[i] = Hash[t:"p", cascade:asset[:cascade]].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
           perspectives << asset[:object].id if asset[:object].id
-          regions += partial_response[i][:regions].map{|r| r[:attrs][:id]} if partial_response[i][:regions]
+          if asset[:cascade] and asset[:cascade] != :no
+            regions += partial_response[i][:regions].map{|r| r[:attrs][:id]} if partial_response[i][:regions]
+          else
+            partial_response[i][:attrs][:regions] = partial_response[i].delete(:regions)
+          end
         when :region
          partial_response[i] = Hash[ t:"r", cascade:asset[:cascade]].merge(asset[:object].hash_partial(@shape_set, asset[:cascade]))
          regions << asset[:object].id if asset[:object].id

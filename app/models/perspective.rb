@@ -84,7 +84,7 @@ class Perspective < ActiveRecord::Base
         distance:   self.distance
       ]
     ]
-    hp[:regions] = self.active_regions.map {|ar| ar.hash_partial(shape_set,cascade)} if cascade
+    hp[:regions] = (cascade and cascade!=:no) ? self.active_regions.map {|ar| ar.hash_partial(shape_set,cascade)} : self.active_regions.map(&:id)
     return hp
   end
   
