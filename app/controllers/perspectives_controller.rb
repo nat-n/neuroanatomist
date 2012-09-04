@@ -74,7 +74,7 @@ class PerspectivesController  < Admin::BaseController
                                                                     params[:perspective][:angle].to_f     != @perspective.angle or
                                                                     params[:perspective][:distance].to_f  != @perspective.distance
     update_region_styles
-        
+    
     respond_to do |format|
       if @perspective.update_attributes(params[:perspective])
         @perspective.do_versioning @changes.to_s, current_user 
@@ -122,11 +122,10 @@ class PerspectivesController  < Admin::BaseController
           region_id = rstr.split("_").last.to_i
           region = Region.find(region_id)
           
-          
-          
           if (inclusion == "1" and (!@perspective.style_for(region) or (@perspective.style_for(region) and @perspective.style_for(region).orphaned == true))) or
               (inclusion == "0" and @perspective.style_for(region) and @perspective.style_for(region).orphaned == false)
-            @changes << :region and @perspective.aggr_update :major
+            @changes << :region
+            @perspective.aggr_update :major
           end
           
           if inclusion == "1" and

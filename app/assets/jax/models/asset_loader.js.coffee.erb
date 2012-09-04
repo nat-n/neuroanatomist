@@ -147,11 +147,15 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         stores = (os for os in @idb.config.stores when @idb.db.objectStoreNames.contains(os) and os != "logs" and os != "shape_set")
         shape_sets = []
         t = @idb.db.transaction(stores.concat(["shape_set"]), "readwrite")
-        t.onerror = if callback and determined # seems to skirt random errors, not entirely sure why, maybe chrome's memory management.
-            (e) => 
-              setTimeout (()=>@idb.load_everything(callback, false)), 100
-              console.log "caught error:"; console.log e
-          else (e) =>
+        callback = callback or (()->null)
+        if determined # seems to skirt random errors, not entirely sure why, maybe chrome's memory management.
+          console.log "first time"
+          t.onerror = (e) => 
+            setTimeout (()=>@idb.load_everything(callback, false)), 100
+            console.log "caught error:"; console.log e
+        else 
+          console.log "second time"
+          t.onerror = (e) =>
             console.log "caught error:"; console.log e
             callback()
         t.oncomplete = () =>

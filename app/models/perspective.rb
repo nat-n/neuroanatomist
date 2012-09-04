@@ -13,7 +13,12 @@ class Perspective < ActiveRecord::Base
   after_update :invalidate_caches
   
   include VersioningHelper
-    
+  
+  def version_bump size, description, user
+    super
+    JaxData.invalidate_caches_with :perspective => self, :shape_sets => ShapeSet.all
+  end
+  
   def regions
     has_external_styles? ? style_set.regions : styled_regions
   end
