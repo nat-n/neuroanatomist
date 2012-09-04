@@ -1,5 +1,4 @@
-class TagsController < ApplicationController
-  layout 'admin_areas'
+class TagsController < Admin::BaseController
 
   def index
     @tags = Tag.all

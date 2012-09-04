@@ -1,11 +1,9 @@
-class ResourcesController < ApplicationController
+class ResourcesController < Admin::BaseController
   before_filter :parse_tags, :only => [:create, :update]
   before_filter :find_resource_type, :only => [:create, :update]
   before_filter :find_resource, :only => [:show, :edit, :update, :destroy]
   before_filter :find_tags, :only => [:show, :edit]
   
-  # GET /resources
-  # GET /resources.json
   def index
     @resources = Resource.all
 
@@ -15,8 +13,6 @@ class ResourcesController < ApplicationController
     end
   end
 
-  # GET /resources/1
-  # GET /resources/1.json
   def show
 
     respond_to do |format|
@@ -25,8 +21,6 @@ class ResourcesController < ApplicationController
     end
   end
 
-  # GET /resources/new
-  # GET /resources/new.json
   def new
     @resource = Resource.new
 
@@ -36,12 +30,9 @@ class ResourcesController < ApplicationController
     end
   end
 
-  # GET /resources/1/edit
   def edit
   end
 
-  # POST /resources
-  # POST /resources.json
   def create
     @resource = Resource.new(params[:resource])
     respond_to do |format|
@@ -55,8 +46,6 @@ class ResourcesController < ApplicationController
     end
   end
 
-  # PUT /resources/1
-  # PUT /resources/1.json
   def update
     respond_to do |format|
       if @resource.update_attributes(params[:resource])
@@ -71,8 +60,6 @@ class ResourcesController < ApplicationController
     end
   end
 
-  # DELETE /resources/1
-  # DELETE /resources/1.json
   def destroy
     @resource.destroy
 
