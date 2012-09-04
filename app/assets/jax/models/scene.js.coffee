@@ -35,6 +35,7 @@ Jax.getGlobal()['Scene'] = Jax.Model.create
   activate_region: (id) ->
     @active_regions[id] = @all_regions[id]
     @active_ids.push id
+    @all_regions[id].decomposed = false
     return @active_regions[id]
     
   deactivate_region: (id) ->

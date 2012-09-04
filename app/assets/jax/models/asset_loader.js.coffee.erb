@@ -112,7 +112,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
           preq.onsuccess = (e) -> console.log "Data stored in indexedDB"
           preq.error = (e) -> console.log "Error putting data"; console.log e; failure e if failure
         success e if success            
-        undefined        
+        undefined
       
       
       load_s3: (ssid, callback, determined=true) =>
