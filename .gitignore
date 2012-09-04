@@ -14,6 +14,8 @@
 /log/*.log
 /tmp
 
+cached_responses/*
+
 /shape_sets/*
 shape_sets/*
 cached_responses/*
