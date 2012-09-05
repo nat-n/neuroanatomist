@@ -16,7 +16,7 @@
   <%= csrf_meta_tags %>
   <meta charset="utf-8" />
 </head>
-<%= content_tag :body, :onload => "start_jax('webgl',$('body').data('jaxController'))", :data => {jax_controller: @jax[:controller]} do %>
+<%= content_tag :body, :onload => "start_jax('webgl',$('body').data('jaxController'))", :data => (@jax ? {jax_controller: @jax[:controller]} : nil) do %>
 <div id="page">
   <header class="page">
     <%= render :partial => "layouts/header_bar" %>
