@@ -165,9 +165,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
           
           exec_cb_stack = (stack) =>
             cb = () =>
-              next = stack.pop()
-              if stack.length > 1 then next(cb)
-              else next stack.pop()
+              stack.pop() cb if stack.length
             stack.pop() cb
           
           ssids = (ssid for ssid of @s3)
@@ -176,7 +174,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
           
           # something truly bizare happens around here somewhere, but it doesn't seem to matter !?!?!
           for ssid of @s3
-            new_func = ((cb) => @idb.load_s3(ssids.shift(),cb))
+            new_func = ((ssid)=>((cb) => @idb.load_s3(ssid,cb)))(ssids.shift())
             stack.push new_func
           
           exec_cb_stack stack
