@@ -59,8 +59,9 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     new_url += r + "," for r in (@scene.active_regions[r].region_id for r of @scene.active_regions).uniq()
     new_url = new_url.slice(0,new_url.length-1)
     new_url += '#'+@mode if @mode
-    window.history.pushState state_object, new_title, new_url
+    window.history.pushState state_object, new_title, new_url unless @url_logging
     @history.previous_url = new_url
+    @history.log.push new_url
   
   load_state_from_url: () ->
     this.load_perspective_from_url this.get_param('p'), false

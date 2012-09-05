@@ -30,6 +30,9 @@ Jax.Controller.create "Explore", ApplicationController,
       updated: () -> updated
     )()
     
+    @url_logging = false
+    @show_hover = true
+    
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
 	  # load visualisation and node data via url, dom, or ajax

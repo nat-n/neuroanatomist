@@ -44,7 +44,10 @@ class PagesController < ApplicationController
       @shape_set = @shape_set.merge(@shape_set.delete(:attrs))
     
       # NOTE TO FUTURE SELF: will probably need some kind of check for perspective/shape_set compatibility here eventually
-    
+      @jax = Hash[
+        controller: 'explore'
+      ]
+      
       render :action => :explore
     end
   end

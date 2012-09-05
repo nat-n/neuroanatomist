@@ -82,10 +82,10 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
     if region
       if @hovered_region != region
         @hovered_region = region
-        this.update_label()
+        this.update_label() if @show_hover
       @paper.canvas.style.left = ""+pageX+"px"
       @paper.canvas.style.top = ""+pageY-@box.offset.y+"px"
-      @paper.canvas.style.opacity = 1
+      @paper.canvas.style.opacity = 1 if @show_hover
     else
       this.clear()
     @dragging = false
@@ -99,10 +99,10 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
     @menu.button.text.offset.x = @menu.button.offset.x+@menu.button.w/2
     
 
-  clear: ->
+  clear: (none_hovered=true) ->
     @paper.canvas.style.opacity = 0
     @menu.active = false
-    @hovered_region = null
+    @hovered_region = null if none_hovered
     @menu.set.remove() if @menu.set.remove?
     @box.set[0].attr 
       path: @box.path(@label.h)
@@ -111,6 +111,7 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
   show_menu: (pageX,pageY) ->
     if @hovered_region
       @menu.active = true
+      @paper.canvas.style.opacity = 1
       new_box_height = @label.h+10
       bg_offset   = @menu.button.offset.y - @menu.button.h
       text_offset = @menu.button.text.offset.y - @menu.button.h
@@ -156,6 +157,7 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
       @menu.set.forEach (elem) => elem.animate
         "clip-rect": "0,0,"+(@box.offset.x+@box.w)+","+new_box_height
         200
+      
   
   hide_menu: (pageX,pageY,region) ->
     @menu.active = false
@@ -164,11 +166,14 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
         path: @box.path(@label.h)
         #fill: gradient(@label.h)
         200
+        "linear"
+        () => this.clear(false) unless @show_hover
+        
       @menu.set.animate
         "clip-rect": "0,0,"+@box.offset.x+@box.w+",0"
         200
         "linear"
-        @menu.set.remove
+        @menu.set.remove()
     else
       this.clear()
     this.hover_region(pageX,pageY,region)

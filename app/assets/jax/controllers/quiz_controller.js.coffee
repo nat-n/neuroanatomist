@@ -7,7 +7,7 @@ Jax.Controller.create "Quiz", ApplicationController,
     @context.gl.clearColor(0.0, 0.0, 0.0, 0.0)
     @loader = AssetLoader.find "standard"
     @scene = Scene.find "primary"
-    @tooltip_ = SVGTooltip.find "region_dark"
+    @tooltip_ = SVGTooltip.find "options"
     @labeler_ = SVGLabeler.find "regions_light"
     @color_ = Color.find "standard"
     this.activate_tooltip()
@@ -30,6 +30,9 @@ Jax.Controller.create "Quiz", ApplicationController,
     )()
     
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
+    
+    @url_logging = true
+    @show_hover = false
     
     this.patch_world()
     
@@ -88,4 +91,4 @@ Jax.Controller.create "Quiz", ApplicationController,
     @labeler.pressed = false
     @labeler.source_labels()
     @labeler.draw()  
-  
+    

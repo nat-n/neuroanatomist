@@ -11,7 +11,7 @@ box:
     "opacity": 0.9
 
 label:
-  h: 25
+  h: 0
   text:
     style:
       "font":         "Helvetica"
@@ -35,4 +35,4 @@ menu:
         "fill":         "#0a0a0a"
         "opacity":      0.001
 
-show_hover: true
+show_hover: false
