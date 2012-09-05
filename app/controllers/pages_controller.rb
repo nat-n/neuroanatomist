@@ -4,7 +4,17 @@ class PagesController < ApplicationController
   def home
     render :debug and return if params.has_key? "debug"
     @node = Node.default
+    render :action => :explore
     return access_node nil, @node
+  end
+  
+  def explore
+    @node = Node.default
+    return access_node nil, @node
+  end
+  
+  def quiz
+    
   end
   
   def about
@@ -30,7 +40,7 @@ class PagesController < ApplicationController
     
       # NOTE TO FUTURE SELF: will probably need some kind of check for perspective/shape_set compatibility here eventually
     
-      render :action => :home
+      render :action => :explore
     end
   end
 

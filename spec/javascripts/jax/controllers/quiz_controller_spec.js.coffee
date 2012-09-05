@@ -1,8 +1,8 @@
-describe "ExploreController", ->
+describe "QuizController", ->
   controller = null
   
   beforeEach ->
-    SPEC_CONTEXT.redirectTo "explore/index"
+    SPEC_CONTEXT.redirectTo "quiz/index"
     controller = SPEC_CONTEXT.current_controller
   
   it "should do something", ->

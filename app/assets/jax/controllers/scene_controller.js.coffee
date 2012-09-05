@@ -1,4 +1,4 @@
-Jax.Controller.create "Scene", ApplicationController,
+Jax.Controller.create "Explore", ApplicationController,
   index: ->
     @active_shape_set = false
     @active_perspective = false
