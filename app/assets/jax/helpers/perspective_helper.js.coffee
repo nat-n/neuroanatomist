@@ -31,7 +31,7 @@ Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
     perspective.regions = perspective.regions.uniq()
     return perspective
   
-  load_perspective: (pid, fire=true) ->
+  load_perspective: (pid, fire=true, whitewash=false) ->
     # loads the referenced perspective from the asset store or log (determined by the id)
     # requires @active_shape_set to be set correctly
     #if String(pid).substring(0,1) == "l" # load from log
@@ -52,11 +52,14 @@ Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
     for region_id in perspective.regions
       missing_regions.push region_id unless region_id of @s3[@active_shape_set].regions
     
+    if whitewash then color = [1,1,1,1]
+    else color = null
+    
     if missing_regions.length
       @loader.fetch_regions @active_shape_set, missing_regions, (data) =>
         for region_id in perspective.regions                    #### !!! not sure what'll happen in jaxdata if fake region requested ???
           if region_id of @s3[@active_shape_set].regions
-            this.show_region @scene.new_region(@active_shape_set, region_id), false
+            this.show_region @scene.new_region(@active_shape_set, region_id, color), false
           else
             console.log "ERROR: No such region with id "+region_id
         this.regions_changed() if fire
@@ -64,7 +67,7 @@ Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
         @active_perspective = pid
     else
       for region_id in perspective.regions
-          this.show_region @scene.new_region(@active_shape_set, region_id), false
+          this.show_region @scene.new_region(@active_shape_set, region_id, color), false
       this.regions_changed() if fire
       this.hide_loading_spinner()
       @active_perspective = pid

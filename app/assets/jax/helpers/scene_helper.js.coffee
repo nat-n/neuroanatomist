@@ -3,13 +3,13 @@ Jax.getGlobal().SceneHelper = Jax.Helper.create
     @active_shape_set = shape_set
     this.configure_camera(@s3[@active_shape_set].center_point, @s3[@active_shape_set].radius)
   
-  decompose: (region_uid, fire=true) ->
+  decompose: (region_uid, fire=true, color) ->
     d = @world.objects[region_uid].decompositions[0]
     return false unless d
     @loader.fetch_regions @active_shape_set, d.sub_regions, (data) =>
       this.hide_region(region_uid, false) if region_uid in @scene.active_ids
       for item of data
-        this.show_region @scene.new_region(@active_shape_set, data[item].id), false
+        this.show_region @scene.new_region(@active_shape_set, data[item].id, color), false
       this.regions_changed() if fire
   
   show_region: (id, fire=true) ->

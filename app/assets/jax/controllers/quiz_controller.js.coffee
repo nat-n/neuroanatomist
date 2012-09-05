@@ -64,13 +64,13 @@ Jax.Controller.create "Quiz", ApplicationController,
           perspective_id  = perspective_id or data.default_shape_set.default_perspective
           this.activate_shape_set shape_set_id
           @loader.fetch_perspective shape_set_id, perspective_id, (data, textStatus, jqXHR) => 
-            this.load_perspective(perspective_id, false)
+            this.load_perspective(perspective_id, false, true)
             #this.update_history()
             this.hide_loading_spinner()
       else
         this.activate_shape_set shape_set_id
         @loader.fetch_perspective shape_set_id, perspective_id, (data, textStatus, jqXHR) =>
-          this.load_perspective(perspective_id, false)
+          this.load_perspective(perspective_id, false, true)
           #this.update_history()
           this.hide_loading_spinner()
     

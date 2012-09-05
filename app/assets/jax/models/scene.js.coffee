@@ -21,10 +21,10 @@ Jax.getGlobal()['Scene'] = Jax.Model.create
   active: (uid) ->
     uid in @active_ids
     
-  new_region: (shape_set_id, region_id) ->
+  new_region: (shape_set_id, region_id, color) ->
     # if this region has been instanciated before then return its uid from inactive regions
     return prev if prev = this.region_activated(region_id)
-    @newest_region = Region.find("standard").compose(shape_set_id, region_id)
+    @newest_region = Region.find("standard").compose(shape_set_id, region_id, color)
     @all_regions[@newest_region.id] = @newest_region
     @actived_regions[region_id] = @newest_region.id
     @newest_region.id
