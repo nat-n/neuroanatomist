@@ -1,8 +1,9 @@
 class ResourcesController < Admin::BaseController
-  before_filter :parse_tags, :only => [:create, :update]
-  before_filter :find_resource_type, :only => [:create, :update]
-  before_filter :find_resource, :only => [:show, :edit, :update, :destroy]
-  before_filter :find_tags, :only => [:show, :edit]
+  before_filter :parse_tags,          :only => [:create, :update]
+  before_filter :correct_formatting,  :only => [:create, :update]
+  before_filter :find_resource_type,  :only => [:create, :update]
+  before_filter :find_resource,       :only => [:show, :edit, :update, :destroy]
+  before_filter :find_tags,           :only => [:show, :edit]
   
   def index
     @resources = Resource.all
@@ -78,6 +79,9 @@ class ResourcesController < Admin::BaseController
     end
     def find_tags
       @tags = @resource.tags
+    end
+    def correct_formatting
+      params[:resource][:title] = params[:resource][:title].titleize!
     end
     def parse_tags
       params[:resource][:tags] = params[:resource][:tags].split(/\s/).map { |tag_string| Tag.find_or_create tag_string }
