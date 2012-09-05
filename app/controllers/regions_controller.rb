@@ -63,7 +63,8 @@ class RegionsController < Admin::BaseController
       redirect_to regions_path
     end
     def find_thing
-      params[:region][:thing] = Thing.where("name = ?",params[:region][:thing]).first
+      region_name =  params[:region][:thing].strip.gsub(/\s/,"_")
+      params[:region][:thing] = Thing.where("name = ?",region_name).first
     end
   
 end
