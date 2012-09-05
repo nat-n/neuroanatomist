@@ -31,8 +31,8 @@ Neuroanatomist::Application.routes.draw do
   
   namespace :ontology do
     root :to => "ontology#index"
-    post "/ontology/ontology" => "ontology#create"
-    get "/ontology/export" => "ontology#export"
+    post "/ontology" => "ontology#create"
+    get "/export" => "ontology#export"
     resources :types, :things, :relations, :facts
   end
   
