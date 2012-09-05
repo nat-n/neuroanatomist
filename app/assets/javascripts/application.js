@@ -13,4 +13,3 @@ window.start_jax = function (canvas_id, controller) {
   window.context = new Jax.Context(canvas_id)
   window.context.redirectTo(controller)
 }
-  

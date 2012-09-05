@@ -3,18 +3,23 @@ class PagesController < ApplicationController
   
   def home
     render :debug and return if params.has_key? "debug"
-    @node = Node.default
-    render :action => :explore
-    return access_node nil, @node
+    return explore
   end
   
   def explore
+    @jax = Hash[
+      controller: 'explore'
+    ]
     @node = Node.default
     return access_node nil, @node
   end
   
   def quiz
-    
+    @shape_set = ShapeSet.default
+    @perspective = ( @shape_set.default_perspective or nil )
+    @jax = Hash[
+      controller: 'quiz'
+    ]
   end
   
   def about

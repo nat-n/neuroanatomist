@@ -41,7 +41,8 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
       when 'editing_node'
         $('#edit_node')[0].show_edit()
       else
-        $('#edit_node')[0].hide_edit()
+        if $('.embedded_node').length
+          $('#edit_node')[0].hide_edit()
         if @mode and @mode[0] == '!'
           new_title = document.title
           state_object = {type:'m'}
