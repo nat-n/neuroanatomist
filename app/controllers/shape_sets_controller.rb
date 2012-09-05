@@ -90,6 +90,7 @@ class ShapeSetsController  < Admin::BaseController
         @shape_set.aggr_update :minor
         @shape_set.update_attribute :radius, params[:shape_set][:radius].to_f
         @shape_set.update_attribute :center_point, JSON.dump([params[:center_point][:x].to_f,params[:center_point][:y].to_f,params[:center_point][:z].to_f])
+      end
     end
     
 end

@@ -48,7 +48,7 @@ class ShapeSet < ActiveRecord::Base
   end
 
   def self.newest_version_of subject
-    ShapeSet.versions_of(subject).first#.sort{|a,b| a.version<=>b.version }.last
+    ShapeSet.versions_of(subject).sort{|a,b| a.version<=>b.version }.last
   end
   
   def previous_version
