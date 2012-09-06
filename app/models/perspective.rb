@@ -23,6 +23,10 @@ class Perspective < ActiveRecord::Base
     has_external_styles? ? style_set.regions : styled_regions
   end
   
+  def defined_for? shape_set
+    regions.map{|region| region.definition_for shape_set }.all?
+  end
+  
   def make_default_for shape_set
     shape_set.default_perspective_attr = self
   end

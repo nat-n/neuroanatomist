@@ -18,7 +18,7 @@ class ShapeSetsController  < Admin::BaseController
     new_version = params[:version][:version]
     @shape_set = ShapeSet.new(params[:shape_set])
     if @shape_set.validate_and_save shape_data, new_version, current_user
-      @shape_set.default_perspective = @perspective
+      @shape_set.default_perspective= @perspective
       @shape_set.save_shape_data
       @shape_set.generate_geometric_descriptions
       @shape_set.copy_region_definitons_from @shape_set.previous_version rescue nil
@@ -77,11 +77,10 @@ class ShapeSetsController  < Admin::BaseController
     end
     
     def find_or_create_default_perspective
-      perspective = params[:shape_set].delete :default_perspective
-      @perspective = if perspective == "Create new empty perspective"
+      @perspective = if params[:default_perspective] == "Create new empty perspective"
         Perspective.create :name => "new perspective #{Time.now.strftime("%Y%m%d%H%M%S%L")}"
       else
-        Perspective.where("name = ?", params[:shape_set][:default_perspective]).first
+        Perspective.where("name = ?", params[:default_perspective]).first
       end
     end
     

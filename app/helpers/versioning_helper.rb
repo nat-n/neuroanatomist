@@ -1,6 +1,6 @@
 module VersioningHelper
   def current_version
-    versions.where(:is_current => true).first
+    versions.where(:is_current => true).first or Version.init_for self, {}
   end
   
   def version

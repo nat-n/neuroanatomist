@@ -34,9 +34,9 @@
     <%= f.text_area :notes, :size => "33x6" %>
   </div>
   <div class="field">
-    <%= f.label :default_perspective %><br />
-    <%= f.select :default_perspective, 
-                 ["Create new empty perspective", *Perspective.all.map(&:name)],
+    <%= label :default_perspective, :shape_set %><br />
+    <%= select_tag :default_perspective,
+                 options_for_select(["Create new empty perspective", *Perspective.all.map(&:name)]),
                  :selected => @shape_set.default_perspective.name %>
   </div>
   <% if editing %>

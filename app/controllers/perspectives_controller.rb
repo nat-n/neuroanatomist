@@ -39,6 +39,7 @@ class PerspectivesController  < Admin::BaseController
   end
 
   def create
+    @changes = []
     if params.has_key? "perspective_file"
       contents = JSON.load params["perspective_file"].read
       unless contents["type"] == "perspective"

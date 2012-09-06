@@ -16,6 +16,7 @@ class Version < ActiveRecord::Base
     new_version.version_string = Versionomy.parse((params[:version].to_s or "0.0.1")).to_s
     object.versions << new_version
     new_version.save :validate => false
+    new_version
   end
   
   def self.current_for object # needs testing still
