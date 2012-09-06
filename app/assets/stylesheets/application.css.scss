@@ -67,6 +67,8 @@ h1#header_title a {
 	font-weight: bold;
 }
 
+/* @group nav */
+
 .header_nav {
 	float: left;
 	margin-left: 100px;
@@ -92,8 +94,21 @@ h1#header_title a {
 }
 
 .header_nav a:active {
-	background-color: #252525;	
+	background-color: #252525;
 }
+
+.header_nav a.current {
+	background-color: #feffff;
+	color: #222;
+	text-shadow: #909090 1px 1px 2px;
+	box-shadow: 0px -1px 2px #111;
+	margin-right: 6px;
+	margin-left: 6px;
+}
+
+
+
+/* @end */
 
 span#login {
 	float: right;
