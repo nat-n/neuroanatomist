@@ -36,3 +36,4 @@ menu:
         "opacity":      0.001
 
 show_hover: true
+menu_set: "explore"

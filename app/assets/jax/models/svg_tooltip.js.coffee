@@ -4,6 +4,30 @@ gradient = (h) ->
   h = 23 if h < 23 or not h
   "270-#7d7d7d:0-#0a0a0a:"+20/h*100
 
+menus = 
+  default:
+    Hide: () ->
+      window.context.current_controller.tooltip.paper.canvas.style["pointer-events"] = "none"
+      window.context.current_controller.hide_region(window.context.current_controller.tooltip.hovered_region.id)
+      window.context.current_controller.tooltip.clear()
+  explore:
+    About: () -> 
+      window.context.current_controller.sc_load_node(window.context.current_controller.tooltip.hovered_region.thing)
+      window.context.current_controller.tooltip.clear()
+    "Pick Colour": () ->
+      window.context.current_controller.color_.show_at(730,350,window.context.current_controller.tooltip.hovered_region)
+      window.context.current_controller.tooltip.clear()
+    "Show Parts": () ->
+      window.context.current_controller.decompose(window.context.current_controller.tooltip.hovered_region.id)
+      window.context.current_controller.tooltip.hovered_region.decomposed = true
+      window.context.current_controller.tooltip.clear()
+  quiz:
+    Select: () -> 0
+    "Show Parts": () ->
+      window.context.current_controller.decompose(window.context.current_controller.tooltip.hovered_region.id, true, [1,1,1,1])
+      window.context.current_controller.tooltip.hovered_region.decomposed = true
+      window.context.current_controller.tooltip.clear()
+
 Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
   after_initialize: ->
     @box.style.fill = gradient(@label.h)
@@ -35,21 +59,8 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
     @menu.button.offset       = { x:@box.offset.x, y:@label.h+5 }
     @menu.button.text.offset  = { x:@menu.button.offset.x+@menu.button.w/2 , y:@menu.button.offset.y+@menu.button.h/2 }    
     
-    @menu.items =
-      Hide: () ->
-        window.context.current_controller.tooltip.paper.canvas.style["pointer-events"] = "none"
-        window.context.current_controller.hide_region(window.context.current_controller.tooltip.hovered_region.id)
-        window.context.current_controller.tooltip.clear()
-      "Show Parts": () ->
-        window.context.current_controller.decompose(window.context.current_controller.tooltip.hovered_region.id)
-        window.context.current_controller.tooltip.hovered_region.decomposed = true
-        window.context.current_controller.tooltip.clear()
-      About: () -> 
-        window.context.current_controller.sc_load_node(window.context.current_controller.tooltip.hovered_region.thing)
-        window.context.current_controller.tooltip.clear()
-      "Pick Colour": () ->
-        window.context.current_controller.color_.show_at(730,350,window.context.current_controller.tooltip.hovered_region)
-        window.context.current_controller.tooltip.clear()
+    @menu.items = {}
+    $.extend @menu.items, menus[@menu_set], menus.default
     
     @box.set = @paper.set @paper.path(@box.path(@label.h)).attr(@box.style),
       @label.el = @paper.text(@box.offset.x+@box.w/2,@label.h/2,"").attr(@label.text.style)

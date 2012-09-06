@@ -32,7 +32,7 @@ Jax.Controller.create "Quiz", ApplicationController,
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
     @url_logging = true
-    @show_hover = false
+    @show_hover = true
     
     this.patch_world()
     
