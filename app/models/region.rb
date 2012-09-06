@@ -19,6 +19,11 @@ class Region < ActiveRecord::Base
   
   include VersioningHelper
   
+  def version
+    Version.init_for self, {} unless current_version
+    super
+  end
+  
   def version_bump size, description, user
     super
     # aggregate versioning

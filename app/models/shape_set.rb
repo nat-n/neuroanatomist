@@ -26,6 +26,11 @@ class ShapeSet < ActiveRecord::Base
     expired == true
   end
 
+  def deploy!
+    deploy = true
+    save
+  end
+  
   def deployed?
     deploy == true
   end
