@@ -21,7 +21,7 @@ class ShapeSetsController  < Admin::BaseController
       @shape_set.default_perspective= @perspective
       @shape_set.save_shape_data
       @shape_set.generate_geometric_descriptions
-      @shape_set.copy_region_definitons_from @shape_set.previous_version rescue nil
+      @shape_set.copy_details_and_definitions_from @shape_set.previous_version rescue nil
       flash[:notice] = "Shape Set has been created."
       redirect_to @shape_set
     else

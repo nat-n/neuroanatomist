@@ -58,7 +58,7 @@ class ShapeSet < ActiveRecord::Base
   
   def previous_version
     all_versions = ShapeSet.versions_of(subject).sort {|a,b| a.version<=>b.version}
-    own_index = all_versions.index(version)
+    own_index = all_versions.index(self)
     if own_index
       return nil if own_index == 0
       all_versions[own_index-1]
@@ -176,7 +176,7 @@ class ShapeSet < ActiveRecord::Base
     report
   end
   
-  def copy_region_definitons_from older_shape_set
+  def copy_details_and_definitions_from older_shape_set
     """ Attempts to copy region defintions from an another shape_set
         - Ignores definitions for already defined regions
         - Assumes identical naming of shapes
@@ -202,9 +202,13 @@ class ShapeSet < ActiveRecord::Base
     end
     true
     self.notes << failures if defined? failures
+    
+    radius = older_shape_set.radius
+    center_point = older_shape_set.center_point
+    save
   end
   
- def create_shape_based_perspective
+  def create_shape_based_perspective
     shape_regions = []
     shapes.each do |shape|
       # assumes there wouldn't be two regions of the same name!!
