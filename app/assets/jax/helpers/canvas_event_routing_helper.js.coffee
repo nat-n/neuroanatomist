@@ -10,12 +10,12 @@ Jax.getGlobal().CanvasEventRoutingHelper = Jax.Helper.create
     
   
   mouse_moved: (event) ->
-    # check @hover_flag
     picked = @world.pick(event.x, event.y)
     if picked and picked.id
       @scene.highlight(picked.id, @show_hover)
     else
-      picked = null 
+      picked = null
+      @scene.highlight()
     if @tooltip
       @tooltip.mouse_moved event.pageX, event.pageY, picked
   
