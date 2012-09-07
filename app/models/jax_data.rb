@@ -44,7 +44,7 @@ class JaxData < ActiveRecord::Base
   def access_locally
     check_expiration
     increment!
-    ENV["cache_server"] == "local" and (File.read(local_data_path_for(cache_id)) rescue false)
+    ENV["cache_server"] == "local" and (File.open("#{Rails.root}/cached_responses/#{cache_id}.json", 'r') rescue false)
   end
   
   def regions
