@@ -101,10 +101,9 @@ Jax.getGlobal()['Region'] = Jax.Model.create
         model_data.vertex_positions.push vp for vp in mesh.vertex_positions[vi3..vi3+2]
         # ensure normals face outwards
         if should_reverse
-          model_data.vertex_normals.push -vn for vn in mesh.vertex_normals[vi3..vi3+2]
+          model_data.vertex_normals.push -mesh.vertex_normals[vi3..vi3+2][0], -mesh.vertex_normals[vi3..vi3+2][2], mesh.vertex_normals[vi3..vi3+2][1]
         else
-          model_data.vertex_normals.push vn for vn in mesh.vertex_normals[vi3..vi3+2]
-    
+          model_data.vertex_normals.push mesh.vertex_normals[vi3..vi3+2][0], mesh.vertex_normals[vi3..vi3+2][2], -mesh.vertex_normals[vi3..vi3+2][1]
     # remap and copy faces
     model_data.faces.push index_map[fi] for fi in mesh.faces
     
