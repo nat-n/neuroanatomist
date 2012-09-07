@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120901125328) do
+ActiveRecord::Schema.define(:version => 20120907013558) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -348,6 +348,7 @@ ActiveRecord::Schema.define(:version => 20120901125328) do
     t.boolean  "is_current",     :default => true
     t.datetime "created_at",                       :null => false
     t.datetime "updated_at",                       :null => false
+    t.string   "contents"
   end
 
   add_index "versions", ["is_current"], :name => "index_versions_on_is_current"
