@@ -86,48 +86,4 @@ Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
     for uid of @world.objects
       perspective_def.regions.push @world.objects[uid].region_id
     perspective_def
-  
-  #log_current_perspective: () ->
-  #  # logs the current perspective and returns the id of the new log item
-  #  new_id = @history.log.length
-  #  @history.log.push
-  #    timestampe: Date.now()
-  #    event_type: "np" # new perspective 
-  #    perspective: this.save_perspective
-  #      id: "l"+new_id
-  #      name: "l-"+new_id
-  #      style_set: false # should really work this out from history
-  #  new_id
-  
-  #update_history: () ->
-  #  # updates the log, adds the current state to the back stack & clears the forward stack
-  #  @history.back.push this.log_current_perspective()
-  #  @history.forward.splice(0, @history.forward.length) if @history.forward.length
-  
-  #load_from_log: (direction, log_i) ->
-  #  # loads the referenced log item and logs the transition
-  #  this.load_perspective @history.log[log_i].perspective.id, false
-  #  @history.log.push
-  #    timestampe: Date.now()
-  #    event_type: direction # "b" for back or "f" for forward
-  #    perspective: log_i
-  #  @history.log.length-1
     
-  #go_back: () ->
-  #  @tooltip.clear()
-  #  if @history.back.length > 1
-  #    @history.forward.push @history.back.pop()
-  #    this.load_from_log "b", @history.back[@history.back.length-1]
-  #    @history.back[@history.back.length-1]
-  #  else false
-  #
-  #go_forward: () ->
-  #  @tooltip.clear()
-  #  if @history.forward.length
-  #    @history.back.push @history.forward.pop()
-  #    this.load_from_log "f", @history.back[@history.back.length-1]
-  #    @history.back[@history.back.length-1]
-  #  else false
-
-    
-  

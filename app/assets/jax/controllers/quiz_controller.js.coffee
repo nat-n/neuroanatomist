@@ -11,7 +11,7 @@ Jax.Controller.create "Quiz", ApplicationController,
     @labeler_ = SVGLabeler.find "regions_light"
     @color_ = Color.find "standard"
     this.activate_tooltip()
-    @history = window.context.history ?= { log: [], back: [], forward: [], previous_url: null }
+    @history = window.context.history ?= { log: [], back: [], forward: [], current: -1 }
     @s3 = window.context.s3 ?= {}
     @activity = (() =>
       c = 0
@@ -31,7 +31,7 @@ Jax.Controller.create "Quiz", ApplicationController,
     
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
-    @url_logging = true
+    @url_updating = false
     @show_hover = true
     
     this.patch_world()

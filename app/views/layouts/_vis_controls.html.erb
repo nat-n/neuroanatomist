@@ -9,6 +9,8 @@
     <%= label_tag(:label_type_labels, "Enable Labels") %>
   </div>
 <div id="undo_redo">
-	<button onclick="context.current_controller.go_back()">undo</button><button onclick="context.current_controller.go_forward()"> redo</button>
+	<button id="reset_button" onclick="context.current_controller.undo_all()"><<- Reset</button>
+	<button id="undo_button"  onclick="context.current_controller.undo()"><- Undo</button>
+	<button id="redo_button"  onclick="context.current_controller.redo()">Redo -></button>
 </div>
 </div>

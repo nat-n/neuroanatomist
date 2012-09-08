@@ -1,6 +1,6 @@
 Jax.getGlobal().ApplicationHelper = Jax.Helper.create
-  get_param: (name) ->
-    results = RegExp("[\\?&]" + name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]") + "=([^&#]*)").exec(window.location.href)
+  get_param: (name, url) ->
+    results = RegExp("[\\?&]" + name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]") + "=([^&#]*)").exec((url or window.location.href))
     return results[1] if results
     null
 
