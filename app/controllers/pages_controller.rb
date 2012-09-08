@@ -20,6 +20,7 @@ class PagesController < ApplicationController
     @jax = Hash[
       controller: 'quiz'
     ]
+    @quiz_list = Hash[Perspective.first.regions.map{|r| [r.id, r.name]}]
   end
   
   def about

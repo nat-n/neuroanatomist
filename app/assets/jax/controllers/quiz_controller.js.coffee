@@ -36,6 +36,8 @@ Jax.Controller.create "Quiz", ApplicationController,
     
     this.patch_world()
     
+    @qm = QuizMaster.find('select')
+    
     setTimeout (()=>@loader.idb.init(()=>setTimeout((()=>this.start()), 100))), 200
   
   

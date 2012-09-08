@@ -1,1 +1,38 @@
-lets do a quiz!
+
+<%= content_tag :div, :id=>"quiz_status", :class=>"neutral", :onclick=>"context.current_controller.qm.start('search', get_quiz_list())" do %>
+<p>Click to start!</p>
+<% end %>
+
+<div id="quiz_controls">
+  
+</div>
+
+<%= content_tag :div, :id=>"quiz_mode", :class=>"quiz_config" do %>
+mode: find and select OR label MCQ
+
+<% end %>
+
+<%= content_tag :div, :id=>"quiz_list", :class=>"quiz_config" do %>
+  <h3>Quiz Contents</h3>
+  <span class="check_all"><%= label :action, :check_all %>
+  <%= check_box :action, :check_all, :checked=>true %></span>
+  <%= content_tag :fieldset, :id=>:target_list  do%><ul>
+  <% @quiz_list.each do |n,r| %>
+  <li>
+    <%= label :target, n, r %>
+    <%= check_box :target, n, :checked=>true %>
+  </li>    
+  <% end %>
+  </ul><% end %>
+<% end %>
+
+
+<%= javascript_tag "
+$(window.get_quiz_list = function() { tlist = []; $('#target_list input[type=checkbox]:checked').each(function(f){tlist.push(parseInt(this.id.split('_')[1]))}); return tlist;},
+$('#quiz_list li').click(function(){$(this).children('input[type=checkbox]').attr('checked',!$(this).children('input[type=checkbox]').attr('checked'))}),
+$('#action_check_all').change(function(){
+  if(this.checked) $(this).siblings('label').html('Uncheck all')
+  else $(this).siblings('label').html('Check all')
+  $('#quiz_list input[type=checkbox]').attr('checked', this.checked)
+})
+)"%>

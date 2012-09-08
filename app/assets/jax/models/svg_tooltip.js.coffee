@@ -22,7 +22,9 @@ menus =
       window.context.current_controller.tooltip.hovered_region.decomposed = true
       window.context.current_controller.tooltip.clear()
   quiz:
-    Select: () -> 0
+    Select: () -> 
+      window.context.current_controller.qm.user_select window.context.current_controller.tooltip.hovered_region.region_id
+      window.context.current_controller.tooltip.clear()
     "Show Parts": () ->
       window.context.current_controller.decompose(window.context.current_controller.tooltip.hovered_region.id, true, [1,1,1,1])
       window.context.current_controller.tooltip.hovered_region.decomposed = true
