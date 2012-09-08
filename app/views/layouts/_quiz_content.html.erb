@@ -6,8 +6,10 @@
 
 <%= content_tag :div, :id=>"quiz_controls", :class=>"quiz_panel" do %>
   
+  <span id="quiz_progress">2/2</span>
   <button onclick="context.current_controller.qm.pass()">Skip Question</button>
   <button onclick="context.current_controller.qm.terminate()">End Quiz</button>
+  <div id="mcq_widgets">
   <ol id="mcq_answers">
     <li><input type="radio" id="answerA" name="radio" /><label for="answerA">Find area</label></li>
     <li><input type="radio" id="answerB" name="radio" /><label for="answerB">Label area</label></li>
@@ -16,7 +18,7 @@
     <li><input type="radio" id="answerE" name="radio" /><label for="answerE">Label area</label></li>
   </ol>
   <button onclick="">Submit answer</button>
-  
+  </div>
 <% end %>
 
 <%= content_tag :div, :id=>"quiz_mode", :class=>"quiz_panel" do %>

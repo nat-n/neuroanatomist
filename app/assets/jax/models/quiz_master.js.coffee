@@ -28,7 +28,7 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
   start: (mode, list) ->
     # mode is either search, or match
     # list should be an array of arrays of ids of regions which count as correct answers for this question
-    return false unless (regions = context.s3[context.current_controller.active_shape_set].regions) and list.length > 0
+    return false if !(regions = context.s3[context.current_controller.active_shape_set].regions) or !list.length or this.is_active()
     @quiz.list = []
     missing_regions = []
     for i in list
@@ -49,9 +49,12 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
     @quiz.timer.reset()
   
   terminate: (complete=false) -> 
-    @quiz.active = false
     @quiz.times.push Date.now
-    this.update_status("Quiz Complete! you scored "+@quiz.correct+"/"+@quiz.list.length, "neutral")
+    if complete
+      this.update_status("Quiz Complete! you scored "+@quiz.correct+"/"+@quiz.list.length+"<br>Click to Start another Quiz!", "neutral")
+    else
+      this.update_status("Quiz Canceled! you scored "+@quiz.correct+"/"+@quiz.active+" : "+(@quiz.list.length-@quiz.active)+" questions left.<br>Click to Start another Quiz!", "neutral")
+    @quiz.active = false
   
   user_select: (id) -> 
     return null unless this.is_active()
