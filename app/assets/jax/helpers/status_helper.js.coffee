@@ -51,7 +51,7 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
         @mode = null
       
   update_url: () ->
-    return false if @history.previous_url and @history.previous_url == window.location.href
+    return false if @history.back[@history.back.length-1] and @history.back[@history.back.length-1] == window.location.href
     new_title = document.title
     state_object = {type:'p'}
     cp = this.camera_position()
@@ -87,6 +87,7 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     @history.forward.push @history.current
     @history.current = @history.back.pop()
     this.load_perspective_from_url this.get_param('p', @history.log[@history.current]), false
+    this.update_buttons()
   
   undo_all: () ->
     return false unless @history.back.length
@@ -95,6 +96,7 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     @history.log.push "reset"
     @history.forward = []
     @history.back = []
+    this.update_buttons()
 
   redo: () ->
     return false unless @history.forward.length
@@ -102,9 +104,19 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     @history.back.push @history.current
     @history.current = @history.forward.pop()
     this.load_perspective_from_url this.get_param('p', @history.log[@history.current]), false    
+    this.update_buttons()
     
   change: (new_url) ->
     @history.forward = []
     @history.log.push new_url
     @history.back.push @history.current if @history.current>=0
     @history.current = @history.log.length-1
+    this.update_buttons()
+  
+  update_buttons: () ->
+    $('#undo_redo button').removeAttr('disabled')
+    $('#undo_button').attr('disabled', 'disabled') unless @history.back.length
+    $('#redo_button').attr('disabled', 'disabled') unless @history.forward.length
+    
+  
+

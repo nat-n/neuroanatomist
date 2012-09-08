@@ -72,13 +72,11 @@ Jax.Controller.create "Explore", ApplicationController,
           this.activate_shape_set shape_set_id
           @loader.fetch_perspective shape_set_id, perspective_id, (data, textStatus, jqXHR) => 
             this.load_perspective(perspective_id, false)
-            #this.update_history()
             this.hide_loading_spinner()
       else
         this.activate_shape_set shape_set_id
         @loader.fetch_perspective shape_set_id, perspective_id, (data, textStatus, jqXHR) =>
           this.load_perspective(perspective_id, false)
-          #this.update_history()
           this.hide_loading_spinner()
 	
   activate_tooltip: () ->

@@ -34,12 +34,6 @@ Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
   load_perspective: (pid, fire=true, whitewash=false) ->
     # loads the referenced perspective from the asset store or log (determined by the id)
     # requires @active_shape_set to be set correctly
-    #if String(pid).substring(0,1) == "l" # load from log
-    #  console.log parseInt(pid.substring(1,pid.length))s3
-    #  
-    #  perspective = @history.log[parseInt(pid.substring(1,pid.length))].perspective
-    #  return this.load_perspective(perspective) if typeof perspective == "string"
-    #else 
     perspective = @s3[@active_shape_set].perspectives[pid] # load from s3
     this.clear_regions(false)
     cp = this.camera_position()
