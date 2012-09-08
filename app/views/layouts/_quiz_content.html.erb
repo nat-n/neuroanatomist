@@ -1,18 +1,33 @@
-
+<div id="quiz_area">
+  
 <%= content_tag :div, :id=>"quiz_status", :class=>"neutral", :onclick=>"context.current_controller.qm.start('search', get_quiz_list())" do %>
 <p>Click to start!</p>
 <% end %>
 
-<div id="quiz_controls">
+<%= content_tag :div, :id=>"quiz_controls", :class=>"quiz_panel" do %>
   
-</div>
-
-<%= content_tag :div, :id=>"quiz_mode", :class=>"quiz_config" do %>
-mode: find and select OR label MCQ
-
+  <button onclick="context.current_controller.qm.pass()">Skip Question</button>
+  <button onclick="context.current_controller.qm.terminate()">End Quiz</button>
+  <ol id="mcq_answers">
+    <li><input type="radio" id="answerA" name="radio" /><label for="answerA">Find area</label></li>
+    <li><input type="radio" id="answerB" name="radio" /><label for="answerB">Label area</label></li>
+    <li><input type="radio" id="answerC" name="radio" /><label for="answerC">Find area</label></li>
+    <li><input type="radio" id="answerD" name="radio" /><label for="answerD">Label area</label></li>
+    <li><input type="radio" id="answerE" name="radio" /><label for="answerE">Label area</label></li>
+  </ol>
+  <button onclick="">Submit answer</button>
+  
 <% end %>
 
-<%= content_tag :div, :id=>"quiz_list", :class=>"quiz_config" do %>
+<%= content_tag :div, :id=>"quiz_mode", :class=>"quiz_panel" do %>
+<h3>Quiz Type</h3>
+<div id="buttonset">
+<input type="radio" id="search_mode" name="radio" /><label for="search_mode">Find area</label>
+<input type="radio" id="mcq_mode" name="radio" checked="checked" /><label for="mcq_mode">Label area</label>
+</div>
+<% end %>
+
+<%= content_tag :div, :id=>"quiz_list", :class=>"quiz_panel" do %>
   <h3>Quiz Contents</h3>
   <span class="check_all"><%= label :action, :check_all %>
   <%= check_box :action, :check_all, :checked=>true %></span>
@@ -29,10 +44,14 @@ mode: find and select OR label MCQ
 
 <%= javascript_tag "
 $(window.get_quiz_list = function() { tlist = []; $('#target_list input[type=checkbox]:checked').each(function(f){tlist.push(parseInt(this.id.split('_')[1]))}); return tlist;},
-$('#quiz_list li').click(function(){$(this).children('input[type=checkbox]').attr('checked',!$(this).children('input[type=checkbox]').attr('checked'))}),
+$('#quiz_list li input[type=checkbox]').click(function(e){e.stopImmediatePropagation()}),
+$('#quiz_list li').click(function(e){$(this).children('input[type=checkbox]').attr('checked',!$(this).children('input[type=checkbox]').attr('checked'))}),
 $('#action_check_all').change(function(){
   if(this.checked) $(this).siblings('label').html('Uncheck all')
   else $(this).siblings('label').html('Check all')
   $('#quiz_list input[type=checkbox]').attr('checked', this.checked)
 })
-)"%>
+)
+$('#buttonset').buttonset()
+"%>
+</div>

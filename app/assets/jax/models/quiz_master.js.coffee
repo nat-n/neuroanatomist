@@ -40,7 +40,7 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
     this.proceed()
   
   pass: () ->
-    context.current_controller.qm.proceed()
+    this.proceed() if this.is_active()
   
   proceed: () ->
     @quiz.active += 1

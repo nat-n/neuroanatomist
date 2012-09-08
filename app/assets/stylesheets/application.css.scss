@@ -412,10 +412,17 @@ iframe {
 
 /* @group quiz */
 
+#quiz_area {
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	overflow: auto;
+}
+
 #quiz_status {
 	border-radius: 15px;
-	width: 95%;
-	height: 40px;
+	width: 99%;
+	height: 45px;
 	padding: 5px;
 	text-align: center;
 	vertical-align: middle;
@@ -447,9 +454,14 @@ iframe {
 	color: #f5f5f5;
 	text-shadow: #000 1px 1px 5px;
 	font: 1.2em "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+	letter-spacing: 0.08em;
 }
 
-.quiz_config {
+#quiz_controls {
+	display: block;
+}
+
+.quiz_panel {
 	border-radius: 10px;
 	display: inline-block;
 	background-color: #ffffff;
@@ -457,6 +469,29 @@ iframe {
 	border: 1px solid #cacaca;
 	margin: 5px;
 	vertical-align: top;
+}
+
+#mcq_answers {
+	list-style-type: upper-alpha;
+	list-style-position: outside;
+	padding-left: 35px;
+}
+
+#mcq_answers li {
+	margin: 2px;
+}
+
+#mcq_answers label {
+	margin-left: 2px;
+}
+
+.check_all {
+	text-align: right;
+	display: block;
+	width: auto;
+	padding-right: 1px;
+	margin-top: -18px;
+	text-decoration: underline;
 }
 
 #quiz_list {
@@ -471,9 +506,10 @@ iframe {
 #quiz_list li {
 	list-style-type: none;
 	padding: 1px;
-	margin: 2px;
 	width: auto;
 	height: auto;
+	margin-top: 2px;
+	margin-bottom: 1px;
 }
 
 #quiz_list li label {
@@ -483,17 +519,6 @@ iframe {
 
 #quiz_list li input[type=checkbox] {
 	float: right;
-}
-
-#quiz_controls {
-	
-}
-
-.check_all {
-	text-align: right;
-	display: block;
-	width: auto;
-	padding-right: 3px;
 }
 
 /* @end */
