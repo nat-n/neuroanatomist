@@ -24,8 +24,8 @@
 <%= content_tag :div, :id=>"quiz_mode", :class=>"quiz_panel" do %>
 <h3>Quiz Type</h3>
 <div id="buttonset">
-<input type="radio" id="search_mode" name="radio" /><label for="search_mode">Find area</label>
-<input type="radio" id="mcq_mode" name="radio" checked="checked" /><label for="mcq_mode">Label area</label>
+<input type="radio" id="search_mode" name="radio" /><label for="search_mode">Find area that matches a label</label><br>
+<input type="radio" id="mcq_mode" name="radio" checked="checked" /><label for="mcq_mode">Choose label that matches an area</label>
 </div>
 <% end %>
 
@@ -43,6 +43,11 @@
   </ul><% end %>
 <% end %>
 
+<%= content_tag :div, :id=>"quiz_stats", :class=>"quiz_panel" do %>
+<h3>Your Quiz Stats</h3>
+Graph accuracy for each item
+<% end %>
+
 
 <%= javascript_tag "
 $(window.get_quiz_list = function() { tlist = []; $('#target_list input[type=checkbox]:checked').each(function(f){tlist.push(parseInt(this.id.split('_')[1]))}); return tlist;},
@@ -54,6 +59,5 @@ $('#action_check_all').change(function(){
   $('#quiz_list input[type=checkbox]').attr('checked', this.checked)
 })
 )
-$('#buttonset').buttonset()
 "%>
 </div>
