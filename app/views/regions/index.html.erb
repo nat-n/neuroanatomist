@@ -8,6 +8,7 @@
     <th>Description</th>
     <th>Definitions</th>
     <th>Decompositions</th>
+    <th>Has Perspective?</th>
     <th>Perspectives</th>
     <th></th>
     <th></th>
@@ -21,6 +22,7 @@
     <td><%= region.description %></td>
     <td><%= region.region_definitions.size %></td>
     <td><%= region.decompositions.size %></td>
+    <td><%= region.default_perspective ? "√" : "" %></td>
     <td><%= region.perspectives.size %></td>
     <td><%= link_to 'Destroy', region, confirm: 'Are you sure?', method: :delete %></td>
   </tr>

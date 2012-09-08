@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120907013558) do
+ActiveRecord::Schema.define(:version => 20120908181436) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -128,6 +128,11 @@ ActiveRecord::Schema.define(:version => 20120907013558) do
   add_index "perspectives", ["node_id"], :name => "index_perspectives_on_node_id"
   add_index "perspectives", ["style_set_id"], :name => "index_perspectives_on_style_set_id"
 
+  create_table "quizzes", :force => true do |t|
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "ratings", :force => true do |t|
     t.float    "value"
     t.string   "comment"
@@ -176,12 +181,14 @@ ActiveRecord::Schema.define(:version => 20120907013558) do
   create_table "regions", :force => true do |t|
     t.string   "name"
     t.string   "description"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
     t.integer  "thing_id"
     t.string   "label"
+    t.integer  "default_perspective_id"
   end
 
+  add_index "regions", ["default_perspective_id"], :name => "index_regions_on_default_perspective_id"
   add_index "regions", ["name"], :name => "index_regions_on_name"
   add_index "regions", ["thing_id"], :name => "index_regions_on_thing_id"
 
