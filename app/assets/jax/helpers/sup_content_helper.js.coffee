@@ -29,7 +29,7 @@ Jax.getGlobal().SupContentHelper = Jax.Helper.create
         return this.sc_load_node(61) # this shouldn't be hard coded!
     this.sc_clear_tabs
     this.sc_clear_tabs()
-    this.sc_new_tab 'Node',         node_data.embedded_node
+    this.sc_new_tab 'Notes',         node_data.embedded_node
     this.sc_new_tab 'Wikipedia',    "<iframe src='"+node_data.wikipedia_uri+"'></iframe>"    if node_data.wikipedia_uri
     this.sc_new_tab 'Scholarpedia', "<iframe src='"+node_data.scholarpedia_uri+"'></iframe>" if node_data.scholarpedia_uri
     this.sc_new_tab 'Resources',    "resources template goes here"
