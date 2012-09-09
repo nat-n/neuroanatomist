@@ -10,11 +10,14 @@
     <th></th>
     <th></th>
     <th></th>
+    <th></th>
   </tr>
 
-<% @region_styles.each do |region_style| %>
+<% @region_styles.each do |region_style| 
+  is_default = (region_style.perspective == region_style.region.default_perspective)
+  %>
   <tr>
-    <td><%= link_to region_style.perspective.name, region_style.perspective %></td>
+    <td><%= link_to region_style.perspective.name, region_style.perspective, :class=>(is_default ?  "bold" : "") %></td>
     <td><%= region_style.perspective.description %></td>
     <td><%= region_style.perspective.region_styles.size %></td>
     <td><%= region_style.colour %></td>
@@ -23,6 +26,8 @@
     <td><%= region_style.orphaned %></td>
     <td><%= link_to 'Show', region_style %></td>
     <td><%= link_to 'Edit', edit_region_style_path(region_style) %></td>
+    <td><%= is_default ? "" : link_to('Make Default', region_path(:region => {:default_perspective_id => region_style.perspective.id}), :method=> :put) %></td>
   </tr>
 <% end %>
 </table>
+<%= link_to('Create new perspective with this region', new_perspective_path(region:[@region.id])) %>
