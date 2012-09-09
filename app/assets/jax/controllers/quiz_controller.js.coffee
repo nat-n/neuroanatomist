@@ -38,8 +38,15 @@ Jax.Controller.create "Quiz", ApplicationController,
     
     @qm = QuizMaster.find('select')
     
+    region_data = $('#target_list').data('regions')
+    @accessible = ([r,(if region_data[r].name.substring(0,3) is "L. " then region_data[r].name.replace("L. ","Left ") else region_data[r].name.replace("R. ","Right "))] for r of region_data when region_data[r].a)
+    @accessible = @accessible.sortBy(1)
+    @viewable = ([r,(if region_data[r].name.substring(0,3) is "L. " then region_data[r].name.replace("L. ","Left ") else region_data[r].name.replace("R. ","Right ")), region_data[r].p] for r of region_data when region_data[r].p)
+    @viewable = @viewable.sortBy(1)
+
     setTimeout (()=>@loader.idb.init(()=>setTimeout((()=>this.start()), 100))), 200
-  
+    
+    this.update_quiz_mode()
   
   helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper, StatusHelper, SceneHelper ]
   
@@ -90,5 +97,26 @@ Jax.Controller.create "Quiz", ApplicationController,
     @tooltip = null
     @labeler.pressed = false
     @labeler.source_labels()
-    @labeler.draw()  
+    @labeler.draw()
+  
+  update_quiz_mode: () ->
+    if $('input[name=quiz_modes]:checked').attr('id') is "search_mode"
+      @qm.quiz.mode = "search"
+      quizable = @accessible
+    else if $('input[name=quiz_modes]:checked').attr('id') is "mcq_mode"
+      @qm.quiz.mode = "mcq"
+      quizable = @viewable
+    $('#target_list ul').html("")
+    for r in quizable
+      $('#target_list ul').append $("<li><label for='target_"+r[0]+"'>"+r[1]+"</label><input type='checkbox' id='target_"+r[0]+"' checked='checked'/></li>")
+    $('#quiz_list li label, #quiz_list li input[type=checkbox]').click((e) -> e.stopImmediatePropagation())
+    $('#quiz_list li').click((e)->$(this).children('input[type=checkbox]').attr('checked',!$(this).children('input[type=checkbox]').attr('checked')))
     
+      #<% @quiz_list.each do |n,r| %>
+      #<li>
+      #  <%= label :target, n, r %>
+      #  <%= check_box :target, n, :checked=>true %>
+      #</li>    
+      #<% end %>
+      #
+  

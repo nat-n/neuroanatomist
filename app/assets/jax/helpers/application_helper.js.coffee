@@ -13,6 +13,14 @@ Jax.getGlobal().ApplicationHelper = Jax.Helper.create
         ret.push arr[i] if arr[i-1] != arr[i]
       ret;
       
+    Array.prototype.sortBy = (key) ->
+      sb = (key, a, b, r) ->
+        r = if r then 1 else -1
+        return -1*r if a[key] > b[key]
+        return +1*r if a[key] < b[key]
+        return 0
+      this.sort (a,b) -> sb(key, a, b)
+        
     Jax.World.prototype.find_region_centers = () ->
       show_debug_view = window.location.href.split("?")[1] and window.location.href.split("?")[1].split("&").indexOf("debug")>=0
       

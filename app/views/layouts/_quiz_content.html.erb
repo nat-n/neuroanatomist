@@ -1,6 +1,6 @@
 <div id="quiz_area">
   
-<%= content_tag :div, :id=>"quiz_status", :class=>"neutral", :onclick=>"context.current_controller.qm.start('search', get_quiz_list())" do %>
+<%= content_tag :div, :id=>"quiz_status", :class=>"neutral", :onclick=>"context.current_controller.qm.start(get_quiz_list())" do %>
 <p>Click to start!</p>
 <% end %>
 
@@ -11,11 +11,11 @@
   <button onclick="context.current_controller.qm.terminate()">End Quiz</button>
   <div id="mcq_widgets">
   <ol id="mcq_answers">
-    <li><input type="radio" id="answerA" name="radio" /><label for="answerA">Find area</label></li>
-    <li><input type="radio" id="answerB" name="radio" /><label for="answerB">Label area</label></li>
-    <li><input type="radio" id="answerC" name="radio" /><label for="answerC">Find area</label></li>
-    <li><input type="radio" id="answerD" name="radio" /><label for="answerD">Label area</label></li>
-    <li><input type="radio" id="answerE" name="radio" /><label for="answerE">Label area</label></li>
+    <li><input type="radio" id="answerA" name="mcq_answers" /><label for="answerA">Find area</label></li>
+    <li><input type="radio" id="answerB" name="mcq_answers" /><label for="answerB">Label area</label></li>
+    <li><input type="radio" id="answerC" name="mcq_answers" /><label for="answerC">Find area</label></li>
+    <li><input type="radio" id="answerD" name="mcq_answers" /><label for="answerD">Label area</label></li>
+    <li><input type="radio" id="answerE" name="mcq_answers" /><label for="answerE">Label area</label></li>
   </ol>
   <button onclick="">Submit answer</button>
   </div>
@@ -24,8 +24,8 @@
 <%= content_tag :div, :id=>"quiz_mode", :class=>"quiz_panel" do %>
 <h3>Quiz Type</h3>
 <div id="buttonset">
-<input type="radio" id="search_mode" name="radio" /><label for="search_mode">Find area that matches a label</label><br>
-<input type="radio" id="mcq_mode" name="radio" checked="checked" /><label for="mcq_mode">Choose label that matches an area</label>
+<input type="radio" id="search_mode" name="quiz_modes" checked="checked" /><label for="search_mode">Find area that matches a label</label><br>
+<input type="radio" id="mcq_mode"    name="quiz_modes" /><label for="mcq_mode">Choose label that matches an area</label>
 </div>
 <% end %>
 
@@ -33,13 +33,8 @@
   <h3>Quiz Contents</h3>
   <span class="check_all"><%= label :action, :check_all %>
   <%= check_box :action, :check_all, :checked=>true %></span>
-  <%= content_tag :fieldset, :id=>:target_list  do%><ul>
-  <% @quiz_list.each do |n,r| %>
-  <li>
-    <%= label :target, n, r %>
-    <%= check_box :target, n, :checked=>true %>
-  </li>    
-  <% end %>
+  <%= content_tag :fieldset, :id=>:target_list, :data=>{:regions=>@quiz_list} do %><ul>
+  
   </ul><% end %>
 <% end %>
 
@@ -51,8 +46,6 @@ Graph accuracy for each item
 
 <%= javascript_tag "
 $(window.get_quiz_list = function() { tlist = []; $('#target_list input[type=checkbox]:checked').each(function(f){tlist.push(parseInt(this.id.split('_')[1]))}); return tlist;},
-$('#quiz_list li input[type=checkbox]').click(function(e){e.stopImmediatePropagation()}),
-$('#quiz_list li').click(function(e){$(this).children('input[type=checkbox]').attr('checked',!$(this).children('input[type=checkbox]').attr('checked'))}),
 $('#action_check_all').change(function(){
   if(this.checked) $(this).siblings('label').html('Uncheck all')
   else $(this).siblings('label').html('Check all')

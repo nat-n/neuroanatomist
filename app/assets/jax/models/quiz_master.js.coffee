@@ -25,7 +25,8 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
         }
       )()
   
-  start: (mode, list) ->
+  start: (list) ->
+    console.log list
     # mode is either search, or match
     # list should be an array of arrays of ids of regions which count as correct answers for this question
     return false if !(regions = context.s3[context.current_controller.active_shape_set].regions) or !list.length or this.is_active()

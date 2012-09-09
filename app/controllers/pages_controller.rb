@@ -20,7 +20,12 @@ class PagesController < ApplicationController
     @jax = Hash[
       controller: 'quiz'
     ]
-    @quiz_list = Hash[Perspective.first.regions.map{|r| [r.id, r.name]}]
+    
+    accessible = Quiz.accessible_regions.select{|r| r.definition_for @shape_set}
+    viewable   = Quiz.viewable_regions.select{|r| r.definition_for @shape_set}
+    
+    @quiz_list = Hash[accessible.map{|r| [r.id, {name:r.name, a:true}]}]
+    viewable.each { |r| @quiz_list[r.id] = {name:r.name, a:(@quiz_list[r.id] ? true : false), p:r.default_perspective_id} }
   end
   
   def about
