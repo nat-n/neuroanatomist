@@ -1,10 +1,10 @@
 <% 
 if params[:region]
   params[:regions] = [*params[:region]]
-  default_name = "Perspective for #{Region.find(:first,params[:region]).name}"
+  default_name = "Perspective for #{Region.find(params[:region]).first.name}" if params[:region]
 end
-params[:regions] and params[:regions].map!(&:to_i) %>
-
+default_name = @perspective.name if @perspective.name
+params[:regions] and params[:regions].map!(&:to_i) rescue nil%>
 <%= form_for(@perspective) do |f| %>
   <% if @perspective.errors.any? %>
     <div id="error_explanation">

@@ -43,5 +43,5 @@
 <%= link_to "New Decomposition", new_decomposition_path(:region => @region.name) %>
 <br><br>
 <h3>Perspectives/Styles</h3>
-<%= @region_styles = @region.region_styles; render :partial => 'region_styles/index'%>
+<%= render :partial => 'perspectives/index'%>
 <br>

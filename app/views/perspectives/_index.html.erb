@@ -1,3 +1,6 @@
+<% 
+@region_styles = @region.region_styles
+%>
 <table class="backend_data">
   <tr>
     <th>Perspective</th>
@@ -24,10 +27,26 @@
     <td><%= region_style.transparency %></td>
     <td><%= region_style.label %></td>
     <td><%= region_style.orphaned %></td>
-    <td><%= link_to 'Show', region_style %></td>
-    <td><%= link_to 'Edit', edit_region_style_path(region_style) %></td>
+    <td><%= link_to 'Show', region_style.perspective %></td>
+    <td><%= link_to 'Edit', edit_perspective_path(region_style.perspective) %></td>
     <td><%= is_default ? "" : link_to('Make Default', region_path(:region => {:default_perspective_id => region_style.perspective.id}), :method=> :put) %></td>
   </tr>
+  <% region_style.perspective.points_of_view.each do |pov| 
+    is_default = (pov == region_style.region.default_perspective)
+    %>
+  <tr>
+    <td><%= link_to pov.name, pov, :class=>(is_default ?  "bold" : "") %></td>
+    <td><%= pov.description %></td>
+    <td><%= pov.region_styles.size %></td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td><%= link_to 'Show', pov %></td>
+    <td><%= link_to 'Edit', edit_perspective_path(pov) %></td>
+    <td><%= is_default ? "" : link_to('Make Default', region_path(:region => {:default_perspective_id => pov.id}), :method=> :put) %></td>
+  </tr>
+  <% end %>
 <% end %>
 </table>
 <%= link_to('Create new perspective with this region', new_perspective_path(region:[@region.id])) %>
