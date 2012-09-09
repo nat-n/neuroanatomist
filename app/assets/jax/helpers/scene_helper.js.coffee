@@ -8,8 +8,8 @@ Jax.getGlobal().SceneHelper = Jax.Helper.create
     return false unless d
     @loader.fetch_regions @active_shape_set, d.sub_regions, (data) =>
       this.hide_region(region_uid, false) if region_uid in @scene.active_ids
-      for item of data
-        this.show_region @scene.new_region(@active_shape_set, data[item].id, color), false
+      for rid in d.sub_regions
+        this.show_region @scene.new_region(@active_shape_set, rid, color), false
       this.regions_changed() if fire
   
   show_region: (id, fire=true) ->

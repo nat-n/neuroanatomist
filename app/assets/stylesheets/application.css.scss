@@ -458,7 +458,7 @@ iframe {
 }
 
 #quiz_controls {
-	display: block;
+	display: none;
 }
 
 .quiz_panel {
@@ -469,6 +469,19 @@ iframe {
 	border: 1px solid #cacaca;
 	margin: 5px;
 	vertical-align: top;
+}
+
+#quiz_progress {
+	font-size: 1.2em;
+	font-weight: bold;
+	vertical-align: baseline;
+	padding: 3px;
+	position: relative;
+	top: 2px;
+}
+
+#mcq_widgets {
+	display: none;
 }
 
 #mcq_answers {
@@ -483,6 +496,14 @@ iframe {
 
 #mcq_answers label {
 	margin-left: 2px;
+}
+
+#quiz_setup {
+	display: block;
+}
+
+#quiz_mode .buttonset {
+	margin-top: 2px;
 }
 
 .check_all {

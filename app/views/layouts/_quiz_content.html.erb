@@ -1,7 +1,7 @@
 <div id="quiz_area">
   
 <%= content_tag :div, :id=>"quiz_status", :class=>"neutral", :onclick=>"context.current_controller.qm.start(get_quiz_list())" do %>
-<p>Click to start!</p>
+<p></p>
 <% end %>
 
 <%= content_tag :div, :id=>"quiz_controls", :class=>"quiz_panel" do %>
@@ -11,19 +11,15 @@
   <button onclick="context.current_controller.qm.terminate()">End Quiz</button>
   <div id="mcq_widgets">
   <ol id="mcq_answers">
-    <li><input type="radio" id="answerA" name="mcq_answers" /><label for="answerA">Find area</label></li>
-    <li><input type="radio" id="answerB" name="mcq_answers" /><label for="answerB">Label area</label></li>
-    <li><input type="radio" id="answerC" name="mcq_answers" /><label for="answerC">Find area</label></li>
-    <li><input type="radio" id="answerD" name="mcq_answers" /><label for="answerD">Label area</label></li>
-    <li><input type="radio" id="answerE" name="mcq_answers" /><label for="answerE">Label area</label></li>
   </ol>
-  <button onclick="">Submit answer</button>
+  <button onclick="window.context.current_controller.qm.user_select($('#mcq_answers input[type=radio]:checked').attr('id').split('_')[1])">Submit answer</button>
   </div>
 <% end %>
 
+<div id="quiz_setup">
 <%= content_tag :div, :id=>"quiz_mode", :class=>"quiz_panel" do %>
 <h3>Quiz Type</h3>
-<div id="buttonset">
+<div class="buttonset">
 <input type="radio" id="search_mode" name="quiz_modes" checked="checked" /><label for="search_mode">Find area that matches a label</label><br>
 <input type="radio" id="mcq_mode"    name="quiz_modes" /><label for="mcq_mode">Choose label that matches an area</label>
 </div>
@@ -42,7 +38,7 @@
 <h3>Your Quiz Stats</h3>
 Graph accuracy for each item
 <% end %>
-
+</div>
 
 <%= javascript_tag "
 $(window.get_quiz_list = function() { tlist = []; $('#target_list input[type=checkbox]:checked').each(function(f){tlist.push(parseInt(this.id.split('_')[1]))}); return tlist;},
@@ -52,5 +48,6 @@ $('#action_check_all').change(function(){
   $('#quiz_list input[type=checkbox]').attr('checked', this.checked)
 })
 )
+$('#quiz_mode input[type=radio]').change(function(){window.context.current_controller.update_quiz_mode()})
 "%>
 </div>

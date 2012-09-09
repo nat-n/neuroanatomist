@@ -12,7 +12,7 @@ Jax.getGlobal().ApplicationHelper = Jax.Helper.create
       for i in [1..arr.length-1]
         ret.push arr[i] if arr[i-1] != arr[i]
       ret;
-      
+    
     Array.prototype.sortBy = (key) ->
       sb = (key, a, b, r) ->
         r = if r then 1 else -1
@@ -20,6 +20,15 @@ Jax.getGlobal().ApplicationHelper = Jax.Helper.create
         return +1*r if a[key] < b[key]
         return 0
       this.sort (a,b) -> sb(key, a, b)
+
+    Array.prototype.uniqBy = (key) ->
+      return this if this.length == 1
+      arr = this.sortBy(key)
+      ret = [arr[0]]
+      for i in [1..arr.length-1]
+        ret.push arr[i] if arr[i-1][key] != arr[i][key]
+      ret;
+
         
     Jax.World.prototype.find_region_centers = () ->
       show_debug_view = window.location.href.split("?")[1] and window.location.href.split("?")[1].split("&").indexOf("debug")>=0

@@ -239,14 +239,20 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       cascade: cascade or "no"
     this.fetch params, callback
   
-  fetch_perspective: (shape_set_id, perspective_id, callback) ->
+  fetch_perspective: (shape_set_id, perspective_id, callback) ->  this.fetch_perspectives(shape_set_id, [perspective_id], callback)
+  
+  fetch_perspectives: (shape_set_id, perspective_ids, callback) ->
     # should fetch the perspective minus regions then request any regions that aren't already cached
+    requests = []
+    perspective_ids = perspective_ids.uniq()
+    for p_id in perspective_ids
+      requests.push {
+        type:"perspective"
+        id: p_id
+        cascade:"no" }
     this.fetch
       shape_set: shape_set_id
-      requests: [
-        type:"perspective"
-        id: perspective_id
-        cascade:"no" ]
+      requests: requests
       (data) =>
         # check if any additional resources are required to load this perspective
         missing_regions = []
@@ -274,7 +280,10 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     params =
       shape_set: shape_set_id
       requests: []
-    for rid in region_ids
+    region_ids = region_ids.uniq()
+    missing_regions = (rid for rid in region_ids when not rid of @s3[shape_set_id].regions)
+    return callback() unless missing_regions.length
+    for rid in missing_regions
       params.requests.push
         type:"region"
         id: rid
