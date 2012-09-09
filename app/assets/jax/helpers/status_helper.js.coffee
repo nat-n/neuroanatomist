@@ -83,11 +83,11 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     
   undo: () ->
     return false unless @history.back.length
-    return history.back() if @url_updating
     @history.forward.push @history.current
     @history.current = @history.back.pop()
-    this.load_perspective_from_url this.get_param('p', @history.log[@history.current]), false
     this.update_buttons()
+    return history.back() if @url_updating
+    this.load_perspective_from_url this.get_param('p', @history.log[@history.current]), false
   
   undo_all: () ->
     return false unless @history.back.length
@@ -100,11 +100,11 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
 
   redo: () ->
     return false unless @history.forward.length
-    return history.forward() if @url_updating
     @history.back.push @history.current
     @history.current = @history.forward.pop()
-    this.load_perspective_from_url this.get_param('p', @history.log[@history.current]), false    
     this.update_buttons()
+    return history.forward() if @url_updating
+    this.load_perspective_from_url this.get_param('p', @history.log[@history.current]), false    
     
   change: (new_url) ->
     @history.forward = []
