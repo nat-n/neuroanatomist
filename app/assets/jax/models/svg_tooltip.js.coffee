@@ -11,7 +11,7 @@ menus =
       window.context.current_controller.hide_region(window.context.current_controller.tooltip.hovered_region.id)
       window.context.current_controller.tooltip.clear()
   explore:
-    "Show More": () -> 
+    "More Info": () -> 
       window.context.current_controller.sc_load_node(window.context.current_controller.tooltip.hovered_region.thing)
       window.context.current_controller.tooltip.clear()
     "Change Colour": () ->
@@ -133,7 +133,7 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
       @menu.set = @paper.set()
       for link_text of @menu.items
         continue if link_text is "Divide into Parts" and (@hovered_region.decomposed or not @hovered_region.decompositions.length) or
-                    link_text is "Show More" and not @hovered_region.thing or
+                    link_text is "More Info" and not @hovered_region.thing or
                     link_text is "Select" and context.current_controller.qm and context.current_controller.qm.quiz.mode != "search"
         @menu.set.push(
           @paper.rect( @menu.button.offset.x+@menu.button.margin,
