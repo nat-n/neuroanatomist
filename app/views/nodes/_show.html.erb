@@ -29,12 +29,13 @@
     $('#node_options')[0].toggle_option = function(opt, action) {
       opt_tab = $('#'+opt+'_node')
       opt_div = $('#node_'+opt)
+      mode = opt_tab.attr('href').split('#')[1].split('!').pop()
       if(action!='show' && (opt_tab.hasClass('active') || action=='hide')) {
-        opt_tab.attr('href', '#editing_node').parent().children().removeClass('active');
+        opt_tab.attr('href', '#'+mode).parent().children().removeClass('active');
         $('.node_option_content').removeClass('active');
       } else {
         opt_tab.siblings().removeClass('active');
-        opt_tab.addClass('active').attr('href', '#!editing_node');
+        opt_tab.addClass('active').attr('href', '#!'+mode);
         opt_div.addClass('active');
       }
     }

@@ -58,8 +58,16 @@ class Perspective < ActiveRecord::Base
     end
   end
   
+  def own_style_for region
+    if styled_regions.include? region
+      own_region_styles.select { |rs| rs.region_id == region.id }.first
+    else
+      return false
+    end
+  end
+  
   def disown_region_if_styled region
-    if rs = style_for(region)
+    if rs = own_style_for(region)
       rs.disown
     end
   end
