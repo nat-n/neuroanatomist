@@ -287,14 +287,14 @@ div#content {
 
 /* @group options */
 
-.node_options {
+#node_options {
 	width: auto;
 	height: 25px;
 	float: right;
 	margin-right: 35px;
 }
 
-.node_options a {
+#node_options a {
 	display: inline-block;
 	text-decoration: none;
 	color: #e0e0e0;
@@ -308,7 +308,7 @@ div#content {
 	top: 0;
 }
 
-.node_options a.active {
+#node_options a.active {
 	top: 5px;
 	border-bottom-left-radius: 0px;
 	border-bottom-right-radius: 0px;
@@ -317,7 +317,7 @@ div#content {
 
 }
 
-.node_options a:hover {
+#node_options a:hover {
 	color: #ff9430;
 }
 
@@ -331,7 +331,7 @@ textarea#node_introduction {
 	max-width: 98%;
 }
 
-#node_edit {
+#node_edit, #node_history {
 	background-color: #3b3b3b;
 	position: relative;
 	top: 25px;
@@ -361,6 +361,10 @@ textarea#node_introduction {
 
 .error_notice {
 	color: #e74632;
+}
+
+#node_history {
+	
 }
 
 
