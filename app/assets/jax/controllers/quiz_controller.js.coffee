@@ -48,7 +48,7 @@ Jax.Controller.create "Quiz", ApplicationController,
     setTimeout (()=>@loader.idb.init(()=>setTimeout((()=>this.start()), 100))), 200
     
   
-  helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper, StatusHelper, SceneHelper ]
+  helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, StatusHelper, SceneHelper ]
   
   start: (tried_loading=false) ->
     this.show_loading_spinner($('#visualisation'), true)
