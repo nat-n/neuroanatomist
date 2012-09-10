@@ -13,11 +13,7 @@
     <% end %>
   </div>
   <div id="node_history" class="node_option_content">
-    <ol>
-      <li>
-        version number, previous_version number, timestamp, author : size : view (action) : revert to this version (action with confirm)
-      </li>
-    </ol>
+    <%= render :partial => "nodes/history" %>
   </div>
     
   <h2 id="node_title"><%= @node.name %></h2>
@@ -60,9 +56,16 @@
         $('#inline_notice').addClass('success_notice');
         $('#inline_notice').removeClass('error_notice');
         $('#inline_notice').html('Text updated Sucessfully!');
+        $('#node_intro')[0].display_version()
       }).bind('ajax:error', function(data, status, xhr){
         $('#inline_notice').addClass('error_notice');
         $('#inline_notice').removeClass('success_notice');
         $('#inline_notice').html('Error: something went wrong, the text may not have been updated!');
-      });" %>
+    });
+    $('#node_intro')[0].display_version = function(v){$.ajax({
+      type: 'GET',
+      url: '/nodes/#{@node.id}:v' + (v||''),
+      success: function(response){$('#node_intro').html(response)}
+    })}
+  "%>
 </div>

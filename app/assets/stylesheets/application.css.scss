@@ -363,9 +363,50 @@ textarea#node_introduction {
 	color: #e74632;
 }
 
+/* @group history */
+
 #node_history {
+}
+
+#node_history table, #node_history tbody {
+	border-radius: 15px;
+	width: 100%;
+	margin: 0;
+	padding: 2px 0 02px;
+	border-width: 0;
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+#node_history tr {
+	width: auto;
+	margin: 0;
+	display: table-row;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+#node_history tr.even {
+	background-color: #656565;
+}
+
+#node_history tr.odd {
 	
 }
+
+#node_history td {
+	display: table-cell;
+	margin: 0;
+	padding: 3px;
+}
+
+#node_history td a {
+	color: #fafafa;
+}
+
+
+
+/* @end */
 
 
 

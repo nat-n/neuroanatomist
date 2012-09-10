@@ -28,16 +28,32 @@ class Version < ActiveRecord::Base
     Versionomy.parse version_string
   end
   
+  def previous
+    # finds the next most recent version assigned to the same updated object, won't neccessarily work for shape_sets
+    ordered = updated.versions.sort{|a,b| b.version <=> a.version}
+    if (i = ordered.index(self)) >= 0
+      return ordered[i+1]
+    end
+    nil
+  end
+  
   def to_s
     version_string
   end
   
-  def bump size, description, user
+  def bump size, description_or_params, user
     return nil unless is_current and (size = Version.do size)
     next_version = version.bump(size)
-    new_version = Version.new( description:    description,
-                                  user:           user,
-                                  description:    description)
+    if description_or_params.is_a? Hash
+      description = (description_or_params[:description] or "")
+      contents = (description_or_params[:contents] or "")
+    else
+      description = description_or_params
+      contents = nil
+    end
+    new_version = Version.new(  description:  description,
+                                user:         user,
+                                contents:     contents)
     new_version.version_string = next_version.to_s
     updated.versions << new_version
     new_version.save :validate => false
