@@ -2,11 +2,14 @@ class Node < ActiveRecord::Base
   belongs_to :thing
   has_many  :subsections, :class_name => 'Section', :foreign_key => 'article_id', :dependent => :destroy
   has_many  :subtopics, :class_name => 'Section', :foreign_key => 'topic_id', :dependent => :destroy
+  has_many :versions,           :as         => :updated,            :dependent => :destroy
   has_one   :bibliography, :as => :referencable
   has_one   :perspective
   has_one   :tag
   validates_uniqueness_of :name
   validates_presence_of :name, :tag
+  
+  include VersioningHelper
   
   def name
     attribute(:name).gsub(/_+/, " ")

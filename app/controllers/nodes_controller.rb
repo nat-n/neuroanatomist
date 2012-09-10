@@ -40,9 +40,9 @@ class NodesController < ApplicationController
 
   def create
     @node = Node.new(params[:node])
-
     respond_to do |format|
       if @node.save
+        Version.init_for @node, {}
         format.html { redirect_to @node, notice: 'Node was successfully created.' }
         format.json { render json: @node, status: :created, location: @node }
       else
@@ -57,8 +57,10 @@ class NodesController < ApplicationController
   end
   
   def update
+    contents_changed = params[:node][:introduction] != @node.introduction
     respond_to do |format|
       if @node.update_attributes(params[:node])
+        @node.version_bump(:minor, {:contents => params[:node][:introduction]}, current_user) if contents_changed
         format.html { redirect_to (params[:return] ? :back : @node), notice: 'Node was successfully updated.' }
         format.json { head :ok }
       else
