@@ -8,7 +8,7 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
       answers: []
       correct: 0
       mode: null
-      choices: 10
+      choices: 4
       timer: (()-> 
         init_time   = null
         timeout     = null
