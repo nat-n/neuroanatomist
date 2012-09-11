@@ -56,7 +56,8 @@
         $('#inline_notice').addClass('success_notice');
         $('#inline_notice').removeClass('error_notice');
         $('#inline_notice').html('Text updated Sucessfully!');
-        $('#node_intro')[0].display_version()
+        $('#node_intro')[0].display_version();
+        $('#node_history')[0].refresh_history();
       }).bind('ajax:error', function(data, status, xhr){
         $('#inline_notice').addClass('error_notice');
         $('#inline_notice').removeClass('success_notice');
@@ -66,6 +67,26 @@
       type: 'GET',
       url: '/nodes/#{@node.id}:v' + (v||''),
       success: function(response){$('#node_intro').html(response)}
+    })};
+    $('#node_intro')[0].revert_to_version = function(v){
+      if(!confirm('Are you sure you want to revert to this older version of this content?')) return false;
+      if(v) $('#node_intro')[0].current=false;
+      else $('#node_intro')[0].current=true;
+      $.ajax({
+      type: 'PUT',
+      url: '/nodes/#{@node.id}?revert=' + (v||''),
+      success: function(response){$('#node_intro').html(response); $('#node_history')[0].refresh_history()}
     })}
+    $('#node_history')[0].refresh_history = function(){ $.ajax({
+      type: 'GET',
+      url: '/nodes/#{@node.id}:history',
+      success: function(response) { $('#node_history').html(response) }
+    })};
+    $('#node_intro')[0].reload_content = function(){
+      // reload node content, history table and reset notices.
+      $('#node_intro')[0].display_version()
+      $('#inline_notice').removeClass();
+      $('#inline_notice').html("");
+    };
   "%>
 </div>

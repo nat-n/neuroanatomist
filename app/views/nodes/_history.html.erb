@@ -4,6 +4,7 @@
   <th>Version</th>
   <th>Prev. Version</th>
   <th>Creation Date</th>
+  <th>bytes</th>
   <th>Author</th>
   <th></th>
   <th></th>
@@ -22,10 +23,13 @@
       <span><%=h[:date]%><span>
     </td>
     <td>
+      <%= h[:version].contents.size rescue 0 %>
+    </td>
+    <td>
       <%= h[:user].alias ? h[:user].alias : "anon."%>
     </td>
     <td><%= link_to_function "View", "$('#node_intro')[0].display_version('#{h[:version].to_s.gsub(".","-")}')" %></td>
-    <td><%= link_to "Revert to this Version", node_path(@node,:revert=>h[:version].to_s.gsub(".","-")), :method => :put, :remote =>true  %></td>
+    <td><%= link_to_function "Revert to this Version", "$('#node_intro')[0].revert_to_version('#{h[:version].to_s.gsub(".","-")}')" %></td>
   </tr>
 <% end %>
 </tbody>

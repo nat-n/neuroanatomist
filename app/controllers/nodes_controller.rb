@@ -28,6 +28,8 @@ class NodesController < ApplicationController
       else
         return head 404
       end
+    elsif params[:id] =~ /\d:history/
+      return render :partial => 'history'
     end
     
     return render(:text => JSON.dump(embedded_json), :content_type => "application/json") if params[:id] =~ /\d+:embed/
@@ -81,6 +83,10 @@ class NodesController < ApplicationController
     respond_to do |format|
       if @node.update_attributes(params[:node])
         @node.version_bump(:minor, {:contents => params[:node][:introduction], :description => description}, current_user) if contents_changed
+        if params[:revert]
+          params[:id] += ":v"
+          return show
+        end
         format.html { redirect_to (params[:return] ? :back : @node), notice: 'Node was successfully updated.' }
         format.json { head :ok }
       else
