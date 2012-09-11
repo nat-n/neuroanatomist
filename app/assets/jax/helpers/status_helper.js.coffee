@@ -54,7 +54,6 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
         @mode = null
       
   update_url: () ->
-    return false if @history.back[@history.back.length-1] and @history.back[@history.back.length-1] == window.location.href
     new_title = document.title
     state_object = {type:'p'}
     cp = this.camera_position()
@@ -64,6 +63,7 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     new_url += r + "," for r in (@scene.active_regions[r].region_id for r of @scene.active_regions).uniq()
     new_url = new_url.slice(0,new_url.length-1)
     new_url += '#'+@mode if @mode
+    return false if @history.back[@history.back.length-1] and @history.back[@history.back.length-1] == new_url
     window.history.pushState state_object, new_title, new_url if @url_updating
     this.change(new_url)
   

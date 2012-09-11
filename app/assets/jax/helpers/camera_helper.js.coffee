@@ -11,11 +11,14 @@ anim    = false
 
 
 Jax.getGlobal().CameraHelper = Jax.Helper.create
+  scroll_time: 0
   camera_scroll: (event) ->
+    @scroll_time = Date.now()
     unless anim
       d -= event.wheelDeltaY/100
       d = d_min if d < d_min
       d = d_max if d > d_max
+      setTimeout((()=>this.camera_moved() if Date.now()-@scroll_time > 499 ), 500)
     @tooltip.mouse_scrolled() if @tooltip
     
   camera_drag: (event) ->
