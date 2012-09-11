@@ -32,10 +32,11 @@ class RegionsController < Admin::BaseController
   
   def update
     changes = []
-    changes << :description and @region.aggr_update :tiny if params[:region][:description] != @region.description
-    changes << :name and @region.aggr_update params[:update_size] if params[:region][:name] != @region.name
-    changes << :thing and @region.aggr_update :major if params[:region][:thing] != @region.thing
-        
+    changes << :description and @region.aggr_update :tiny if params[:region][:description] and params[:region][:description] != @region.description
+    changes << :name and @region.aggr_update (params[:update_size] or :major) if params[:region][:name] and params[:region][:name] != @region.name
+    changes << :thing and @region.aggr_update :major if params[:region][:thing]  and params[:region][:thing] != @region.thing
+    changes << :default_perspective and @region.aggr_update :tiny if params[:region][:default_perspective_id]
+    
     if @region.update_attributes(params[:region])
       @region.do_versioning changes.to_s, current_user
       flash[:notice] = 'Region was successfully updated.'
@@ -63,7 +64,9 @@ class RegionsController < Admin::BaseController
       redirect_to regions_path
     end
     def find_thing
-      params[:region][:thing] = Thing.where("name = ?",params[:region][:thing]).first
+      return false unless params[:region][:thing]
+      region_name =  params[:region][:thing].strip.gsub(/\s/,"_")
+      params[:region][:thing] = Thing.where("name = ?",region_name).first
     end
   
 end

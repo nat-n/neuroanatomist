@@ -1,10 +1,9 @@
 <div class="embedded_node">
-  <div class="node_options">
+  <div id="node_options">
     <a href="#editing_node" id="edit_node">edit</a>
-    <a href="#discussing_node" id="discuss_node">discuss</a>
     <a href="#viewing_history_node" id="history_node">view history</a>
   </div>
-  <div id="node_edit">
+  <div id="node_edit" class="node_option_content">
     <%= form_for @node, :url=>"/nodes/#{@node.id}?return=true", :remote => true do |f| %>
       <%= f.label :introduction, "Editing textile:" %> <a href="http://redcloth.org/textile/writing-paragraph-text/" id="textile_ref" target="_blank">textile reference</a>
       <%= f.text_area :introduction, :rows => 16 %>
@@ -13,6 +12,9 @@
       <span id="inline_notice"></span>
     <% end %>
   </div>
+  <div id="node_history" class="node_option_content">
+    <%= render :partial => "nodes/history" %>
+  </div>
     
   <h2 id="node_title"><%= @node.name %></h2>
   <div id="node_intro">
@@ -20,16 +22,19 @@
   </div>
   
   <%= javascript_tag "
-    $('#edit_node')[0].show_edit = function(){
-      $('#edit_node').siblings().removeClass('active');
-      $('#edit_node').addClass('active').attr('href', '#!editing_node');
-      $('#node_edit').addClass('active');
-    };
-    $('#edit_node')[0].hide_edit = function(){
-      if(!$('#edit_node').hasClass('active')) return false;
-      $('#edit_node').attr('href', '#editing_node').parent().children().removeClass('active');
-      $('#node_edit').removeClass('active');
-    };
+    $('#node_options')[0].toggle_option = function(opt, action) {
+      opt_tab = $('#'+opt+'_node')
+      opt_div = $('#node_'+opt)
+      mode = opt_tab.attr('href').split('#')[1].split('!').pop()
+      if(action!='show' && (opt_tab.hasClass('active') || action=='hide')) {
+        opt_tab.attr('href', '#'+mode).parent().children().removeClass('active');
+        $('.node_option_content').removeClass('active');
+      } else {
+        opt_tab.siblings().removeClass('active');
+        opt_tab.addClass('active').attr('href', '#!'+mode);
+        opt_div.addClass('active');
+      }
+    }
     $('#redcloth_preview').click(function(){$.ajax({
       type: 'POST',
       url: '/nodes/preview',
@@ -51,9 +56,37 @@
         $('#inline_notice').addClass('success_notice');
         $('#inline_notice').removeClass('error_notice');
         $('#inline_notice').html('Text updated Sucessfully!');
+        $('#node_intro')[0].display_version();
+        $('#node_history')[0].refresh_history();
       }).bind('ajax:error', function(data, status, xhr){
         $('#inline_notice').addClass('error_notice');
         $('#inline_notice').removeClass('success_notice');
         $('#inline_notice').html('Error: something went wrong, the text may not have been updated!');
-      });" %>
+    });
+    $('#node_intro')[0].display_version = function(v){$.ajax({
+      type: 'GET',
+      url: '/nodes/#{@node.id}:v' + (v||''),
+      success: function(response){$('#node_intro').html(response)}
+    })};
+    $('#node_intro')[0].revert_to_version = function(v){
+      if(!confirm('Are you sure you want to revert to this older version of this content?')) return false;
+      if(v) $('#node_intro')[0].current=false;
+      else $('#node_intro')[0].current=true;
+      $.ajax({
+      type: 'PUT',
+      url: '/nodes/#{@node.id}?revert=' + (v||''),
+      success: function(response){$('#node_intro').html(response); $('#node_history')[0].refresh_history()}
+    })}
+    $('#node_history')[0].refresh_history = function(){ $.ajax({
+      type: 'GET',
+      url: '/nodes/#{@node.id}:history',
+      success: function(response) { $('#node_history').html(response) }
+    })};
+    $('#node_intro')[0].reload_content = function(){
+      // reload node content, history table and reset notices.
+      $('#node_intro')[0].display_version()
+      $('#inline_notice').removeClass();
+      $('#inline_notice').html("");
+    };
+  "%>
 </div>

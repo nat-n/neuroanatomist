@@ -1,6 +1,7 @@
 class Region < ActiveRecord::Base
   belongs_to  :thing
-  has_one :node, :through => :thing
+  belongs_to  :default_perspective, :class_name => 'Perspective'
+  has_one     :node, :through => :thing
   has_and_belongs_to_many :super_compositions, :class_name => 'Decomposition'
   has_many :decompositions  #,     :dependent  => :destroy
   has_many :region_definitions, :dependent  => :destroy
@@ -18,6 +19,11 @@ class Region < ActiveRecord::Base
   alias :definitions :region_definitions
   
   include VersioningHelper
+  
+  def version
+    Version.init_for self, {} unless current_version
+    super
+  end
   
   def version_bump size, description, user
     super

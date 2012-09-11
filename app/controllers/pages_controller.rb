@@ -3,8 +3,29 @@ class PagesController < ApplicationController
   
   def home
     render :debug and return if params.has_key? "debug"
+    return explore
+  end
+  
+  def explore
+    @jax = Hash[
+      controller: 'explore'
+    ]
     @node = Node.default
     return access_node nil, @node
+  end
+  
+  def quiz
+    @shape_set = ShapeSet.default
+    @perspective = ( @shape_set.default_perspective or nil )
+    @jax = Hash[
+      controller: 'quiz'
+    ]
+    
+    accessible = Quiz.accessible_regions.select{|r| r.definition_for @shape_set}
+    viewable   = Quiz.viewable_regions.select{|r| r.definition_for @shape_set}
+    
+    @quiz_list = Hash[accessible.map{|r| [r.id, {name:r.name, a:true}]}]
+    viewable.each { |r| @quiz_list[r.id] = {name:r.name, a:(@quiz_list[r.id] ? true : false), p:r.default_perspective_id} }
   end
   
   def about
@@ -29,8 +50,11 @@ class PagesController < ApplicationController
       @shape_set = @shape_set.merge(@shape_set.delete(:attrs))
     
       # NOTE TO FUTURE SELF: will probably need some kind of check for perspective/shape_set compatibility here eventually
-    
-      render :action => :home
+      @jax = Hash[
+        controller: 'explore'
+      ]
+      
+      render :action => :explore
     end
   end
 

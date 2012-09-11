@@ -1,8 +1,8 @@
-describe "SceneController", ->
+describe "ExploreController", ->
   controller = null
   
   beforeEach ->
-    SPEC_CONTEXT.redirectTo "scene/index"
+    SPEC_CONTEXT.redirectTo "explore/index"
     controller = SPEC_CONTEXT.current_controller
   
   it "should do something", ->

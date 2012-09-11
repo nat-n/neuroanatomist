@@ -7,3 +7,10 @@
 //= require jquery
 //= require jquery_ujs
 //= require_tree .
+
+
+window.start_jax = function (canvas_id, controller) {
+  if(!(canvas_id && controller)) return false;
+  window.context = new Jax.Context(canvas_id);
+  window.context.redirectTo(controller);
+}

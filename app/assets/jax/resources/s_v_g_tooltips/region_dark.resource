@@ -34,3 +34,6 @@ menu:
         "r":            7
         "fill":         "#0a0a0a"
         "opacity":      0.001
+
+show_hover: true
+menu_set: "explore"

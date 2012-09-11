@@ -61,7 +61,7 @@
   </div>
   <div class="field">
     <%= f.label :tags %><br />
-    <%= f.text_field :tags, :value => @tags.map {|t| t.name}.join(" ") %>
+    <%= f.text_field :tags, :value => (@tags.map {|t| t.name}.join(" ") if @tags) %>
   </div>
   <div class="actions">
     <%= f.submit %>

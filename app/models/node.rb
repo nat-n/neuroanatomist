@@ -1,12 +1,15 @@
 class Node < ActiveRecord::Base
   belongs_to :thing
-  has_many  :subsections, :class_name => 'Section', :foreign_key => 'article_id', :dependent => :destroy
-  has_many  :subtopics, :class_name => 'Section', :foreign_key => 'topic_id', :dependent => :destroy
-  has_one   :bibliography, :as => :referencable
+  has_many  :subsections,   :class_name => 'Section', :foreign_key => 'article_id', :dependent => :destroy
+  has_many  :subtopics,     :class_name => 'Section', :foreign_key => 'topic_id', :dependent => :destroy
+  has_many  :versions,      :as => :updated,          :dependent => :destroy
+  has_one   :bibliography,  :as => :referencable
   has_one   :perspective
   has_one   :tag
   validates_uniqueness_of :name
-  validates_presence_of :name, :tag
+  validates_presence_of   :name, :tag
+  
+  include VersioningHelper
   
   def name
     attribute(:name).gsub(/_+/, " ")
@@ -34,6 +37,19 @@ class Node < ActiveRecord::Base
   
   def self.find_or_create node_name
     Node.find_by_name(node_name) or Node.create(:name => node_name, :tag => Tag.find_or_create(node_name))
+  end
+  
+  def history
+    versions.map do |v|
+      Hash[ 
+        date:v.created_at,
+        version:  v, 
+        current:  v.is_current, 
+        user:     v.user, 
+        contents: v.contents, 
+        previous: ((v.description.scan(/from:\((.*)\)/)[0][0] rescue v.previous.to_s) or v.previous.to_s)
+      ]
+    end.reverse
   end
   
   def self.default

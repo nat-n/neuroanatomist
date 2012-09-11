@@ -37,11 +37,15 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
 
   update_mode_from_url: () ->
     @mode = window.location.href.split('#')[1]
+    if $('.embedded_node').length
+      $('#node_options')[0].toggle_option("edit", "hide")
+      $('#node_options')[0].toggle_option("history", "hide")
     switch @mode
       when 'editing_node'
-        $('#edit_node')[0].show_edit()
+        $('#node_options')[0].toggle_option("edit", "show")
+      when 'viewing_history_node'
+        $('#node_options')[0].toggle_option("history", "show")
       else
-        $('#edit_node')[0].hide_edit()
         if @mode and @mode[0] == '!'
           new_title = document.title
           state_object = {type:'m'}
@@ -50,16 +54,18 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
         @mode = null
       
   update_url: () ->
-    return false if @history.previous_url and @history.previous_url == window.location.href
     new_title = document.title
     state_object = {type:'p'}
     cp = this.camera_position()
-    new_url = "/node:"+@active_node+"?p="+@active_shape_set+":"+@active_perspective+":"+cp.a+":"+cp.d+":"+cp.h+":"
+    new_url = ""
+    new_url += "/node:" + @active_node if @active_node
+    new_url += "?p="+@active_shape_set+":"+@active_perspective+":"+cp.a+":"+cp.d+":"+cp.h+":"
     new_url += r + "," for r in (@scene.active_regions[r].region_id for r of @scene.active_regions).uniq()
     new_url = new_url.slice(0,new_url.length-1)
     new_url += '#'+@mode if @mode
-    window.history.pushState state_object, new_title, new_url
-    @history.previous_url = new_url
+    return false if @history.back[@history.back.length-1] and @history.back[@history.back.length-1] == new_url
+    window.history.pushState state_object, new_title, new_url if @url_updating
+    this.change(new_url)
   
   load_state_from_url: () ->
     this.load_perspective_from_url this.get_param('p'), false
@@ -76,5 +82,44 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     
     # initialse popstate event for use of forward/back buttons
     window.onpopstate = (e) => this.state_popped(e)
+    this.update_url()
     
+  undo: () ->
+    return false unless @history.back.length
+    @history.forward.push @history.current
+    @history.current = @history.back.pop()
+    this.update_buttons()
+    return history.back() if @url_updating
+    this.load_perspective_from_url this.get_param('p', @history.log[@history.current]), false
+  
+  undo_all: () ->
+    return false unless @history.back.length
+    @history.current = @history.back[0]
+    this.load_perspective_from_url this.get_param('p', @history.log[@history.current]), false
+    @history.log.push "reset"
+    @history.forward = []
+    @history.back = []
+    this.update_buttons()
+
+  redo: () ->
+    return false unless @history.forward.length
+    @history.back.push @history.current
+    @history.current = @history.forward.pop()
+    this.update_buttons()
+    return history.forward() if @url_updating
+    this.load_perspective_from_url this.get_param('p', @history.log[@history.current]), false    
     
+  change: (new_url) ->
+    @history.forward = []
+    @history.log.push new_url
+    @history.back.push @history.current if @history.current>=0
+    @history.current = @history.log.length-1
+    this.update_buttons()
+  
+  update_buttons: () ->
+    $('#undo_redo button').removeAttr('disabled')
+    $('#undo_button').attr('disabled', 'disabled') unless @history.back.length
+    $('#redo_button').attr('disabled', 'disabled') unless @history.forward.length
+    
+  
+

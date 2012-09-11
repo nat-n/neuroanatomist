@@ -9,6 +9,7 @@ Neuroanatomist::Application.routes.draw do
   root :to => 'pages#home'
   match "/node:node_name" => "pages#access_node", :constraints => { :node_name => /:.*/}
   match "/thing:thing_name" => "pages#access_thing", :constraints => { :thing_name => /:.*/}
+  match "/quiz" => "pages#quiz"
   match "/about" => "pages#about"
   match "/contact" => "pages#contact"
   
@@ -31,8 +32,8 @@ Neuroanatomist::Application.routes.draw do
   
   namespace :ontology do
     root :to => "ontology#index"
-    post "/ontology/ontology" => "ontology#create"
-    get "/ontology/export" => "ontology#export"
+    post "/ontology" => "ontology#create"
+    get "/export" => "ontology#export"
     resources :types, :things, :relations, :facts
   end
   

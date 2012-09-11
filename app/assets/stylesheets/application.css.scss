@@ -1,3 +1,5 @@
+$page_pg: #fafafa;
+
 $header_height: 44px;
 
 $footer_height: 15px;
@@ -23,7 +25,7 @@ time,mark,audio,video{
 
 html, body {
 	height: 100%;
-	background-color: #fafafa;
+	background-color: $page_pg;
 }
 
 div#page {
@@ -67,6 +69,8 @@ h1#header_title a {
 	font-weight: bold;
 }
 
+/* @group nav */
+
 .header_nav {
 	float: left;
 	margin-left: 100px;
@@ -92,8 +96,21 @@ h1#header_title a {
 }
 
 .header_nav a:active {
-	background-color: #252525;	
+	background-color: #252525;
 }
+
+.header_nav a.current {
+	background-color: $page_pg;
+	color: #222;
+	text-shadow: #909090 1px 1px 2px;
+	box-shadow: 0px -1px 2px #111;
+	margin-right: 6px;
+	margin-left: 6px;
+}
+
+
+
+/* @end */
 
 span#login {
 	float: right;
@@ -270,14 +287,14 @@ div#content {
 
 /* @group options */
 
-.node_options {
+#node_options {
 	width: auto;
 	height: 25px;
 	float: right;
 	margin-right: 35px;
 }
 
-.node_options a {
+#node_options a {
 	display: inline-block;
 	text-decoration: none;
 	color: #e0e0e0;
@@ -291,7 +308,7 @@ div#content {
 	top: 0;
 }
 
-.node_options a.active {
+#node_options a.active {
 	top: 5px;
 	border-bottom-left-radius: 0px;
 	border-bottom-right-radius: 0px;
@@ -300,7 +317,7 @@ div#content {
 
 }
 
-.node_options a:hover {
+#node_options a:hover {
 	color: #ff9430;
 }
 
@@ -314,7 +331,7 @@ textarea#node_introduction {
 	max-width: 98%;
 }
 
-#node_edit {
+#node_edit, #node_history {
 	background-color: #3b3b3b;
 	position: relative;
 	top: 25px;
@@ -326,7 +343,7 @@ textarea#node_introduction {
 	color: #f0f0f0;
 }
 
-#node_edit.active {
+#node_edit.active, #node_history.active {
 	display: block;
 }
 
@@ -345,6 +362,51 @@ textarea#node_introduction {
 .error_notice {
 	color: #e74632;
 }
+
+/* @group history */
+
+#node_history {
+}
+
+#node_history table, #node_history tbody {
+	border-radius: 15px;
+	width: 100%;
+	margin: 0;
+	padding: 2px 0 02px;
+	border-width: 0;
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+#node_history tr {
+	width: auto;
+	margin: 0;
+	display: table-row;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+#node_history tr.even {
+	background-color: #656565;
+}
+
+#node_history tr.odd {
+	
+}
+
+#node_history td {
+	display: table-cell;
+	margin: 0;
+	padding: 3px;
+}
+
+#node_history td a {
+	color: #fafafa;
+}
+
+
+
+/* @end */
 
 
 
@@ -393,6 +455,140 @@ iframe {
 	height: 100%;
 }
 
+/* @group quiz */
+
+#quiz_area {
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	overflow: auto;
+}
+
+#quiz_status {
+	border-radius: 15px;
+	width: 99%;
+	height: 45px;
+	padding: 5px;
+	text-align: center;
+	vertical-align: middle;
+	display: table;
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+#quiz_status.negative {
+	background: -webkit-linear-gradient(top, rgba(244,22,22,1) 0%,rgba(181,52,38,1) 44%,rgba(127,52,52,1) 100%); /* Chrome10+,Safari5.1+ */
+
+}
+
+#quiz_status.positive {
+	background: -webkit-linear-gradient(top, rgba(195,221,128,1) 0%,rgba(138,182,107,1) 44%,rgba(57,130,53,1) 100%); /* Chrome10+,Safari5.1+ */
+}
+
+#quiz_status.neutral {
+	background: -webkit-linear-gradient(top, rgba(122,188,255,1) 0%,rgba(96,171,248,1) 44%,rgba(64,150,238,1) 100%);
+	cursor:pointer;
+}
+
+#quiz_status p {
+	width: auto;
+	vertical-align: middle;
+	margin: 0;
+	height: 100%;
+	display: table-cell;
+	color: #f5f5f5;
+	text-shadow: #000 1px 1px 5px;
+	font: 1.2em/1.4em "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+	letter-spacing: 0.08em;
+}
+
+#quiz_controls {
+	display: none;
+}
+
+.quiz_panel {
+	border-radius: 10px;
+	display: inline-block;
+	background-color: #ffffff;
+	padding: 10px;
+	border: 1px solid #cacaca;
+	margin: 5px;
+	vertical-align: top;
+}
+
+#quiz_progress {
+	font-size: 1.2em;
+	font-weight: bold;
+	vertical-align: baseline;
+	padding: 3px;
+	position: relative;
+	top: 2px;
+}
+
+#mcq_widgets {
+	display: none;
+}
+
+#mcq_answers {
+	list-style-type: upper-alpha;
+	list-style-position: outside;
+	padding-left: 35px;
+}
+
+#mcq_answers li {
+	margin: 2px;
+}
+
+#mcq_answers label {
+	margin-left: 2px;
+}
+
+#quiz_setup {
+	display: block;
+}
+
+#quiz_mode .buttonset {
+	margin-top: 2px;
+}
+
+.check_all {
+	text-align: right;
+	display: block;
+	width: auto;
+	padding-right: 1px;
+	margin-top: -18px;
+	text-decoration: underline;
+}
+
+#quiz_list {
+	width: 250px;
+}
+
+#quiz_list ul {
+	margin: 0;
+	padding: 0;
+}
+
+#quiz_list li {
+	list-style-type: none;
+	padding: 1px;
+	width: auto;
+	height: auto;
+	margin-top: 2px;
+	margin-bottom: 1px;
+}
+
+#quiz_list li label {
+	width: 220px;
+	height: auto;
+}
+
+#quiz_list li input[type=checkbox] {
+	float: right;
+}
+
+/* @end */
+
 
 
 /* @end */
@@ -402,6 +598,10 @@ iframe {
 	border: 1;
 	border-width: 1px;
 	border-style: groove;
+}
+
+a.bold {
+	font-weight: bold;
 }
 
 #ontology_nav {

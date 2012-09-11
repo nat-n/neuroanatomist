@@ -2,6 +2,7 @@ class Perspective < ActiveRecord::Base
   belongs_to  :default_for_shape_set, :class_name => 'ShapeSet',    :foreign_key => 'default_for_shape_set_id'
   belongs_to  :style_set,             :class_name => 'Perspective'
   belongs_to  :node
+  has_one     :main_region,           :class_name => 'Region',      :foreign_key => 'default_perspective_id'
   has_many    :points_of_view,        :class_name => 'Perspective', :foreign_key => 'style_set_id',   :dependent => :destroy
   has_many    :own_region_styles,     :class_name => 'RegionStyle', :foreign_key => 'perspective_id', :dependent => :destroy
   has_many    :styled_regions,        :through    => :own_region_styles, :source => :region
@@ -21,6 +22,10 @@ class Perspective < ActiveRecord::Base
   
   def regions
     has_external_styles? ? style_set.regions : styled_regions
+  end
+  
+  def defined_for? shape_set
+    regions.map{|region| region.definition_for shape_set }.all?
   end
   
   def make_default_for shape_set
@@ -53,8 +58,16 @@ class Perspective < ActiveRecord::Base
     end
   end
   
+  def own_style_for region
+    if styled_regions.include? region
+      own_region_styles.select { |rs| rs.region_id == region.id }.first
+    else
+      return false
+    end
+  end
+  
   def disown_region_if_styled region
-    if rs = style_for(region)
+    if rs = own_style_for(region)
       rs.disown
     end
   end

@@ -2,7 +2,3 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
-
-window.start_jax = (canvas_id, controller) ->
-  window.context = new Jax.Context(canvas_id)
-  window.context.redirectTo controller

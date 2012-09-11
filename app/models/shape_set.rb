@@ -26,6 +26,11 @@ class ShapeSet < ActiveRecord::Base
     expired == true
   end
 
+  def deploy!
+    deploy = true
+    save
+  end
+  
   def deployed?
     deploy == true
   end
@@ -48,12 +53,12 @@ class ShapeSet < ActiveRecord::Base
   end
 
   def self.newest_version_of subject
-    ShapeSet.versions_of(subject).first#.sort{|a,b| a.version<=>b.version }.last
+    ShapeSet.versions_of(subject).sort{|a,b| a.version<=>b.version }.last
   end
   
   def previous_version
     all_versions = ShapeSet.versions_of(subject).sort {|a,b| a.version<=>b.version}
-    own_index = all_versions.index(version)
+    own_index = all_versions.index(self)
     if own_index
       return nil if own_index == 0
       all_versions[own_index-1]
@@ -88,14 +93,14 @@ class ShapeSet < ActiveRecord::Base
   def default_perspective
     # assumed no conflicting regions
     return default_perspective_attr if default_perspective_attr.kind_of? Perspective rescue nil
-    # this is useless...
-    set_of_all_defined_regions = Perspective.new :name => "dynamic_default", :default_for_shape_set_id => self.id
-    set_of_all_defined_regions.include_regions RegionDefinition.all_definitions_for_shape_set(self).map {|d| d.region}
+    # this is not quite an ideal solution...
+    set_of_all_defined_regions = Perspective.new :name => "empty", :default_for_shape_set_id => self.id
+    #set_of_all_defined_regions.include_regions RegionDefinition.all_definitions_for_shape_set(self).map {|d| d.region}
     set_of_all_defined_regions
   end
   
   def default_perspective= perspective
-    update_attribute :default_perspective_attr, perspective
+    update_attributes :default_perspective_attr => perspective
   end
     
   def name
@@ -171,7 +176,7 @@ class ShapeSet < ActiveRecord::Base
     report
   end
   
-  def copy_region_definitons_from older_shape_set
+  def copy_details_and_definitions_from older_shape_set
     """ Attempts to copy region defintions from an another shape_set
         - Ignores definitions for already defined regions
         - Assumes identical naming of shapes
@@ -197,9 +202,13 @@ class ShapeSet < ActiveRecord::Base
     end
     true
     self.notes << failures if defined? failures
+    
+    radius = older_shape_set.radius
+    center_point = older_shape_set.center_point
+    save
   end
   
- def create_shape_based_perspective
+  def create_shape_based_perspective
     shape_regions = []
     shapes.each do |shape|
       # assumes there wouldn't be two regions of the same name!!

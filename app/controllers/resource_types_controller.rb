@@ -1,4 +1,4 @@
-class ResourceTypesController < ApplicationController
+class ResourceTypesController < Admin::BaseController
   # GET /resource_types
   # GET /resource_types.json
   def index

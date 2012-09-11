@@ -1,0 +1,36 @@
+<table>
+<thead>
+  <tr>
+  <th>Version</th>
+  <th>Prev. Version</th>
+  <th>Creation Date</th>
+  <th>bytes</th>
+  <th>Author</th>
+  <th></th>
+  <th></th>
+  </tr>  
+</thead>
+<tbody>
+<% @node.history.each_with_index do |h, i| %>
+  <tr class=<%= i%2==0 ? "odd" : "even" %>>
+    <td>
+      <span><%=h[:version].to_s%></span>
+    </td>
+    <td>
+      <span><% if h[:previous] %><%=h[:previous] %><% end %><span>
+    </td>
+    <td>
+      <span><%=h[:date]%><span>
+    </td>
+    <td>
+      <%= h[:version].contents.size rescue 0 %>
+    </td>
+    <td>
+      <%= h[:user].alias ? h[:user].alias : "anon."%>
+    </td>
+    <td><%= link_to_function "View", "$('#node_intro')[0].display_version('#{h[:version].to_s.gsub(".","-")}')" %></td>
+    <td><%= link_to_function "Revert to this Version", "$('#node_intro')[0].revert_to_version('#{h[:version].to_s.gsub(".","-")}')" %></td>
+  </tr>
+<% end %>
+</tbody>
+</table>

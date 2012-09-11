@@ -11,11 +11,17 @@ Jax.getGlobal().CanvasEventRoutingHelper = Jax.Helper.create
   
   mouse_moved: (event) ->
     picked = @world.pick(event.x, event.y)
-    picked = null unless @scene.highlight(picked and picked.id) 
+    if picked and picked.id
+      @scene.highlight(picked.id, @show_hover)
+    else
+      picked = null
+      @scene.highlight()
     if @tooltip
       @tooltip.mouse_moved event.pageX, event.pageY, picked
   
   mouse_dragged: (event) ->
+    event.cancelBubble = true
+    event.isImmediatePropagationEnabled = false
     this.camera_drag(event) # camera control
     if @tooltip
       @tooltip.mouse_dragged event.pageX, event.pageY, @picked

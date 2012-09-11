@@ -7,12 +7,11 @@ Jax.getGlobal()['Scene'] = Jax.Model.create
     @newest_region = null
     @highlighted = null
   
-  highlight: (uid) ->
+  highlight: (uid, mode) ->
     if @highlighted
       @highlighted.mesh.material = @default_material
-      @highlighted.mesh.color = [1,1,1,1]
       @highlighted = null
-    if uid and context.world.objects[uid]
+    if uid and context.world.objects[uid] and mode
       @highlighted = context.world.objects[uid]
       @highlighted.mesh.material = @highlight_material
       return true
@@ -21,10 +20,10 @@ Jax.getGlobal()['Scene'] = Jax.Model.create
   active: (uid) ->
     uid in @active_ids
     
-  new_region: (shape_set_id, region_id) ->
+  new_region: (shape_set_id, region_id, color) ->
     # if this region has been instanciated before then return its uid from inactive regions
     return prev if prev = this.region_activated(region_id)
-    @newest_region = Region.find("standard").compose(shape_set_id, region_id)
+    @newest_region = Region.find("standard").compose(shape_set_id, region_id, color)
     @all_regions[@newest_region.id] = @newest_region
     @actived_regions[region_id] = @newest_region.id
     @newest_region.id
@@ -35,6 +34,7 @@ Jax.getGlobal()['Scene'] = Jax.Model.create
   activate_region: (id) ->
     @active_regions[id] = @all_regions[id]
     @active_ids.push id
+    @all_regions[id].decomposed = false
     return @active_regions[id]
     
   deactivate_region: (id) ->

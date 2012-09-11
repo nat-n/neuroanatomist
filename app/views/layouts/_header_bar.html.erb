@@ -1,10 +1,7 @@
 <div id="header_bar">
   <h1 id="header_title"><%= link_to "neuroanatomist", "/" %></h1>
   <span id="header_badge">alpha</span>
-  <nav class="header_nav">
-    <%= link_to "About", "/about" %>
-    <%= link_to "Contact", "/contact" %>
-  </nav>
+  <%= render :partial => "layouts/main_nav" %>
   <%= link_to image_tag("/assets/ccace_logo.png", 
                         :alt => "Centre for Cognitive Ageing and Cognitive Epidemiology at The University of Edinburgh",
                         :height => 43),

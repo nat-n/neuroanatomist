@@ -18,9 +18,10 @@ class ShapeSetsController  < Admin::BaseController
     new_version = params[:version][:version]
     @shape_set = ShapeSet.new(params[:shape_set])
     if @shape_set.validate_and_save shape_data, new_version, current_user
+      @shape_set.default_perspective= @perspective
       @shape_set.save_shape_data
       @shape_set.generate_geometric_descriptions
-      @shape_set.copy_region_definitons_from @shape_set.previous_version rescue nil
+      @shape_set.copy_details_and_definitions_from @shape_set.previous_version rescue nil
       flash[:notice] = "Shape Set has been created."
       redirect_to @shape_set
     else
@@ -38,6 +39,7 @@ class ShapeSetsController  < Admin::BaseController
     
   def update
     notes = params[:shape_set][:notes]
+    @shape_set.default_perspective = @perspective
     if notes and @shape_set.update_attribute :notes, notes
       @shape_set.aggr_update :tiny
       flash[:notice] = "Shape Set has been updated."
@@ -75,21 +77,21 @@ class ShapeSetsController  < Admin::BaseController
     end
     
     def find_or_create_default_perspective
-      perspective = params[:shape_set].delete :default_perspective
-      @perspective = if perspective == "Create new empty perspective"
+      @perspective = if params[:default_perspective] == "Create new empty perspective"
         Perspective.create :name => "new perspective #{Time.now.strftime("%Y%m%d%H%M%S%L")}"
       else
-        Perspective.where("name = ?", params[:shape_set][:default_perspective]).first
+        Perspective.where("name = ?", params[:default_perspective]).first
       end
     end
     
     def update_descriptors
       # updates radius center_point
       return unless params[:center_point] and params[:shape_set][:radius]
-      if radius != params[:shape_set][:radius].to_f or center_point != JSON.dump([params[:center_point][:x].to_f,params[:center_point][:y].to_f,params[:center_point][:z].to_f])
+      if params[:shape_set][:radius] != params[:shape_set][:radius].to_f or center_point != JSON.dump([params[:center_point][:x].to_f,params[:center_point][:y].to_f,params[:center_point][:z].to_f])
         @shape_set.aggr_update :minor
         @shape_set.update_attribute :radius, params[:shape_set][:radius].to_f
         @shape_set.update_attribute :center_point, JSON.dump([params[:center_point][:x].to_f,params[:center_point][:y].to_f,params[:center_point][:z].to_f])
+      end
     end
     
 end

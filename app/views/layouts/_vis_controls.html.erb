@@ -1,0 +1,16 @@
+<div id="vis_controls">
+  <h5 id="controls_title">Controls:</h5>
+  <div>
+    <%= radio_button_tag(:label_type, "tooltip", true, 
+                         :onchange => 'context.current_controller.activate_tooltip()') %>
+    <%= label_tag(:label_type_tooltip, "Enable Tooltip") %><br />
+    <%= radio_button_tag(:label_type, "labels", false, 
+                         :onchange => 'context.current_controller.activate_labels()') %>
+    <%= label_tag(:label_type_labels, "Enable Labels") %>
+  </div>
+<div id="undo_redo">
+	<button id="reset_button" onclick="context.current_controller.undo_all()"><<- Reset</button>
+	<button id="undo_button"  onclick="context.current_controller.undo()"><- Undo</button>
+	<button id="redo_button"  onclick="context.current_controller.redo()">Redo -></button>
+</div>
+</div>

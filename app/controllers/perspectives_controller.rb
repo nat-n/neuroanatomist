@@ -39,6 +39,7 @@ class PerspectivesController  < Admin::BaseController
   end
 
   def create
+    @changes = []
     if params.has_key? "perspective_file"
       contents = JSON.load params["perspective_file"].read
       unless contents["type"] == "perspective"
@@ -60,6 +61,7 @@ class PerspectivesController  < Admin::BaseController
         format.html { redirect_to @perspective, notice: 'Perspective was successfully created.' }
         format.json { render json: @perspective, status: :created, location: @perspective }
       else
+        @regions = Region.all
         format.html { render action: "new" }
         format.json { render json: @perspective.errors, status: :unprocessable_entity }
       end

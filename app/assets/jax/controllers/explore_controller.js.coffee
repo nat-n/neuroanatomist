@@ -1,4 +1,4 @@
-Jax.Controller.create "Scene", ApplicationController,
+Jax.Controller.create "Explore", ApplicationController,
   index: ->
     @active_shape_set = false
     @active_perspective = false
@@ -12,7 +12,7 @@ Jax.Controller.create "Scene", ApplicationController,
     @labeler_ = SVGLabeler.find "regions_light"
     @color_ = Color.find "standard"
     this.activate_tooltip()
-    @history = window.context.history ?= { log: [], back: [], forward: [], previous_url: null }
+    @history = window.context.history ?= { log: [], back: [], forward: [], current: -1 }
     @s3 = window.context.s3 ?= {previous_node:null}
     @activity = (() =>
       c = 0
@@ -30,6 +30,9 @@ Jax.Controller.create "Scene", ApplicationController,
       updated: () -> updated
     )()
     
+    @url_updating = true
+    @show_hover = true
+    
     @world.addLightSource @player.lantern = LightSource.find "headlamp"
     
 	  # load visualisation and node data via url, dom, or ajax
@@ -37,7 +40,7 @@ Jax.Controller.create "Scene", ApplicationController,
     
     setTimeout (()=>@loader.idb.init(()=>setTimeout((()=>this.start()), 100))), 200
   
-  helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper, StatusHelper ]
+  helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper, StatusHelper, SceneHelper ]
   
   start: (tried_loading=false) ->
     this.show_loading_spinner($('#visualisation'), true)
@@ -69,42 +72,12 @@ Jax.Controller.create "Scene", ApplicationController,
           this.activate_shape_set shape_set_id
           @loader.fetch_perspective shape_set_id, perspective_id, (data, textStatus, jqXHR) => 
             this.load_perspective(perspective_id, false)
-            #this.update_history()
             this.hide_loading_spinner()
       else
         this.activate_shape_set shape_set_id
         @loader.fetch_perspective shape_set_id, perspective_id, (data, textStatus, jqXHR) =>
           this.load_perspective(perspective_id, false)
-          #this.update_history()
           this.hide_loading_spinner()
-    
-        
-  
-  activate_shape_set: (shape_set) ->
-    @active_shape_set = shape_set
-    this.configure_camera(@s3[@active_shape_set].center_point, @s3[@active_shape_set].radius)
-  
-  decompose: (region_uid, fire=true) ->
-    d = @world.objects[region_uid].decompositions[0]
-    return false unless d
-    @loader.fetch_regions @active_shape_set, d.sub_regions, (data) =>
-      this.hide_region(region_uid, false) if region_uid in @scene.active_ids
-      for item of data
-        this.show_region @scene.new_region(@active_shape_set, data[item].id), false
-      this.regions_changed() if fire
-  
-  show_region: (id, fire=true) ->
-    return false unless id and r = @scene.activate_region(id)
-    @world.addObject(r).id
-    this.regions_changed() if fire
-    
-  hide_region: (id, fire=true) ->
-    @world.removeObject @scene.deactivate_region(id)
-    this.regions_changed() if fire
-  
-  clear_regions: (fire=true) ->
-    this.hide_region(r, false) for r of @world.objects
-    this.regions_changed() if fire
 	
   activate_tooltip: () ->
     if @labeler

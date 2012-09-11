@@ -4,7 +4,7 @@ Jax.getGlobal()['Region'] = Jax.Model.create
     @s3 = window.context.s3
     @color = false
     
-  compose: (shape_set_id, region_id) ->
+  compose: (shape_set_id, region_id, color) ->
     @shape_set_id = shape_set_id
     @region_id = region_id
     region_def = @s3[@shape_set_id].regions[@region_id]
@@ -36,6 +36,8 @@ Jax.getGlobal()['Region'] = Jax.Model.create
     #  b = c1[1]-c2[1]
     #  c = c1[2]-c2[2]
     #  Math.sqrt(a*a+b*b+c*c)
+    
+    @color = color if color and color.length is 4
     
     until @color
       c1 = [Math.random(),Math.random(),Math.random(),1]
@@ -99,10 +101,9 @@ Jax.getGlobal()['Region'] = Jax.Model.create
         model_data.vertex_positions.push vp for vp in mesh.vertex_positions[vi3..vi3+2]
         # ensure normals face outwards
         if should_reverse
-          model_data.vertex_normals.push -vn for vn in mesh.vertex_normals[vi3..vi3+2]
+          model_data.vertex_normals.push -mesh.vertex_normals[vi3..vi3+2][0], -mesh.vertex_normals[vi3..vi3+2][2], mesh.vertex_normals[vi3..vi3+2][1]
         else
-          model_data.vertex_normals.push vn for vn in mesh.vertex_normals[vi3..vi3+2]
-    
+          model_data.vertex_normals.push mesh.vertex_normals[vi3..vi3+2][0], mesh.vertex_normals[vi3..vi3+2][2], -mesh.vertex_normals[vi3..vi3+2][1]
     # remap and copy faces
     model_data.faces.push index_map[fi] for fi in mesh.faces
     

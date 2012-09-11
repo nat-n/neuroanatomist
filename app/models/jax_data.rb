@@ -29,6 +29,10 @@ class JaxData < ActiveRecord::Base
     JaxData.local_data_path_for cache_id
   end
   
+  def most_recently_accessed
+    JaxData.find(:first, :order => "updated_at DESC")
+  end
+  
   def check_expiration
     update_attribute :response_description, ""  if !response_description.empty? and 30 < Time.now-created_at
   end
@@ -39,6 +43,7 @@ class JaxData < ActiveRecord::Base
   
   def access_locally
     check_expiration
+    increment!
     ENV["cache_server"] == "local" and (File.open("#{Rails.root}/cached_responses/#{cache_id}.json", 'r') rescue false)
   end
   

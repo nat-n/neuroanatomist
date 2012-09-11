@@ -2,11 +2,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   fetch_start: () -> window.context.current_controller.started_fetching_data()
   fetch_end: (shape_set_id, stores) -> window.context.current_controller.finished_fetching_data(shape_set_id, stores)
   after_initialize: ->
-    # this model is responsible for finding, fetching and returning requested meshes, regions, descriptions, indexes etc
-    # particularly in service of scene and region
-    # also responsible for local caching of assets
-    # can bundle assets into a single request to the server to reduce overhead
-    
     # create jax asset store
     # all meshes are stripped out of the loaded asset and stored here by id, where region can find them later
     @s3 = window.context.s3 = {}
@@ -112,7 +107,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
           preq.onsuccess = (e) -> console.log "Data stored in indexedDB"
           preq.error = (e) -> console.log "Error putting data"; console.log e; failure e if failure
         success e if success            
-        undefined        
+        undefined
       
       
       load_s3: (ssid, callback, determined=true) =>
@@ -165,9 +160,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
           
           exec_cb_stack = (stack) =>
             cb = () =>
-              next = stack.pop()
-              if stack.length > 1 then next(cb)
-              else next stack.pop()
+              stack.pop() cb if stack.length
             stack.pop() cb
           
           ssids = (ssid for ssid of @s3)
@@ -176,7 +169,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
           
           # something truly bizare happens around here somewhere, but it doesn't seem to matter !?!?!
           for ssid of @s3
-            new_func = ((cb) => @idb.load_s3(ssids.shift(),cb))
+            new_func = ((ssid)=>((cb) => @idb.load_s3(ssid,cb)))(ssids.shift())
             stack.push new_func
           
           exec_cb_stack stack
@@ -246,14 +239,20 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       cascade: cascade or "no"
     this.fetch params, callback
   
-  fetch_perspective: (shape_set_id, perspective_id, callback) ->
+  fetch_perspective: (shape_set_id, perspective_id, callback) ->  this.fetch_perspectives(shape_set_id, [perspective_id], callback)
+  
+  fetch_perspectives: (shape_set_id, perspective_ids, callback) ->
     # should fetch the perspective minus regions then request any regions that aren't already cached
+    requests = []
+    perspective_ids = perspective_ids.uniq()
+    for p_id in perspective_ids
+      requests.push {
+        type:"perspective"
+        id: p_id
+        cascade:"no" }
     this.fetch
       shape_set: shape_set_id
-      requests: [
-        type:"perspective"
-        id: perspective_id
-        cascade:"no" ]
+      requests: requests
       (data) =>
         # check if any additional resources are required to load this perspective
         missing_regions = []
@@ -281,7 +280,10 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     params =
       shape_set: shape_set_id
       requests: []
-    for rid in region_ids
+    region_ids = region_ids.uniq()
+    missing_regions = (rid for rid in region_ids when not rid of @s3[shape_set_id].regions)
+    return callback() unless missing_regions.length
+    for rid in missing_regions
       params.requests.push
         type:"region"
         id: rid

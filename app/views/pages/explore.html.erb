@@ -1,0 +1,15 @@
+<div id="static_col">
+  
+  <%= content_tag :div, id: "visualisation", data: {perspective_id: (@perspective.id rescue nil), shape_set: (@shape_set or nil)} do %>
+    <canvas id="webgl" width="640" height="570">
+      Sorry, your browser doesn't support the &lt;canvas/&gt; tag. Please come back with a newer
+      browser.
+    </canvas>
+  <% end %>
+  <%= render :partial => "layouts/vis_controls"%>
+
+</div>
+
+<div id="dynamic_col">
+  <%= render :partial => "layouts/sup_content"%>
+</div>

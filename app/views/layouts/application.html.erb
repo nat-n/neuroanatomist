@@ -16,7 +16,7 @@
   <%= csrf_meta_tags %>
   <meta charset="utf-8" />
 </head>
-<body onload="start_jax('webgl','scene')">
+<%= content_tag :body, :onload => "start_jax('webgl',$('body').data('jaxController'))", :data => (@jax ? {jax_controller: @jax[:controller]} : nil) do %>
 <div id="page">
   <header class="page">
     <%= render :partial => "layouts/header_bar" %>
@@ -43,5 +43,5 @@
     <%= render :partial => "layouts/footer_bar"%>
   </footer>
 </div>
-</body>
+<% end %>
 </html>
