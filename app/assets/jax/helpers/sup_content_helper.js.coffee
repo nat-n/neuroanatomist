@@ -32,7 +32,6 @@ Jax.getGlobal().SupContentHelper = Jax.Helper.create
     this.sc_new_tab 'Notes',         node_data.embedded_node
     this.sc_new_tab 'Wikipedia',    "<iframe src='"+node_data.wikipedia_uri+"'></iframe>"    if node_data.wikipedia_uri
     this.sc_new_tab 'Scholarpedia', "<iframe src='"+node_data.scholarpedia_uri+"'></iframe>" if node_data.scholarpedia_uri
-    this.sc_new_tab 'Resources',    "resources template goes here"
     $(tabs_id).tabs 'select', 0
     $(window).scroll() # this just triggers the javascript resize of the tabs
     @active_node = node_data.name
