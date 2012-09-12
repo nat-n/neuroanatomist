@@ -55,7 +55,6 @@ class NodesController < ApplicationController
     @node = Node.new(params[:node])
     respond_to do |format|
       if @node.save
-        Version.init_for @node, {:contents => ((params[:node][:introduction] and !params[:node][:introduction].empty?) ? params[:node][:introduction] : "")}
         format.html { redirect_to @node, notice: 'Node was successfully created.' }
         format.json { render json: @node, status: :created, location: @node }
       else

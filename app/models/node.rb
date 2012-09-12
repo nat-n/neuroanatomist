@@ -11,6 +11,12 @@ class Node < ActiveRecord::Base
   
   include VersioningHelper
   
+  def save
+    saved = super
+    Version.init_for self, {} if saved
+    saved
+  end
+  
   def name
     attribute(:name).gsub(/_+/, " ")
   end
