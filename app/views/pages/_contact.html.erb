@@ -35,7 +35,7 @@ $('#contact_send').click(function(){ $.ajax({
     $('#msg_send_status').html('Message sent')
     setTimeout(function(){$('.header_nav a[href=\"#contact\"]').click()},600)
   },
-  failure: function(){
+  error: function(){
     $('#msg_send_status').html('Error: Message not sent! try again.')
   }
 }) })
