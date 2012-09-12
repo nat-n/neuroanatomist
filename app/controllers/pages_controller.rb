@@ -33,7 +33,7 @@ class PagesController < ApplicationController
   end
   
   def contact
-    DataMailer.feedback(params[:subject],params[:message],current_user) if params[:subject] and params[:message]
+    DataMailer.feedback(params[:subject],params[:message],current_user).deliver if params[:subject] and params[:message]
   end
   
   def access_node shape_set = nil, node = nil
