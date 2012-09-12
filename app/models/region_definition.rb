@@ -45,7 +45,7 @@ class RegionDefinition < ActiveRecord::Base
   def self.create_from_label_string region_id, label_string
     shape_set, shapes = label_string.split("::")
     shape_set = shape_set.split(" - ")
-    shape_set = ShapeSet.where("subject = ?",shape_set[0]).select{|ss| ss.version.to_s == shape_set[1]}.first
+    shape_set = ShapeSet.where("subject = ?",shape_set[0]).select{|ss| ss.version.to_s == shape_set[1]}.first or throw "shapeset not found"
     shapes = shapes.split("+").map { |shape| Shape.where("shape_set_id = ? and label = ?", shape_set.id, shape).first }
     new_region_def = RegionDefinition.create :shape_set_id => shape_set.id, :region_id => region_id
     new_region_def.shapes << shapes
