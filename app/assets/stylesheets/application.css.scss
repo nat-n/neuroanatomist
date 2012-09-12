@@ -43,7 +43,7 @@ header.page {
 	top: 0;
 	left: 0;
 	right: 0;
-	z-index: 3;
+	z-index: 10;
 	width: auto;
 	min-width: 1050px;
 }
@@ -191,6 +191,68 @@ footer.page, .footer_push {
 /* @end */
 
 /* @group content */
+
+/* @group contact modal */
+
+.modal_container {
+	display: none;
+}
+
+.modal_mask {
+	background-color: #000;
+	opacity: 0.8;
+	position: fixed;
+	top: $header_height;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 5;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+#contact_modal {
+	background-color: $page_pg;
+	border-radius: 8px;
+	margin: 0;
+	padding: 14px;
+	position: fixed;
+	top: $header_height;
+	z-index: 7;
+	left: 400px;
+	width: 500px;
+	opacity: 1;
+	color: #000;
+	font: 0.8em/1.5em "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+}
+
+#contact_modal p {
+}
+
+#contact_fields {
+	margin: 5px;
+}
+
+#contact_fields input, #contact_fields textarea {
+	width: 99%;
+}
+
+#contact_buttons {
+	display: inline-block;
+}
+
+#msg_send_status {
+	font-weight: bold;
+	display: inline-block;
+	margin-left: 20px;
+	margin-right: 20px;
+	font-size: 1.3em;
+	padding: 5px;
+}
+
+/* @end */
 
 .small_spinner {
 	left: 625px;

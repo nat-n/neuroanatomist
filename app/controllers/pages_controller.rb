@@ -33,7 +33,7 @@ class PagesController < ApplicationController
   end
   
   def contact
-    
+    #throw params
   end
   
   def access_node shape_set = nil, node = nil
