@@ -38,6 +38,12 @@ class Region < ActiveRecord::Base
     JaxData.invalidate_caches_with region: self if size == :minor or size == :major
   end
   
+  def save
+    saved = super
+    Version.init_for self, {} if saved
+    saved
+  end
+  
   def decompositions
     # position any unranked decompositions at end of ranking preserving order
     decompositions = Decomposition.where("region_id = ?", id)

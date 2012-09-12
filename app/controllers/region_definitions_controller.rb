@@ -38,7 +38,6 @@ class RegionDefinitionsController  < Admin::BaseController
     end
     
     if @region_definition.save
-      Version.init_for @region_definition, {}
       
       @region_definition.region.aggr_update :tiny
       @region_definition.region.do_versioning "new definition: #{@region_definition.id}", current_user

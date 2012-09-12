@@ -20,6 +20,12 @@ class Perspective < ActiveRecord::Base
     JaxData.invalidate_caches_with :perspective => self, :shape_sets => ShapeSet.all
   end
   
+  def save
+    saved = super
+    Version.init_for self, {} if saved
+    saved
+  end
+  
   def regions
     has_external_styles? ? style_set.regions : styled_regions
   end

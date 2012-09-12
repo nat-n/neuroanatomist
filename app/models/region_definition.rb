@@ -30,6 +30,12 @@ class RegionDefinition < ActiveRecord::Base
     end
   end
   
+  def save
+    saved = super
+    Version.init_for self, {} if saved
+    saved
+  end
+  
   def self.all_definitions_for_shape_set shape_set
     RegionDefinition.where("shape_set_id = ? and orphaned = ?", shape_set.id, false)
   end
