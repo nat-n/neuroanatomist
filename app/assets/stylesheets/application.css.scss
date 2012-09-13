@@ -192,6 +192,27 @@ footer.page, .footer_push {
 
 /* @group content */
 
+/* @group blocked */
+
+#blocked_msg {
+	width: 500px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	font-size: 1.3em;
+	color: #323232;
+	text-shadow: #fff 1px 1px 1px;
+	margin-top: 70px;
+}
+
+#blocked_msg img {
+	margin: 5px;
+}
+
+
+
+/* @end */
+
 .content_area {
 	border-radius: 10px;
 	display: inline-block;
@@ -200,6 +221,17 @@ footer.page, .footer_push {
 	border: 1px solid #cacaca;
 	margin: 5px;
 	vertical-align: top;
+	text-align: justify;
+}
+
+.content_header {
+	position: relative;
+	top: -20px;
+	font-size: 3em;
+}
+
+.finetext {
+	font-size: 0.7em;
 }
 
 /* @group user */
