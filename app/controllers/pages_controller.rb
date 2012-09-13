@@ -1,5 +1,6 @@
 class PagesController < ApplicationController
   include NodesHelper
+  before_filter :determine_access, :only => [:home, :access_node, :access_thing, :explore, :quiz]
   
   def home
     render :debug and return if params.has_key? "debug"
@@ -35,6 +36,10 @@ class PagesController < ApplicationController
     DataMailer.feedback(params[:subject],params[:message],(params[:anon] ? nil : current_user)).deliver if params[:subject] and params[:message]
   end
   
+  def blocked
+    
+  end
+  
   def access_node shape_set = nil, node = nil
     node_name = (params[:node_name].split(':')[1] rescue node.name)
     if params[:node_name] and params[:node_name].end_with? ':embed'
@@ -63,8 +68,15 @@ class PagesController < ApplicationController
     redirect_to "/node:#{@node.name}"
   end
   
-  def chrome?
-    Browser.new(:ua => request.env['HTTP_USER_AGENT'], :accept_language => "en-us").chrome?
+  def determine_access
+    @chrome = Browser.new(:ua => request.env['HTTP_USER_AGENT'], :accept_language => "en-us").chrome?
+    @current_user = current_user
+    if @chrome and current_user
+      return true
+    else
+      render :action => :blocked
+      return false
+    end
   end
   
 end
