@@ -1,3 +1,8 @@
+if File.exist? '../secrets.yaml'
+  YAML.load File.open('../secrets.yaml','r').each { |k,v| ENV[k] = v }
+end
+
+
 Neuroanatomist::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -27,4 +32,7 @@ Neuroanatomist::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
+  
+  config.action_mailer.default_url_options = { :host => 'localhost' }
+  
 end
