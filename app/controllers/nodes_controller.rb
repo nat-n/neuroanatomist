@@ -77,11 +77,14 @@ class NodesController < ApplicationController
       description = "from:(#{v})"
       #request.format = :json
     end
+    show_author = (params[:node].delete("Show_my_alias_in_history") != "0")
     
     contents_changed = params[:node][:introduction] != @node.introduction if params[:node]
     respond_to do |format|
       if @node.update_attributes(params[:node])
         @node.version_bump(:minor, {:contents => params[:node][:introduction], :description => description}, current_user) if contents_changed
+        @node.current_version.show_author = show_author
+        @node.current_version.save
         if params[:revert]
           params[:id] += ":v"
           return show
