@@ -27,7 +27,9 @@ class UserController < ApplicationController
   end
   
   def update
-    @user.alias = params[:user][:alias]
+    params[:user][:alias].strip.squeeze(' ')
+    params[:user][:alias] = nil if params[:user][:alias].empty?
+    @user.alias = params[:user][:alias] if params[:user][:alias]
     if @user.save
       render action: "user_page", notice: 'Account updated.'
     else
@@ -44,5 +46,4 @@ class UserController < ApplicationController
       params[:user].delete :email
       params[:user].delete :group
     end
-  
 end
