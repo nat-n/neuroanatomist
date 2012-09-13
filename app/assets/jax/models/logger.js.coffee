@@ -18,6 +18,7 @@ Jax.getGlobal()['Logger'] = Jax.Model.create
       data: {logs: (@log[time] for time in upload_times)}
       success: (response) ->
         # clear log of uploaded times
-        delete @log[time] for time in upload_times) if response = "logs saved"
+        if response = "logs saved"
+          delete @log[time] for time in upload_times
       error: () ->
         # dump log in indexedDB
