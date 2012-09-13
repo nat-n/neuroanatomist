@@ -44,6 +44,7 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
     this.proceed()
   
   pass: () ->
+    this.current().object.mesh.setColor([1,1,1,1])
     this.proceed() if this.is_active()
   
   proceed: () ->
