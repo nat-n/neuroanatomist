@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120908181436) do
+ActiveRecord::Schema.define(:version => 20120912232327) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -325,8 +325,8 @@ ActiveRecord::Schema.define(:version => 20120908181436) do
   add_index "types", ["supertype_id"], :name => "index_types_on_supertype_id"
 
   create_table "users", :force => true do |t|
-    t.string   "email",                                 :default => "",    :null => false
-    t.string   "encrypted_password",     :limit => 128, :default => "",    :null => false
+    t.string   "email",                                 :default => "",     :null => false
+    t.string   "encrypted_password",     :limit => 128, :default => "",     :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
@@ -338,8 +338,10 @@ ActiveRecord::Schema.define(:version => 20120908181436) do
     t.string   "alias"
     t.string   "name"
     t.boolean  "admin",                                 :default => false
-    t.datetime "created_at",                                               :null => false
-    t.datetime "updated_at",                                               :null => false
+    t.datetime "created_at",                                                :null => false
+    t.datetime "updated_at",                                                :null => false
+    t.integer  "data_count",                            :default => 0
+    t.string   "group",                                 :default => "none"
   end
 
   add_index "users", ["alias"], :name => "index_users_on_alias", :unique => true

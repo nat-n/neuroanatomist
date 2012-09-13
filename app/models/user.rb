@@ -12,5 +12,10 @@ class User < ActiveRecord::Base
 
   scope :admins, where(:admin => true)
   
+  def next_data_count
+    data_count += 1
+    save
+    data_count
+  end
   
 end

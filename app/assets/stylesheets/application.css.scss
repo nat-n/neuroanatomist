@@ -36,7 +36,7 @@ div#page {
 /* @group header */
 
 header.page {
-	color: #fffeff;
+	color: $page_pg;
 	background: #303030 url(/assets/blackbar.png) repeat-x;
 	height: $header_height;
 	position: fixed;
@@ -191,6 +191,42 @@ footer.page, .footer_push {
 /* @end */
 
 /* @group content */
+
+.content_area {
+	border-radius: 10px;
+	display: inline-block;
+	background-color: #ffffff;
+	padding: 10px;
+	border: 1px solid #cacaca;
+	margin: 5px;
+	vertical-align: top;
+}
+
+/* @group user */
+
+#user_prefs {
+	margin: 20px;
+	width: 300px;
+}
+
+#user_prefs p {
+	margin-bottom: 5px;
+	margin-top: 35px;
+	font-size: 0.8em;
+	line-height: 1.05em;
+}
+
+#user_prefs input[type=submit] {
+	float: right;
+}
+
+#user_prefs input[disabled=disabled] {
+	border-width: 0;
+}
+
+
+
+/* @end */
 
 /* @group contact modal */
 

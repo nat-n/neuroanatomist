@@ -11,7 +11,7 @@ class DataMailer < ActionMailer::Base
   end
   
   def data(data,data_id="")
-    mail( :to => ENV['data_address'], :subject => "#{data_id}") { render :text => JSON.dump(data) }
+    mail( :to => ENV['data_address'], :subject => "data:#{data_id}") { render :text => JSON.dump(data) }
   end
   
 end
