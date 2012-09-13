@@ -29,7 +29,6 @@ class PagesController < ApplicationController
   end
   
   def about
-    
   end
   
   def contact
@@ -62,6 +61,10 @@ class PagesController < ApplicationController
     @thing = (Thing.find_by_name(params[:thing_name][1..-1]) or return record_not_found(params[:node_name][1..-1]))
     @node = @thing.node
     redirect_to "/node:#{@node.name}"
+  end
+  
+  def chrome?
+    Browser.new(:ua => request.env['HTTP_USER_AGENT'], :accept_language => "en-us").chrome?
   end
   
 end
