@@ -1,5 +1,5 @@
 <div id="blocked_msg">
-<% if true %>
+<% if !@chrome %>
 
 <%= link_to image_tag("/assets/chromelogo.png", :alt => "Download Google Chrome"), "https://www.google.com/intl/en/chrome/browser/", :target => :blank %>
 <p>Sorry, this content is currently only compatible with Google Chrome, which you can <%= link_to "download here", "https://www.google.com/intl/en/chrome/browser/", :target => :blank %>.</p>
@@ -12,9 +12,9 @@
 </div>
 <% elsif !@current_user %>
 
-<br><br>
-You need to be logged in.
-<br><br>
+<p>
+Neuroanatomist is currently in an early private Alpha stage. <br>You need to be logged in to access this content.
+</p>
 
 <% end %>
 </div>
