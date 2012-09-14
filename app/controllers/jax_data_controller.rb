@@ -9,7 +9,7 @@ class JaxDataController < ApplicationController
       if (local_file = cached_request.access_locally)
         return render :file => local_file.path#, :content_type => Mime::Type.lookup_by_extension(:json).to_s
       elsif ENV["cache_server"] != "local"
-        return redirect_to cached_request.uri
+        return redirect_to cached_request.remote_uri
       else
         cached_request.destroy
       end

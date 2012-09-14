@@ -4,7 +4,7 @@ class JaxData < ActiveRecord::Base
   belongs_to :shape_set
   before_destroy :destroy_cache
   
-  def uri
+  def remote_uri
     check_expiration
     "#{ENV["cache_server"]}/#{cache_id}"
   end
