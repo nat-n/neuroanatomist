@@ -5,10 +5,10 @@ class JaxDataController < ApplicationController
     @request_string = request.fullpath
     
     
-    if ENV["cache_server"] and (cached_request = JaxData.where(:request_string => @request_string).first)
+    if ENV["CACHE_SERVER"] and (cached_request = JaxData.where(:request_string => @request_string).first)
       if (local_file = cached_request.access_locally)
         return render :file => local_file.path#, :content_type => Mime::Type.lookup_by_extension(:json).to_s
-      elsif ENV["cache_server"] != "local"
+      elsif ENV["CACHE_SERVER"] != "local"
         return redirect_to cached_request.remote_uri
       else
         cached_request.destroy
@@ -85,8 +85,8 @@ class JaxDataController < ApplicationController
     
     response = describe_response
     
-    if ENV["cache_server"] and ENV["cache_server"] != "local"
-      redirect_to "#{ENV["cache_server"]}/#{response.cache_id}/#{response.destroy_key}"
+    if ENV["CACHE_SERVER"] and ENV["CACHE_SERVER"] != "local"
+      redirect_to "#{ENV["CACHE_SERVER"]}/#{response.cache_id}/#{response.destroy_key}"
     else
       
       @assets = JSON.load response.response_description
@@ -95,7 +95,7 @@ class JaxDataController < ApplicationController
       @shapes = Hash[Shape.where(:shape_set_id => @shape_set.id).map { |s| [s.id, s] }]
       @meshes = Hash[Mesh.where(:shape_set_id => @shape_set.id).map { |m| [m.id, m] }]
       
-      if ENV["cache_server"] = "local"
+      if ENV["CACHE_SERVER"] = "local"
         cache_path = JaxData.local_data_path_for response.cache_id
         response_string = render_to_string(:action => "response.json", :layout => false)
         response.save_locally response_string
