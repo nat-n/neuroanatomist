@@ -1,0 +1,20 @@
+<div id="blocked_msg">
+<% if !@chrome %>
+
+<%= link_to image_tag("/assets/chromelogo.png", :alt => "Download Google Chrome"), "https://www.google.com/intl/en/chrome/browser/", :target => :blank %>
+<p>Sorry, this content is currently only compatible with Google Chrome, which you can <%= link_to "download here", "https://www.google.com/intl/en/chrome/browser/", :target => :blank %>.</p>
+<br><br>
+<div class="content_area">
+  <h2 class="content_header">Why?</h2>
+  <p class="finetext">
+    The interactive 3D content on this page makes use of cutting technologies which are not yet supported by all browsers (and only supported so well by advanced browsers like Google Chrome and Mozilla Firefox). On top of that, as an independent developer with a deadline I've not yet had time to make sure things work with browsers other than Google Chrome, which is currently becoming the most popular desktop browser, and has the best Javascript support.
+  </p>
+</div>
+<% elsif !@current_user %>
+
+<p>
+Neuroanatomist is currently in an early private alpha testing stage. You need to be logged in to access this content.
+</p>
+
+<% end %>
+</div>

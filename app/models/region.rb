@@ -38,6 +38,12 @@ class Region < ActiveRecord::Base
     JaxData.invalidate_caches_with region: self if size == :minor or size == :major
   end
   
+  def save
+    saved = super
+    Version.init_for self, {} if saved
+    saved
+  end
+  
   def decompositions
     # position any unranked decompositions at end of ranking preserving order
     decompositions = Decomposition.where("region_id = ?", id)
@@ -76,7 +82,7 @@ class Region < ActiveRecord::Base
   
   def self.create_from_description description
     description = JSON.load(description) if description.kind_of? String
-    new_region = Region.create :name => (description["name"] or description[:name])
+    (new_region = Region.create :name => (description["name"] or description[:name])) or throw "region couldn't be created"
     (description["definitions"] or description[:definitions]).each { |label_string| RegionDefinition.create_from_label_string new_region.id, label_string }
   end
   

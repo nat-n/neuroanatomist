@@ -6,5 +6,6 @@
                         :alt => "Centre for Cognitive Ageing and Cognitive Epidemiology at The University of Edinburgh",
                         :height => 43),
               "http://www.ccace.ed.ac.uk/", :id => "ccace_link", :target => :blank %>
-  <span id="login"><% if user_signed_in? %><span>Signed in as <%= current_user.alias or current_user.email %></span> | <%= link_to "Sign out", destroy_user_session_path, :method => :delete %><%= raw " | " << link_to("Admin", "/admin") if current_user.try(:admin?) %><% else %><%= link_to "Sign in", new_user_session_path %><% raw " | " << link_to("Sign up", new_user_registration_path) %><% end %></span>
+  <span id="login"><% if user_signed_in? %><span>Signed in as <%= current_user.alias or current_user.email %></span> | <%= link_to "Account", "/user" %> | <%= link_to "Sign out", destroy_user_session_path, :method => :delete %><%= raw " | " << link_to("Admin", "/admin") if current_user.try(:admin?) %><% else %><%= link_to "Sign in", new_user_session_path %><% raw " | " << link_to("Sign up", new_user_registration_path) %><% end %></span>
 </div>
+<%= render :partial => "pages/contact" %>

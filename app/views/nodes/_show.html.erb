@@ -4,9 +4,13 @@
     <a href="#viewing_history_node" id="history_node">view history</a>
   </div>
   <div id="node_edit" class="node_option_content">
-    <%= form_for @node, :url=>"/nodes/#{@node.id}?return=true", :remote => true do |f| %>
-      <%= f.label :introduction, "Editing textile:" %> <a href="http://redcloth.org/textile/writing-paragraph-text/" id="textile_ref" target="_blank">textile reference</a>
+    <%= form_for @node, :url=>"/nodes/#{@node.id}?return=true", :remote => false do |f| %>
+      <%= f.label :introduction, "Editing textile:" %> <a href="http://redcloth.org/textile/phrase-modifiers/" id="textile_ref" target="_blank">textile reference</a>
       <%= f.text_area :introduction, :rows => 16 %>
+      <div class="privacy">
+      <%= check_box :node, "Show_my_alias_in_history", :checked=>true%>
+      <%= label :node, "Show_my_alias_in_history" %> (unchecking this box will hide the authorship details of your edit from public display)<br>
+      </div>
       <input id="redcloth_preview" name="preview" type="button", value="Preview Changes">
       <%= f.submit "Save Changes!" %>
       <span id="inline_notice"></span>

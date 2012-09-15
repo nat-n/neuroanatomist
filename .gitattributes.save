@@ -1,0 +1,2 @@
+config/initializers/secret*     merge=keepMine
+config/environments/*           merge=keepMine

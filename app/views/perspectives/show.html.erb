@@ -24,7 +24,6 @@
     <th>Description</th>
     <th>Number of Definitions</th>
     <th></th>
-    <th></th>
   </tr>
 
 <% @perspective.region_styles.each do |region_style|
@@ -35,7 +34,6 @@
     <td><%= region.description %></td>
     <td><%= region.region_definitions.size %></td>
     <td><%= link_to 'Show', region %></td>
-    <td><%= link_to 'Edit', edit_region_path(region) %></td>
   </tr>
 <% end %>
 </table>

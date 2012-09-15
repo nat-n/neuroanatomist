@@ -4,9 +4,9 @@ class JaxData < ActiveRecord::Base
   belongs_to :shape_set
   before_destroy :destroy_cache
   
-  def uri
+  def remote_uri
     check_expiration
-    "#{ENV["cache_server"]}/#{cache_id}"
+    "#{ENV["CACHE_SERVER"]}/#{cache_id}"
   end
   
   def self.local_chache_dir
@@ -44,7 +44,7 @@ class JaxData < ActiveRecord::Base
   def access_locally
     check_expiration
     increment!
-    ENV["cache_server"] == "local" and (File.open("#{Rails.root}/cached_responses/#{cache_id}.json", 'r') rescue false)
+    ENV["CACHE_SERVER"] == "local" and (File.open("#{Rails.root}/cached_responses/#{cache_id}.json", 'r') rescue false)
   end
   
   def regions
@@ -68,10 +68,10 @@ class JaxData < ActiveRecord::Base
   end
   
   def destroy_cache
-    if ENV["cache_server"] = "local"
+    if ENV["CACHE_SERVER"] = "local"
       File.delete data_path rescue :whatever
-    elsif ENV["cache_server"]
-      HTTParty.delete "#{ENV["cache_server"]}/#{cache_id}/#{destroy_key}"
+    elsif ENV["CACHE_SERVER"]
+      HTTParty.delete "#{ENV["CACHE_SERVER"]}/#{cache_id}/#{destroy_key}"
     end
   end
   

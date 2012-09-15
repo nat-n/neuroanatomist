@@ -38,6 +38,7 @@ GEM
       uuidtools (~> 2.1)
     bcrypt-ruby (3.0.1)
     blockenspiel (0.4.5)
+    browser (0.1.4)
     builder (3.0.0)
     cancan (1.6.8)
     capybara (1.1.2)
@@ -207,6 +208,7 @@ PLATFORMS
 DEPENDENCIES
   RedCloth
   aws-sdk
+  browser
   cancan
   capybara
   coffee-rails (~> 3.2.1)

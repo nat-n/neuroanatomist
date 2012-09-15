@@ -26,7 +26,7 @@
       <%= h[:version].contents.size rescue 0 %>
     </td>
     <td>
-      <%= h[:user].alias ? h[:user].alias : "anon."%>
+      <%= (h[:user] and h[:user].alias) ? h[:user].alias : "anon."%>
     </td>
     <td><%= link_to_function "View", "$('#node_intro')[0].display_version('#{h[:version].to_s.gsub(".","-")}')" %></td>
     <td><%= link_to_function "Revert to this Version", "$('#node_intro')[0].revert_to_version('#{h[:version].to_s.gsub(".","-")}')" %></td>

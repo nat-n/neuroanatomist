@@ -144,7 +144,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         t = @idb.db.transaction(stores.concat(["shape_set"]), "readwrite")
         callback = callback or (()->null)
         if determined # seems to skirt random errors, not entirely sure why, maybe chrome's memory management.
-          console.log "first time"
           t.onerror = (e) => 
             setTimeout (()=>@idb.load_everything(callback, false)), 100
             console.log "caught error:"; console.log e
@@ -281,7 +280,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       shape_set: shape_set_id
       requests: []
     region_ids = region_ids.uniq()
-    missing_regions = (rid for rid in region_ids when not rid of @s3[shape_set_id].regions)
+    missing_regions = (rid for rid in region_ids when not (rid of @s3[shape_set_id].regions))
     return callback() unless missing_regions.length
     for rid in missing_regions
       params.requests.push

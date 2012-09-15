@@ -57,7 +57,6 @@ class PerspectivesController  < Admin::BaseController
     respond_to do |format|
       if @perspective.save
         update_region_styles
-        Version.init_for @perspective, {}
         format.html { redirect_to @perspective, notice: 'Perspective was successfully created.' }
         format.json { render json: @perspective, status: :created, location: @perspective }
       else

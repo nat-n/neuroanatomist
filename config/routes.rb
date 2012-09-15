@@ -5,13 +5,15 @@ Neuroanatomist::Application.routes.draw do
     root :to => "base#index"
     resources :users
   end
-  
+    
   root :to => 'pages#home'
   match "/node:node_name" => "pages#access_node", :constraints => { :node_name => /:.*/}
   match "/thing:thing_name" => "pages#access_thing", :constraints => { :thing_name => /:.*/}
   match "/quiz" => "pages#quiz"
   match "/about" => "pages#about"
   match "/contact" => "pages#contact"
+  
+  match "/user" => "user#index"
   
   devise_for :users, :controllers => {:registrations => "registrations"}
 
@@ -49,7 +51,7 @@ Neuroanatomist::Application.routes.draw do
   match "/jaxdata/c/:cache_id" => "jax_data#fetch_partial_response", :as => :jax_data
   match "/jaxdata/i/:shape_set_id" => "jax_data#fetch_shape_set_ids", :as => :jax_data
   match "/jaxdata/:shape_set_id/update" => "jax_data#update", :as => :jax_data
-    
+  
   match "/images/:file" => redirect {|params| "/assets/#{params[:file]}.#{params[:format]}" }
   
   

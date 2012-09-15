@@ -36,14 +36,14 @@ div#page {
 /* @group header */
 
 header.page {
-	color: #fffeff;
+	color: $page_pg;
 	background: #303030 url(/assets/blackbar.png) repeat-x;
 	height: $header_height;
 	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
-	z-index: 3;
+	z-index: 10;
 	width: auto;
 	min-width: 1050px;
 }
@@ -191,6 +191,142 @@ footer.page, .footer_push {
 /* @end */
 
 /* @group content */
+
+/* @group blocked */
+
+#blocked_msg {
+	width: 500px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	font-size: 1.3em;
+	color: #323232;
+	text-shadow: #fff 1px 1px 1px;
+	margin-top: 70px;
+}
+
+#blocked_msg img {
+	margin: 5px;
+}
+
+
+
+/* @end */
+
+.content_area {
+	border-radius: 10px;
+	display: inline-block;
+	background-color: #ffffff;
+	padding: 10px;
+	border: 1px solid #cacaca;
+	margin: 5px;
+	vertical-align: top;
+	text-align: justify;
+}
+
+.content_header {
+	position: relative;
+	top: -20px;
+	font-size: 3em;
+}
+
+.finetext {
+	font-size: 0.7em;
+}
+
+/* @group user */
+
+#user_prefs {
+	margin: 20px;
+	width: 300px;
+}
+
+#user_prefs p {
+	margin-bottom: 5px;
+	margin-top: 35px;
+	font-size: 0.8em;
+	line-height: 1.05em;
+}
+
+#user_prefs input[type=submit] {
+	float: right;
+}
+
+#user_prefs input[disabled=disabled] {
+	border-width: 0;
+}
+
+
+
+/* @end */
+
+/* @group contact modal */
+
+.modal_container {
+	display: none;
+}
+
+.modal_mask {
+	background-color: #000;
+	opacity: 0.8;
+	position: fixed;
+	top: $header_height;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 5;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+#contact_modal {
+	background-color: $page_pg;
+	border-radius: 8px;
+	margin: 0;
+	padding: 14px;
+	position: fixed;
+	top: $header_height;
+	z-index: 7;
+	left: 400px;
+	width: 500px;
+	opacity: 1;
+	color: #000;
+	font: 0.8em/1.5em "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+}
+
+#contact_modal p {
+}
+
+#contact_fields {
+	margin: 5px;
+}
+
+#contact_fields input, #contact_fields textarea {
+	width: 99%;
+}
+
+#contact_buttons {
+	display: inline-block;
+}
+
+.privacy {
+	position: relative;
+	top: -4px;
+	font-size: 0.8em;
+}
+
+#msg_send_status {
+	font-weight: bold;
+	display: inline-block;
+	margin-left: 20px;
+	margin-right: 20px;
+	font-size: 1.3em;
+	padding: 5px;
+}
+
+/* @end */
 
 .small_spinner {
 	left: 625px;

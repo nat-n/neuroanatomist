@@ -1,0 +1,57 @@
+<div class="modal_container">
+<div class="modal_mask">&nbsp</div>
+<div id="contact_modal">
+<p>If you have any questions or comments regarding neuroanatomist, or if you think you might have discovered a bug then please don't hesitate to send me (the developer) a message using this form. You can also <%= link_to_function "email me directly", "window.location.href = ['mail','to',':','feed','back','@','neuroanatomist','.','org'].join('')" %>.</p>
+<div id="contact_fields">
+  <%= label :message, :subject %>: <%= text_field_tag :message_subject %><br>
+  <%= label :body, :message %><br>
+  <%= text_area_tag :body_message, "", :rows => 20 %>
+</div>
+<div class="privacy">
+<%= check_box :anonymise, "Send_anonymously"%>
+<%= label :anonymise, "Send_anonymously" %> (I won't be able to reply) <br>
+</div>
+<div id="contact_buttons">
+  <button id="contact_send">Send!</button>
+  <button id="contact_cancel">Cancel</button>
+</div><span id="msg_send_status"></span>
+</div>
+</div>
+
+<%= javascript_tag "
+$('.header_nav a[href=\"#contact\"]')[0].onclick = function() {
+  if($('.header_nav a[href=\"#contact\"]').hasClass('current')) {
+    $('.modal_container').fadeOut(333)
+    $('.header_nav a').removeClass()
+    $('.header_nav a[href=\"' + $('.header_nav a[href=\"#contact\"]')[0].prev_tab + '\"]').addClass('current')
+  } else {
+    $('.modal_container').fadeIn(333)
+    $('.header_nav a[href=\"#contact\"]')[0].prev_tab = $('.header_nav a.current').attr('href')
+    $('.header_nav a').removeClass()
+    $('.header_nav a[href=\"#contact\"]').addClass('current')
+  }
+}
+$('#contact_send').click(function(){ 
+  data = {subject:$('#message_subject').val(),message:$('#body_message').val()}
+  if($('#anonymise_Send_anonymously:checked')[0]) data['anon'] = true;
+    console.log(data)
+  $.ajax({
+  type: 'POST',
+  url: '/contact',
+  data: data,
+  success: function(){
+    $('#msg_send_status').html('Message sent')
+    setTimeout(function(){$('.header_nav a[href=\"#contact\"]').click()},600)
+  },
+  error: function(){
+    $('#msg_send_status').html('Error: Message not sent! try again.')
+  }
+}) })
+$('#contact_cancel').click(function(){
+  if( $('#message_subject').val().length && $('#body_message').val().length ) {
+    if(!confirm('Are you sure you don\\'t wish to send your message? Click cancel to return to your message.'))
+      return false;
+  }
+  $('.header_nav a[href=\"#contact\"]')[0].click();
+})
+"%>

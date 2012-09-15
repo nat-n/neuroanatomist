@@ -11,6 +11,12 @@ class Node < ActiveRecord::Base
   
   include VersioningHelper
   
+  def save
+    saved = super
+    Version.init_for self, {} if saved
+    saved
+  end
+  
   def name
     attribute(:name).gsub(/_+/, " ")
   end
@@ -45,7 +51,7 @@ class Node < ActiveRecord::Base
         date:v.created_at,
         version:  v, 
         current:  v.is_current, 
-        user:     v.user, 
+        user:     (v.show_author ? v.user : nil), 
         contents: v.contents, 
         previous: ((v.description.scan(/from:\((.*)\)/)[0][0] rescue v.previous.to_s) or v.previous.to_s)
       ]

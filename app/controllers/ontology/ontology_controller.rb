@@ -49,7 +49,7 @@ class Ontology::OntologyController < Ontology::BaseController
         existing_thing = Thing.where("name = ?",thing["name"]).first
         tag = (Tag.where("name = ?",thing["name"]).first or Tag.create(:name=>thing["name"]))
         node = (Node.where("name = ?",thing["name"]).first or Node.create(:name => thing["name"], :tag => tag))
-        regions = thing["regions"].map {|rdesc| Region.where("name = ?", rdesc["name"]).first or Region.create_from_description(rdesc) }.compact
+        regions = thing["regions"].map {|rdesc| Region.where("name = ?", rdesc["name"]).first or (Region.create_from_description(rdesc) rescue nil) }.compact
         if existing_thing
           existing_thing.update_attributes(:description       => thing["description"],
                                            :synonyms          => thing["synonyms"],

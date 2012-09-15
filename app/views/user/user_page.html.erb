@@ -1,0 +1,44 @@
+<div id="user_prefs" class="content_area">
+  <% if @user.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@user.errors.count, "error") %> prohibited these changes from being saved:</h2>
+
+      <ul>
+      <% @user.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  
+  <%= form_for(@user) do |f| %>
+  <table>
+    <tr class="field">
+      <td>
+      <%= f.label :alias %>: 
+      </td><td>
+      <%= f.text_field :alias %>
+      </td>
+    </tr>
+    <tr class="field">
+      <td>
+      <%= f.label :email, "User name" %>: 
+      </td><td>
+      <%= f.text_field :email, :disabled=>true %>
+      </td>
+    </tr>
+    <tr class="field">
+      <td>
+      <%= f.label :group, "Account Type" %>: 
+      </td><td>
+      <%= f.text_field :group, :disabled=>true %>
+      </td>
+    </tr>
+  </table>
+  <%= f.submit "Update Settings"%>
+  <% end %>
+  <p>
+    NB: Your alias may be publicly associated with posts or edits that you make, which you do not specify to be made anonymously. It should not be your real name, and does not have to be anything by which others might recognise you.
+  </p>
+  
+</div>

@@ -1,6 +1,7 @@
 Jax.getGlobal()['QuizMaster'] = Jax.Model.create
   after_initialize: ->
     @ready = false
+    @temp_region = null
     @quiz =
       list: []
       active: false
@@ -31,19 +32,31 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
     # mode is either search, or match
     # list should be an array of arrays of ids of regions which count as correct answers for this question
     return false if !@ready or !(regions = context.s3[context.current_controller.active_shape_set].regions) or !list.length or this.is_active()
+    @active_shape_set = context.current_controller.active_shape_set
     @quiz.list = []
     missing_regions = []
     for i in list
       if i of regions then @quiz.list.push regions[i]
       else missing_regions.push i
-    @quiz.list = @quiz.list.sort () -> 0.5 - Math.random()
-    @quiz.active = -1
-    @quiz.times.push Date.now
-    $('#quiz_controls').slideDown(500)
-    $('#quiz_setup').slideUp(500)
-    this.proceed()
+    if missing_regions.length
+      @qm.update_status("Loading quiz data...")
+      context.current_controller.asset_loader.fetch_regions @active_shape_set, missing_regions, () =>
+        @quiz.list = @quiz.list.sort () -> 0.5 - Math.random()
+        @quiz.active = -1
+        @quiz.times.push Date.now()
+        $('#quiz_controls').slideDown(500)
+        $('#quiz_setup').slideUp(500)
+        this.proceed()
+    else
+      @quiz.list = @quiz.list.sort () -> 0.5 - Math.random()
+      @quiz.active = -1
+      @quiz.times.push Date.now()
+      $('#quiz_controls').slideDown(500)
+      $('#quiz_setup').slideUp(500)
+      this.proceed()
   
   pass: () ->
+    this.current().object.mesh.setColor([1,1,1,1]) if this.current().object
     this.proceed() if this.is_active()
   
   proceed: () ->
@@ -73,23 +86,31 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
   user_select: (id) ->
     return null unless this.is_active()
     @quiz.times.push @quiz.timer.read()
+    unless this.current().object and this.current().object.id of context.current_controller.world
+      context.current_controller.show_region(context.current_controller.scene.new_region(@active_shape_set, this.current().id, [1,1,1,1]), false)
+      @temp_region = this.current().object.id
     if parseInt(id) is this.current().id
       this.correct(this.current().object)
     else
       this.incorrect(this.current().object)
+    setTimeout (()=>
+      this.current().object.mesh.setColor([1,1,1,1])
+      context.current_controller.show_hover=true
+      if @temp_region
+        context.current_controller.hide_region @temp_region
+        @temp_region = 0
+      this.proceed()), 1500
     
   correct: (region) ->
     this.update_status "Correct!", "positive"
     region.mesh.setColor([0,1,0,1])
     context.current_controller.show_hover = false
-    setTimeout (()=>this.proceed();region.mesh.setColor([1,1,1,1]);context.current_controller.show_hover=true;), 1500
     @quiz.correct +=1
   
   incorrect: (region) ->
     this.update_status "Incorrect!", "negative"
     region.mesh.setColor([1,0,0,1])
     context.current_controller.show_hover = false
-    setTimeout (()=>this.proceed();region.mesh.setColor([1,1,1,1]);context.current_controller.show_hover=true;), 1500
   
   current: () -> @quiz.list[@quiz.active]
   
