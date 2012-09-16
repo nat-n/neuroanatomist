@@ -187,23 +187,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       clear: () -> 0
     
   
-  # not sure if this is needed or belongs here if it is
-  #perspective2region_descs: (json_data) ->
-  #  regions = []
-  #  meshes = {}
-  #  for region in json_data["regions"]
-  #    new_region = []
-  #    shape_vids = (shape["volume_value"] for shape in region["shapes"])
-  #    for shape in region["shapes"]
-  #      for mesh in shape["meshes"]
-  #        bf = mesh["name"].split("-")
-  #        if (bf[0] in shape_vids) or (bf[1] in shape_vids)
-  #          mesh_id = parseInt(mesh["id"])
-  #          meshes[mesh_id] = mesh if mesh["included"] == "yes"
-  #          new_region.push mesh_id
-  #    regions.push new_region
-  #  ((meshes[mesh_id] for mesh_id in region) for region in regions)
-  
   fetch_defaults: (callback) ->
     $.ajax
       url: @jax_data_path
@@ -233,37 +216,35 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     return p_def.id
   
   fetch_shape_set: (ss,callback,cascade) ->
-    params =
-      shape_set: ss
-      cascade: cascade or "no"
-    this.fetch params, callback
+    this.fetch_start()
+    $.ajax
+      url: "/vdata/#{shape_set_id}"
+      dataType: 'json'
+      error: (jqXHR, textStatus, errorThrown) ->
+        console.log "AJAX Error: " + textStatus
+        this.fetch_end(shape_set_id, ["shape_set"])
+      success: (data, textStatus, jqXHR) =>
+        this.cache_shape_set(data)        
+        this.fetch_end(shape_set_id, ["shape_set"])
   
   fetch_perspective: (shape_set_id, perspective_id, callback) ->  this.fetch_perspectives(shape_set_id, [perspective_id], callback)
   
   fetch_perspectives: (shape_set_id, perspective_ids, callback) ->
-    # should fetch the perspective minus regions then request any regions that aren't already cached
-    requests = []
-    perspective_ids = perspective_ids.uniq()
-    for p_id in perspective_ids
-      requests.push {
-        type:"perspective"
-        id: p_id
-        cascade:"no" }
-    this.fetch
-      shape_set: shape_set_id
-      requests: requests
-      (data) =>
-        # check if any additional resources are required to load this perspective
-        missing_regions = []
-        if typeof(data[0].regions[0]) is 'number'
-          for rid in data[0].regions
-            missing_regions.push rid unless (rid of @s3[shape_set_id].regions) and this.verify_region(shape_set_id, rid)
-        else
-          for r in data[0].regions
-            missing_regions.push r.id unless (r.id of @s3[shape_set_id].regions) and this.verify_region(shape_set_id, r.id)
-        return callback() unless missing_regions.length
-        this.fetch_regions shape_set_id, missing_regions, callback
-    
+    this.fetch_start()
+    $.ajax
+      url: "/vdata/#{shape_set_id}/p:#{perspective_ids.join(",")}"
+      dataType: 'json'
+      error: (jqXHR, textStatus, errorThrown) ->
+        console.log "AJAX Error: " + textStatus
+        this.fetch_end(shape_set_id, ["perspectives"])
+      success: (data, textStatus, jqXHR) =>
+        for p_id of data
+          @s3[shape_set_id].perspectives[p_id]  ?= {}
+          for attr in ['id', 'name', 'version', 'style_set', 'height', 'angle', 'distance']
+            @s3[shape_set_id].perspectives[p_id][attr] = data[p_id][attr]
+            this.fetch_end(shape_set_id, ["perspectives"])
+            callback(data, textStatus, jqXHR)
+      
   verify_region: (shape_set_id, region_id) ->
     return false unless @s3 and @s3[shape_set_id] and @s3[shape_set_id].regions and 
       @s3[shape_set_id].shapes and @s3[shape_set_id].meshes and @s3[shape_set_id].regions[region_id] and 
@@ -273,120 +254,51 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       for mesh_id in @s3[shape_set_id].shapes[shape_id].meshes
         return false unless @s3[shape_set_id].meshes[mesh_id]
     true
-  
+
   fetch_regions: (shape_set_id, region_ids, callback) ->
-	  # should compose the params to fetch the requested regions, excluding already aquired meshes
-    params =
-      shape_set: shape_set_id
-      requests: []
-    region_ids = region_ids.uniq()
-    missing_regions = (rid for rid in region_ids when not (rid of @s3[shape_set_id].regions))
-    return callback() unless missing_regions.length
-    for rid in missing_regions
-      params.requests.push
-        type:"region"
-        id: rid
-        cascade:"yes"
-    if @s3[shape_set_id].meshes.length
-      params.exclude = []
-      params.exclude.push mesh_id for mesh_id of @s3.meshes
-    this.fetch params, callback
-	
+    this.fetch_start()
+    exclude = (mesh_id for mesh_id of @s3[shape_set_id].meshes)
+    $.ajax
+      url: "/vdata/#{shape_set_id}/r:#{region_ids.join(",")}?full=true&excl=#{exclude.join(",")}"
+      dataType: 'json'
+      error: (jqXHR, textStatus, errorThrown) ->
+        console.log "AJAX Error: " + textStatus
+        this.fetch_end(shape_set_id, [])
+      success: (data, textStatus, jqXHR) =>
+        @s3[shape_set_id].regions[region.id] ?= {}
+        if "regions" of data
+          regions = (data["regions"][r] for r of data["regions"])
+          meshes = (data["meshes"][m] for m of data["meshes"])
+        else
+          regions = (region for region of data)
+        
+        for region of regions
+          for attr in ['id', 'name', 'version', 'decompositions', 'thing']
+            @s3[shape_set_id].regions[region.id][attr] = region[attr]
+          @s3[shape_set_id].regions[region.id].shapes = []
+          if typeof(region.shapes[0]) is 'number'
+            @s3[shape_set_id].regions[region.id].shapes.push shape_id for shape_id in region.shapes
+          else
+            for shape in region.shapes
+              @s3[shape_set_id].regions[region.id].shapes.push shape.id
+              @s3[shape_set_id].shapes[shape.id] ?= {}
+              for attr in ['id','volume_value', 'name']
+                @s3[shape_set_id].shapes[shape.id][attr] = shape[attr]
+              @s3[shape_set_id].shapes[shape.id].meshes = [] # have to overwrite here to avoid duplication!
+              @s3[shape_set_id].shapes[shape.id].meshes.push mesh.id for mesh in shape["meshes"]
+        
+        for mesh of meshes
+          @s3[shape_set_id].meshes[mesh.id] ?= {}
+          for attr in ['id', 'name', 'vertex_positions', 'vertex_normals', 'faces', 'borders']
+            @s3[shape_set_id].meshes[mesh.id][attr] = mesh[attr]
+        
+        this.fetch_end(shape_set_id, ["regions","shapes","meshes"])
+        callback(data, textStatus, jqXHR)
+  	
   init_ss: (ssid) ->
     @s3[ssid] ?= {}
     @s3[ssid].perspectives ?= {}
     @s3[ssid].meshes ?= {}
     @s3[ssid].shapes ?= {}
     @s3[ssid].regions ?= {}
-    
-  
-  fetch: (params, callback) ->
-    # params = {shape_set: #, include:[], exclude:[], cascade:flag, requests: {}}
-    this.fetch_start()
-    shape_set_id = params.shape_set
-    updated = []
-    this.init_ss(shape_set_id)
-    url = @jax_data_path
-    url += "/" + shape_set_id if shape_set_id
-    url += "?" if params.include or params.exclude or params.requests or params.cascade
-    if params.include and params.include.length
-      url += "include=" + params.include.uniq() + "&"
-    else if params.exclude and params.exclude.length
-      url += "exclude=" + params.exclude.uniq() + "&"
-    if params.requests
-      url += "requests=" + encodeURIComponent(JSON.stringify(params.requests))
-    else if params.cascade
-      url += "cascade=" + params.cascade
-    console.log url
-    $.ajax
-      url: url
-      dataType: 'json'
-      error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: " + textStatus
-      success: (data, textStatus, jqXHR) =>
-        
-        perspective_proc = (shape_set_id, perspective, region_proc, shape_proc, mesh_proc, cascade) =>
-          updated.push "perspectives" unless "perspectives" in updated
-          @s3[shape_set_id].perspectives[perspective.id]  ?= {}
-          
-          for attr in ['id', 'name', 'version', 'style_set', 'height', 'angle', 'distance']
-            @s3[shape_set_id].perspectives[perspective.id][attr] = perspective[attr]
-          
-          if "regions" of perspective
-            @s3[shape_set_id].perspectives[perspective.id].regions = []
-            if typeof(perspective.regions[0]) is 'number'
-              for region in perspective.regions
-                @s3[shape_set_id].perspectives[perspective.id].regions.push region
-            else
-              for region in perspective.regions
-                @s3[shape_set_id].perspectives[perspective.id].regions.push region.id
-                region_proc(shape_set_id, region, shape_proc, mesh_proc)
-        
-        region_proc = (shape_set_id, region, shape_proc, mesh_proc) =>
-          updated.push "regions" unless "regions" in updated
-          @s3[shape_set_id].regions[region.id] ?= {}
-
-          for attr in ['id', 'name', 'version', 'decompositions', 'thing']
-            @s3[shape_set_id].regions[region.id][attr] = region[attr]
-
-          if "shapes" of region
-            @s3[shape_set_id].regions[region.id].shapes = []
-            for shape in region.shapes
-              @s3[shape_set_id].regions[region.id].shapes.push shape.id
-              shape_proc(shape_set_id, shape, mesh_proc)
-        
-        shape_proc = (shape_set_id, shape, mesh_proc) =>
-          updated.push "shapes" unless "shapes" in updated
-          @s3[shape_set_id].shapes[shape.id] ?= {}
-          for attr in ['id','volume_value', 'name']
-            @s3[shape_set_id].shapes[shape.id][attr] = shape[attr]
-          if "meshes" of shape
-            @s3[shape_set_id].shapes[shape.id].meshes = [] # have to overwrite here for avoid duplication!
-            for mesh in shape["meshes"]
-              if mesh.included == "yes" or mesh.included == "elsewhere" # maybe should remove this line actually??
-                @s3[shape_set_id].shapes[shape.id].meshes.push mesh.id
-              if mesh.included == "yes"
-                mesh_proc(shape_set_id, mesh)
-        
-        mesh_proc = (shape_set_id, mesh) =>
-          updated.push "meshes" unless "meshes" in updated
-          @s3[shape_set_id].meshes[mesh.id] ?= {}
-          for attr in ['id', 'name', 'vertex_positions', 'vertex_normals', 'faces', 'borders']
-            @s3[shape_set_id].meshes[mesh.id][attr] = mesh[attr]
-                  
-        unless "default_shape_set" of data # not sure if this is necccessary
-          for ri of data
-            if params.requests and "type" of params.requests[ri]
-              switch params.requests[ri].type
-                when "perspective"                  
-                  perspective_proc(shape_set_id, data[ri], region_proc, shape_proc, mesh_proc)
-                when "region"
-                  region_proc(shape_set_id, data[ri], shape_proc, mesh_proc)
-                when "shape"
-                  shape_proc(shape_set_id, data[ri], shape_proc, mesh_proc)
-                when "mesh"
-                  mesh_proc(shape_set_id, data[ri])
-            else
-              this.cache_shape_set data[ri]
-        this.fetch_end(shape_set_id, updated)
-        callback(data, textStatus, jqXHR)
   

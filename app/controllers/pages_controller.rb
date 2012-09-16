@@ -50,8 +50,7 @@ class PagesController < ApplicationController
       @node_data = embedded_json
       shape_set = (shape_set or ShapeSet.default)
       @perspective = ( @node.perspective or shape_set.default_perspective or nil )
-      @shape_set = shape_set.hash_partial(@cascade)
-      @shape_set = @shape_set.merge(@shape_set.delete(:attrs))
+      @shape_set = shape_set.hash_partial
     
       # NOTE TO FUTURE SELF: will probably need some kind of check for perspective/shape_set compatibility here eventually
       @jax = Hash[
