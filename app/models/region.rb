@@ -60,16 +60,21 @@ class Region < ActiveRecord::Base
     attributes["name"]
   end
   
-  def hash_partial shape_set
+  def hash_partial shape_set, full=false
     definition = self.definition_for(shape_set)
-    Hash[
+    hp = Hash[
       id:             self.id,
       version:        definition.version.to_s,
       name:           self.name,
       thing:          (self.thing ? self.thing.id : nil),
       decompositions: self.decompositions.map(&:hash_partial),
-      shapes:         definition.shapes.map(&:hash_partial)
     ]
+    if full
+      hp[:shapes] = definition.shapes.map(&:hash_partial)
+    else
+      hp[:shapes] = definition.shapes.map(&:id)
+    end
+    hp
   end
   
   def description_hash
