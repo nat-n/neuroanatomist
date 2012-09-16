@@ -20,8 +20,12 @@ class VDataController < ApplicationController
     ids.delete(0)
     if params[:full] == "t"
       @regions = Hash[Region.find(:all, :conditions => ["id IN (?)", ids]).map { |r| r.hash_partial(@shape_set, true) }.map{|m| [m[:id],m]}]
-      mesh_ids = @regions.map{|id,r| r[:shapes].map{|s| s[:meshes]} }.flatten.uniq
+      mesh_ids = @regions.map{|id,r| r[:shapes].map{ |s| s[:meshes]} }.flatten.uniq
       @meshes = Hash[Mesh.find(:all, :conditions => ["id IN (?)", mesh_ids]).map{|m| [m.id,m]}]
+      if params[:excl]
+        exclude = params[:excl].split(',').map(&:to_i)
+        @meshes.reject! { |id,m| exclude.include? id }
+      end
       render :action => :regions, :formats => [:json]
     else
       @regions = Hash[Region.find(:all, :conditions => ["id IN (?)", ids]).map { |r| r.hash_partial(@shape_set, false) }.map{|m| [m[:id],m]}]
