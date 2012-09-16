@@ -52,6 +52,10 @@ Neuroanatomist::Application.routes.draw do
   match "/jaxdata/i/:shape_set_id" => "jax_data#fetch_shape_set_ids", :as => :jax_data
   match "/jaxdata/:shape_set_id/update" => "jax_data#update", :as => :jax_data
   
+  match "/vdata/:shape_set_id"        => "v_data#shape_set",    :constraints => { :shape_set_id => /\d+/ }
+  match "/vdata/:shape_set_id/r:ids"  => "v_data#regions",      :constraints => { :shape_set_id => /\d+/, :ids => /:[\d,]*/ }
+  match "/vdata/:shape_set_id/p:ids"  => "v_data#perspectives", :constraints => { :ids => /:[\d,]*/ }
+  
   match "/images/:file" => redirect {|params| "/assets/#{params[:file]}.#{params[:format]}" }
   
   

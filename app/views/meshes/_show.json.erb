@@ -1,11 +1,8 @@
 {
   "id":<%= @mesh.id %>,
   "name":"<%= @mesh.name %>",
-  "included": "<%= @included[@mesh.id].to_s %>"
-  <% if !@included or @included[@mesh.id] == :yes %>,
   "vertex_positions":<%= @mesh.vertices :json %>,
   "vertex_normals":<%= @mesh.normals :json %>,
   "faces":<%= @mesh.faces :json %>,
   "borders":<%= raw @mesh.borders :json %>
-  <% @included[@mesh.id] = :elsewhere end %>
 }

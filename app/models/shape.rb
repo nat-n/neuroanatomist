@@ -4,6 +4,15 @@ class Shape < ActiveRecord::Base
   has_many :low_meshes, :class_name => 'Mesh', :foreign_key => 'front_shape_id', :dependent => :destroy
   has_and_belongs_to_many :region_definitions
   
+  def hash_partial
+    Hash[
+      id:             id,
+      volume_value:   volume_value,
+      name:           name,
+      meshes:         meshes.map(&:id)
+    ]
+  end
+  
   def has_definition_for region
     region_definitions.each do |region_definition|
       return true if region_definition.region == region

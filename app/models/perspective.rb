@@ -96,20 +96,17 @@ class Perspective < ActiveRecord::Base
     end
   end
   
-  def hash_partial shape_set, cascade=true
-    hp = Hash[
-      attrs: Hash[
-        id:         self.id,
-        version:    self.version.to_s,
-        name:       self.name,
-        style_set:  (self.has_external_styles? ? self.style_set.id : false),
-        height:     self.height,
-        angle:      self.angle,
-        distance:   self.distance
-      ]
+  def hash_partial
+    Hash[
+      id:         self.id,
+      version:    self.version.to_s,
+      name:       self.name,
+      style_set:  (self.has_external_styles? ? self.style_set.id : false),
+      height:     self.height,
+      angle:      self.angle,
+      distance:   self.distance,
+      regions:    self.active_regions.map(&:id)
     ]
-    hp[:regions] = (cascade and cascade!=:no) ? self.active_regions.map {|ar| ar.hash_partial(shape_set,cascade)} : self.active_regions.map(&:id)
-    return hp
   end
   
   def description_hash

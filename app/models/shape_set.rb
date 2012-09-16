@@ -144,20 +144,16 @@ class ShapeSet < ActiveRecord::Base
     regions.include? region
   end
   
-  def hash_partial cascade
-    hp = Hash[
-      attrs: Hash[
-        type:                 'shape_set',
-        id:                   self.id,
-        version:              self.version.to_s,
-        name:                 self.name,
-        radius:               self.radius,
-        center_point:         (self.center_point or nil),
-        default_perspective:  (self.default_perspective.id or nil rescue nil)
-      ]
+  def hash_partial
+    Hash[
+      type:                 'shape_set',
+      id:                   self.id,
+      version:              self.version.to_s,
+      name:                 self.name,
+      radius:               self.radius,
+      center_point:         (self.center_point or nil),
+      default_perspective:  (self.default_perspective.id or nil rescue nil)
     ]
-    hp[:shapes] = self.shapes.map(&:id) if [true,:yes,:partial].include? cascade
-    return hp
   end
   
   def latest
