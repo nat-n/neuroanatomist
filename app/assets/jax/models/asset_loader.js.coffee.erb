@@ -215,8 +215,9 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     @s3[ss].perspectives[p_def.id] = p_def
     return p_def.id
   
-  fetch_shape_set: (ss,callback,cascade) ->
+  fetch_shape_set: (shape_set_id,callback,cascade) ->
     this.fetch_start()
+    console.log "/vdata/#{shape_set_id}"
     $.ajax
       url: "/vdata/#{shape_set_id}"
       dataType: 'json'
@@ -231,6 +232,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   
   fetch_perspectives: (shape_set_id, perspective_ids, callback) ->
     this.fetch_start()
+    console.log "/vdata/#{shape_set_id}/p:#{perspective_ids.join(",")}"
     $.ajax
       url: "/vdata/#{shape_set_id}/p:#{perspective_ids.join(",")}"
       dataType: 'json'
@@ -240,10 +242,10 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       success: (data, textStatus, jqXHR) =>
         for p_id of data
           @s3[shape_set_id].perspectives[p_id]  ?= {}
-          for attr in ['id', 'name', 'version', 'style_set', 'height', 'angle', 'distance']
+          for attr in ['id', 'name', 'version', 'style_set', 'height', 'angle', 'distance', 'regions']
             @s3[shape_set_id].perspectives[p_id][attr] = data[p_id][attr]
-            this.fetch_end(shape_set_id, ["perspectives"])
-            callback(data, textStatus, jqXHR)
+        this.fetch_end(shape_set_id, ["perspectives"])
+        callback(data, textStatus, jqXHR)
       
   verify_region: (shape_set_id, region_id) ->
     return false unless @s3 and @s3[shape_set_id] and @s3[shape_set_id].regions and 
@@ -258,21 +260,27 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   fetch_regions: (shape_set_id, region_ids, callback) ->
     this.fetch_start()
     exclude = (mesh_id for mesh_id of @s3[shape_set_id].meshes)
+    region_ids = (rid for rid in region_ids when not this.verify_region(shape_set_id,rid))
+    return callback() unless region_ids.length
+    url = "/vdata/#{shape_set_id}/r:#{region_ids.join(",")}?full=t"
+    url += "&excl=#{exclude.join(",")}" if exclude.length
+    console.log url
     $.ajax
-      url: "/vdata/#{shape_set_id}/r:#{region_ids.join(",")}?full=true&excl=#{exclude.join(",")}"
+      type: 'get'
+      url:  url
       dataType: 'json'
       error: (jqXHR, textStatus, errorThrown) ->
         console.log "AJAX Error: " + textStatus
         this.fetch_end(shape_set_id, [])
       success: (data, textStatus, jqXHR) =>
-        @s3[shape_set_id].regions[region.id] ?= {}
         if "regions" of data
           regions = (data["regions"][r] for r of data["regions"])
-          meshes = (data["meshes"][m] for m of data["meshes"])
+          meshes = data["meshes"]
         else
-          regions = (region for region of data)
+          regions = (data[r] for r of data)
         
-        for region of regions
+        for region in regions
+          @s3[shape_set_id].regions[region.id] ?= {}
           for attr in ['id', 'name', 'version', 'decompositions', 'thing']
             @s3[shape_set_id].regions[region.id][attr] = region[attr]
           @s3[shape_set_id].regions[region.id].shapes = []
@@ -285,9 +293,9 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
               for attr in ['id','volume_value', 'name']
                 @s3[shape_set_id].shapes[shape.id][attr] = shape[attr]
               @s3[shape_set_id].shapes[shape.id].meshes = [] # have to overwrite here to avoid duplication!
-              @s3[shape_set_id].shapes[shape.id].meshes.push mesh.id for mesh in shape["meshes"]
-        
-        for mesh of meshes
+              @s3[shape_set_id].shapes[shape.id].meshes.push mesh_id for mesh_id in shape["meshes"]
+            
+        for mesh in meshes
           @s3[shape_set_id].meshes[mesh.id] ?= {}
           for attr in ['id', 'name', 'vertex_positions', 'vertex_normals', 'faces', 'borders']
             @s3[shape_set_id].meshes[mesh.id][attr] = mesh[attr]

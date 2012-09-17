@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120913185555) do
+ActiveRecord::Schema.define(:version => 20120915183522) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -347,6 +347,21 @@ ActiveRecord::Schema.define(:version => 20120913185555) do
   add_index "users", ["alias"], :name => "index_users_on_alias", :unique => true
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
+
+  create_table "v_caches", :force => true do |t|
+    t.string   "request_string"
+    t.string   "cache_id"
+    t.string   "destroy_key"
+    t.string   "type"
+    t.string   "ids"
+    t.integer  "count",          :default => 0
+    t.boolean  "expired",        :default => false
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+  end
+
+  add_index "v_caches", ["cache_id"], :name => "index_v_caches_on_cache_id"
+  add_index "v_caches", ["request_string"], :name => "index_v_caches_on_request_string"
 
   create_table "versions", :force => true do |t|
     t.string   "version_string"

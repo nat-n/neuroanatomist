@@ -1,5 +1,5 @@
 { 
   "type":"regions",
   "regions":<%= raw JSON.dump(@regions) %>,
-  "meshes":<% n = @meshes.size; for id, @mesh in @meshes do %><%= render :partial => "meshes/show", :formats => [:json] %><%= "," unless (n-=1)==0 %><% end %>
+  "meshes":[<% n = @meshes.size; for id, @mesh in @meshes do %><%= render :partial => "meshes/show", :formats => [:json] %><%= "," unless (n-=1)==0 %><% end %>]
 }

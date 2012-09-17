@@ -40,28 +40,15 @@ Jax.getGlobal().PerspectiveHelper = Jax.Helper.create
     this.camera_position perspective.angle or cp.a,
                          perspective.height or cp.h,
                          perspective.distance or cp.d
-    # should load from or keep UIDs if possible instead of rebuilding everything!
-    # but need to first fetch any regions that we don't have
-    missing_regions = []
-    for region_id in perspective.regions
-      missing_regions.push region_id unless region_id of @s3[@active_shape_set].regions
-    
     if whitewash then color = [1,1,1,1]
     else color = null
     
-    if missing_regions.length
-      @loader.fetch_regions @active_shape_set, missing_regions, (data) =>
-        for region_id in perspective.regions                    #### !!! not sure what'll happen in jaxdata if fake region requested ???
-          if region_id of @s3[@active_shape_set].regions
-            this.show_region @scene.new_region(@active_shape_set, region_id, color), false
-          else
-            console.log "ERROR: No such region with id "+region_id
-        this.regions_changed() if fire
-        this.hide_loading_spinner()
-        @active_perspective = pid
-    else
+    @loader.fetch_regions @active_shape_set, perspective.regions, (data) =>
       for region_id in perspective.regions
+        if region_id of @s3[@active_shape_set].regions
           this.show_region @scene.new_region(@active_shape_set, region_id, color), false
+        else
+          console.log "ERROR: No such region with id "+region_id
       this.regions_changed() if fire
       this.hide_loading_spinner()
       @active_perspective = pid
