@@ -35,11 +35,11 @@ class Region < ActiveRecord::Base
       region_styles.each { |rs|  rs.version_bump size, description, user }
     end
     # MINOR or MAJOR updates queue a refresh of all server caches that include this region
-    JaxData.invalidate_caches_with region: self if size == :minor or size == :major
+    shape_sets.each { |ss| VCache.expire_regions ss.id, self.id } if size == :minor or size == :major
   end
   
-  def save
-    saved = super
+  def save *args
+    saved = super *args
     Version.init_for self, {} if saved
     saved
   end
@@ -89,6 +89,6 @@ class Region < ActiveRecord::Base
   end
   
   def invalidate_caches
-    JaxData.invalidate_caches_with shape_sets: shape_sets, region: self
+    VCache.expire_perspectives self.id, false
   end
 end

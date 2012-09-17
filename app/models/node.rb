@@ -11,8 +11,8 @@ class Node < ActiveRecord::Base
   
   include VersioningHelper
   
-  def save
-    saved = super
+  def save *args
+    saved = super *args
     Version.init_for self, {} if saved
     saved
   end

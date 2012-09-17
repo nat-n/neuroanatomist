@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120915183522) do
+ActiveRecord::Schema.define(:version => 20120917141901) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -57,23 +57,6 @@ ActiveRecord::Schema.define(:version => 20120915183522) do
   add_index "facts", ["object_id"], :name => "index_facts_on_object_id"
   add_index "facts", ["relation_id"], :name => "index_facts_on_relation_id"
   add_index "facts", ["subject_id"], :name => "index_facts_on_subject_id"
-
-  create_table "jax_data", :force => true do |t|
-    t.string   "request_string"
-    t.string   "response_description"
-    t.string   "cache_id"
-    t.string   "destroy_key"
-    t.integer  "shape_set_id"
-    t.string   "perspectives"
-    t.integer  "count",                :default => 0
-    t.boolean  "expired",              :default => false
-    t.datetime "created_at",                              :null => false
-    t.datetime "updated_at",                              :null => false
-    t.string   "regions"
-  end
-
-  add_index "jax_data", ["request_string"], :name => "index_jax_data_on_request_string", :unique => true
-  add_index "jax_data", ["shape_set_id"], :name => "index_jax_data_on_shape_set_id"
 
   create_table "meshes", :force => true do |t|
     t.string   "mesh_data_id"
@@ -347,21 +330,6 @@ ActiveRecord::Schema.define(:version => 20120915183522) do
   add_index "users", ["alias"], :name => "index_users_on_alias", :unique => true
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
-
-  create_table "v_caches", :force => true do |t|
-    t.string   "request_string"
-    t.string   "cache_id"
-    t.string   "destroy_key"
-    t.string   "type"
-    t.string   "ids"
-    t.integer  "count",          :default => 0
-    t.boolean  "expired",        :default => false
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
-  end
-
-  add_index "v_caches", ["cache_id"], :name => "index_v_caches_on_cache_id"
-  add_index "v_caches", ["request_string"], :name => "index_v_caches_on_request_string"
 
   create_table "versions", :force => true do |t|
     t.string   "version_string"

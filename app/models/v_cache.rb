@@ -15,10 +15,10 @@ class VCache < ActiveRecord::Base
     new_cache = Hash[ request_string: request_string,
                       cache_id:       (Digest::MD5.new << request_string).to_s ]
     new_cache[:destroy_key] = params[:destroy_key].to_s if params[:destroy_key]
-    if params[:type] and params[:ids]
-      new_cache[:type] = params[:type]
+    #if params[:cache_type] and params[:ids]
+      new_cache[:cache_type] = params[:cache_type] or "foo"
       new_cache[:ids]  = [*params[:ids]].join(",")
-    end
+    #end
     new_cache = VCache.create new_cache
     
     case VCache.mode
@@ -33,40 +33,63 @@ class VCache < ActiveRecord::Base
   
   def self.access request_string
     @cache = VCache.where(:request_string => request_string).first
-    return false unless @cache and not @cache.expired
+    if !@cache
+      return false
+    elsif @cache.expired
+      @cache.delete
+      return false
+    end
     
     @cache.count +=1
     @cache.save
     
     case VCache.mode
     when :local
-      return (File.open(@cache.local_path, 'r') rescue @cache.destroy and nil)
+      return (File.open(@cache.local_path, 'r') rescue @cache.expire! and nil)
     when :s3
       
     end
   end
   
-  def self.expire request_string, delete=false
-    @cache = VCache.where(:request_string => request_string).first
+  def self.expire! request_string, delete=false
+    VCache.where(:request_string => request_string).each {|vc| vc.expire! delete }
+  end
+  
+  def expire! delete=false
+    
     # if remote cache also then send it the destroy key
     
     case VCache.mode
     when :local
-      File.delete(@cache.local_path)
+      File.delete(local_path) rescue nil
     when :s3
       
     end
-    
-    if delete
-      @cache.delete
-    else
-      expired = true
-      save
-    end
-  end
 
+    self.expired = true
+    self.save
+    return self.delete if delete
+  end
+  
   def local_path
     "#{VCache.dir}/#{cache_id}.json"
+  end
+  
+  def self.expire_regions shape_set_id, region_ids, delete=false
+    VCache.where(:cache_type => 'regions').each do |vc|
+      ids = vc.ids.split(",").map(&:to_i)
+      vc.expire! delete if ids.shift == shape_set_id and !(ids & [*region_ids]).empty?
+    end
+  end
+  
+  def self.expire_perspectives perspective_ids, delete=false
+    VCache.where(:cache_type => 'perspectives').each { |vc| 
+      vc.expire! delete unless (vc.ids.split(",").map(&:to_i) & [*perspective_ids]).empty?
+    }
+  end
+
+  def self.expire_shape_set shape_set_id, delete=false
+    VCache.where(:cache_type => 'shape_set', :ids => shape_set_id).each { |vc| vc.expire! delete }
   end
   
   private

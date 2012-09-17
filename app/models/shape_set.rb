@@ -10,16 +10,13 @@ class ShapeSet < ActiveRecord::Base
   
   include VersioningHelper
   
-  def jax_data # because the has_many doesn't seem to work for this
-    JaxData.where(:shape_set_id => id)
-  end
-  
   def expire!
     expired = true
     is_default = false
     notes = "#{notes}\n**EXPIRED AT #{Time.now}"
     save
-    (region_definitions+shapes+meshes+jax_data).each {|dependant| dependant.destroy }
+    VCache.expire_shape_set id
+    (region_definitions+shapes+meshes).each {|dependant| dependant.destroy }
   end
   
   def expired?

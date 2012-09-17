@@ -189,7 +189,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   
   fetch_defaults: (callback) ->
     $.ajax
-      url: @jax_data_path
+      url: "/vdata"
       dataType: 'json'
       error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: " + textStatus
       success: (data, textStatus, jqXHR) =>

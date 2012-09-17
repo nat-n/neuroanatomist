@@ -17,11 +17,11 @@ class Perspective < ActiveRecord::Base
   
   def version_bump size, description, user
     super
-    JaxData.invalidate_caches_with :perspective => self, :shape_sets => ShapeSet.all
+    VCache.expire_perspectives self.id, false
   end
   
-  def save
-    saved = super
+  def save *args
+    saved = super *args
     Version.init_for self, {} if saved
     saved
   end
@@ -151,8 +151,7 @@ class Perspective < ActiveRecord::Base
   end
   
   def invalidate_caches
-    return false unless defined? shape_set
-    JaxData.invalidate_caches_with shape_set: shape_set, perspective: self
+    VCache.expire_perspectives self.id, false
   end
   
 end
