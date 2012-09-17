@@ -90,7 +90,7 @@ Jax.Controller.create "Quiz", ApplicationController,
     region_data = $('#target_list').data('regions')
     p_ids = (region_data[r].p for r of region_data when region_data[r].p)
     @loader.fetch_perspectives @active_shape_set, p_ids, () =>
-      r_ids = (region_data[r].p for r of region_data when region_data[r].a)
+      r_ids = (r for r of region_data when region_data[r].a)
       @loader.fetch_regions @active_shape_set, r_ids, () =>
         for r_id of region_data
           @s3[@active_shape_set].regions[r_id].default_perspective = region_data[r_id].p if region_data[r_id].p

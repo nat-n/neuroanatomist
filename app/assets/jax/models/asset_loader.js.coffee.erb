@@ -217,9 +217,10 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   
   fetch_shape_set: (shape_set_id,callback,cascade) ->
     this.fetch_start()
-    console.log "/vdata/#{shape_set_id}"
+    url = "/vdata/#{shape_set_id}"
+    console.log url
     $.ajax
-      url: "/vdata/#{shape_set_id}"
+      url: url
       dataType: 'json'
       error: (jqXHR, textStatus, errorThrown) ->
         console.log "AJAX Error: " + textStatus
@@ -232,13 +233,14 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   
   fetch_perspectives: (shape_set_id, perspective_ids, callback) ->
     this.fetch_start()
-    console.log "/vdata/#{shape_set_id}/p:#{perspective_ids.join(",")}"
+    url = "/vdata/#{shape_set_id}/p:#{perspective_ids.join(",")}"
+    console.log url
     $.ajax
-      url: "/vdata/#{shape_set_id}/p:#{perspective_ids.join(",")}"
+      url: url
       dataType: 'json'
       error: (jqXHR, textStatus, errorThrown) ->
         console.log "AJAX Error: " + textStatus
-        this.fetch_end(shape_set_id, ["perspectives"])
+        this.fetch_end(shape_set_id, [])
       success: (data, textStatus, jqXHR) =>
         for p_id of data
           @s3[shape_set_id].perspectives[p_id]  ?= {}
@@ -261,7 +263,9 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     this.fetch_start()
     exclude = (mesh_id for mesh_id of @s3[shape_set_id].meshes)
     region_ids = (rid for rid in region_ids when not this.verify_region(shape_set_id,rid))
-    return callback() unless region_ids.length
+    unless region_ids.length
+      this.fetch_end(shape_set_id, [])
+      return callback()
     url = "/vdata/#{shape_set_id}/r:#{region_ids.join(",")}?full=t"
     url += "&excl=#{exclude.join(",")}" if exclude.length
     console.log url
