@@ -2,7 +2,6 @@ class VCache < ActiveRecord::Base
   validates_presence_of :request_string
   validates_uniqueness_of :request_string
   
-  
   def self.mode
     case ENV["CACHE_SERVER"]
     when 'local'  then :local
@@ -13,12 +12,12 @@ class VCache < ActiveRecord::Base
   
   def self.cache request_string, response_string, params
     new_cache = Hash[ request_string: request_string,
-                      cache_id:       (Digest::MD5.new << request_string).to_s ]
-    new_cache[:destroy_key] = params[:destroy_key].to_s if params[:destroy_key]
-    #if params[:cache_type] and params[:ids]
-      new_cache[:cache_type] = params[:cache_type] or "foo"
+                      request_hash:   (Digest::MD5.new << request_string).to_s,
+                      response_hash:  (Digest::MD5.new << response_string).to_s ]
+    if params[:cache_type] and params[:ids]
+      new_cache[:cache_type] = params[:cache_type]
       new_cache[:ids]  = [*params[:ids]].join(",")
-    #end
+    end
     new_cache = VCache.create new_cache
     
     case VCache.mode
@@ -57,7 +56,7 @@ class VCache < ActiveRecord::Base
   
   def expire! delete=false
     
-    # if remote cache also then send it the destroy key
+    # should ping hippocampus to check for expirations
     
     case VCache.mode
     when :local
@@ -66,13 +65,13 @@ class VCache < ActiveRecord::Base
       
     end
 
+    return self.delete if delete
     self.expired = true
     self.save
-    return self.delete if delete
   end
   
   def local_path
-    "#{VCache.dir}/#{cache_id}.json"
+    "#{VCache.dir}/#{request_hash}.json"
   end
   
   def self.expire_regions shape_set_id, region_ids, delete=false
@@ -98,6 +97,5 @@ class VCache < ActiveRecord::Base
       Dir.mkdir(dir) unless File.exists?(dir)
       dir
     end
-      
   
 end

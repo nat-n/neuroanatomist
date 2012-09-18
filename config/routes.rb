@@ -51,6 +51,8 @@ Neuroanatomist::Application.routes.draw do
   match "/vdata/:shape_set_id/r:ids"  => "v_data#regions",      :constraints => { :shape_set_id => /\d+/, :ids => /:[\d,]*/ }
   match "/vdata/:shape_set_id/p:ids"  => "v_data#perspectives", :constraints => { :ids => /:[\d,]*/ }
   match "/vdata"                      => "v_data#defaults"
+  match "/vdata_hashes"               => "v_data#check_hashes"
+  match "/vdata_ids/:subject/:major_version"    => "v_data#shape_set_ids"
   
   match "/images/:file" => redirect {|params| "/assets/#{params[:file]}.#{params[:format]}" }
   

@@ -1,6 +1,6 @@
 class CreateVCaches < ActiveRecord::Migration
   def change
-    create_table :v_caches, :force=>true do |t|
+    create_table :v_caches do |t|
       t.string  :request_string
       t.string  :cache_id
                 
@@ -15,7 +15,7 @@ class CreateVCaches < ActiveRecord::Migration
       t.timestamps
     end
     
-    #add_index :v_caches, :request_string
-    #add_index :v_caches, :cache_id
+    add_index :v_caches, :request_string
+    add_index :v_caches, :cache_id
   end
 end

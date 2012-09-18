@@ -9,8 +9,7 @@ class VDataController < ApplicationController
   def shape_set
     cache_params = Hash[
       cache_type:   "shape_set",
-      ids:          [@shape_set.id],
-      destroy_key:  @destroy_key = (params.has_key?(:dk) ? (Digest::MD5.new << Random.rand.to_s).to_s : nil)
+      ids:          [@shape_set.id]
       ]
     render_and_cache JSON.dump(@shape_set.hash_partial), cache_params
   end
@@ -24,8 +23,7 @@ class VDataController < ApplicationController
 
     cache_params = Hash[
       cache_type:   "perspectives",
-      ids:          [@shape_set.id]+[*perspectives.map(&:id)],
-      destroy_key:  @destroy_key = (params.has_key?(:dk) ? (Digest::MD5.new << Random.rand.to_s).to_s : nil)
+      ids:          [@shape_set.id]+[*perspectives.map(&:id)]
       ]
     
     render_and_cache JSON.dump(response), cache_params
@@ -37,8 +35,7 @@ class VDataController < ApplicationController
     
     cache_params = Hash[
       cache_type:   "regions",
-      ids:          [@shape_set.id],
-      destroy_key:  @destroy_key = (params.has_key?(:dk) ? (Digest::MD5.new << Random.rand.to_s).to_s : nil)
+      ids:          [@shape_set.id]
       ]
     
     if params[:full] == "t" or params[:full] == "true"
@@ -58,11 +55,24 @@ class VDataController < ApplicationController
     else
       @regions = Hash[Region.find(:all, :conditions => ["id IN (?)", ids]).map { |r| r.hash_partial(@shape_set, false) }.map{|m| [m[:id],m]}]
       cache_params[:ids] += @regions.keys
-      @regions.merge! :destroy_key => (Digest::MD5.new << @destroy_key).to_s if @destroy_key
       
       render_and_cache JSON.dump(@regions), cache_params
     end
   end
+  
+  def check_hashes
+    render :text => JSON.dump(Hash[ VCache.all.map { |vc| [vc.request_hash,vc.response_hash] } ])
+  end
+  
+  def shape_set_ids
+    ss = ShapeSet.where(:subject => params[:subject]).select {|ss| ss.version.major.to_s == params[:version] }.first
+    if ss
+      render :text => JSON.dump(ss.ids_hash)
+    else
+      render :text => JSON.dump({error: "invalid shape_set_id"})
+    end
+  end
+  
   
   private
   
