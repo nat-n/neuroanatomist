@@ -2,7 +2,7 @@ class ShapeSet < ActiveRecord::Base
   has_many    :region_definitions, :dependent => :destroy
   has_many    :regions, :through => :region_definitions
   has_many    :shapes, :dependent => :destroy
-  has_many    :meshes, :through => :shapes, :source => :low_meshes
+  has_many    :meshes
   has_one     :default_perspective_attr, :class_name => 'Perspective', :foreign_key => 'default_for_shape_set_id'
   validates_presence_of   :subject
   
