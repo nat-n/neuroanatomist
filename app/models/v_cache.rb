@@ -2,10 +2,11 @@ class VCache < ActiveRecord::Base
   validates_presence_of :request_string
   validates_uniqueness_of :request_string
   
+  include S3Helper
+  
   def self.mode
-    case ENV["CACHE_SERVER"]
+    case ENV["CACHE_MODE"]
     when 'local'  then :local
-    when nil      then :local
     when 's3'     then :s3
     end
   end
@@ -25,7 +26,7 @@ class VCache < ActiveRecord::Base
       # whitespace removal would be good at this point
       File.open(new_cache.local_path, 'w') {|f| f.write response_string }
     when :s3
-      
+      S3Helper.write_to_object "/cached_responses/#{new_cache.request_hash}", response_string
     end
     
   end
@@ -46,7 +47,7 @@ class VCache < ActiveRecord::Base
     when :local
       return (File.open(@cache.local_path, 'r') rescue @cache.expire! and nil)
     when :s3
-      
+      return S3Helper.read_from_object("/cached_responses/#{@cache.request_hash}")
     end
   end
   
@@ -62,7 +63,7 @@ class VCache < ActiveRecord::Base
     when :local
       File.delete(local_path) rescue nil
     when :s3
-      
+      S3Helper.destroy_data("/cached_responses/#{request_hash}")
     end
 
     return self.delete if delete

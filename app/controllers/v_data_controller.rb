@@ -65,14 +65,13 @@ class VDataController < ApplicationController
   end
   
   def shape_set_ids
-    ss = ShapeSet.where(:subject => params[:subject]).select {|ss| ss.version.major.to_s == params[:version] }.first
+    ss = ShapeSet.where(:subject => params[:subject]).select {|ss| ss.version.major.to_s == params[:major_version] }.first
     if ss
       render :text => JSON.dump(ss.ids_hash)
     else
       render :text => JSON.dump({error: "invalid shape_set_id"})
     end
   end
-  
   
   private
   
