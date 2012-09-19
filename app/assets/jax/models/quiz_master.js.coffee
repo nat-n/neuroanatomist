@@ -6,7 +6,6 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
       list: []
       active: false
       times: []
-      answers: []
       correct: 0
       mode: null
       choices: 4
@@ -26,6 +25,7 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
             clearTimeout(to)
             Date.now-init_time
         }
+      stats: {}
       )()
   
   start: (list) ->
@@ -89,7 +89,9 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
     unless this.current().object and this.current().object.id of context.current_controller.world
       context.current_controller.show_region(context.current_controller.scene.new_region(@active_shape_set, this.current().id, [1,1,1,1]), false)
       @temp_region = this.current().object.id
-    if parseInt(id) is this.current().id
+    correct = parseInt(id) is this.current().id
+    this.log_result id, correct
+    if correct
       this.correct(this.current().object)
     else
       this.incorrect(this.current().object)
@@ -138,4 +140,21 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
     for option in options
       $('#mcq_answers').append $("<li><input type='radio', id='answer_"+option[0]+"' name='mcq_answers'><label for='answer_"+option[0]+"'>"+option[1]+"</label></li>")
     
-  
+  log_result: (answer,correct) ->
+    @quiz.stats[this.current().name] ?= {}
+    @quiz.stats[this.current().name][@quiz.mode] ?= [0,0]
+    @quiz.stats[this.current().name][@quiz.mode][0] += 1 if correct
+    @quiz.stats[this.current().name][@quiz.mode][1] += 1
+    logger.log_quiz
+      type: 'quiz_response'
+      m:@quiz.mode
+      n:@quiz.active
+      s:@quiz.list.size
+      q:this.current().name
+      a_rid:answer
+      c:correct
+    
+    
+    
+    
+    

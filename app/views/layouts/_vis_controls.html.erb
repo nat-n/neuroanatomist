@@ -6,7 +6,7 @@
     <%= label_tag(:label_type_tooltip, "Enable Tooltip") %><br />
     <%= radio_button_tag(:label_type, "labels", false, 
                          :onchange => 'context.current_controller.activate_labels()') %>
-    <%= label_tag(:label_type_labels, "Enable Labels") %>
+    <%= label_tag(:label_type_labels, "Enable Labels (experimental!)") %>
   </div>
 <div id="undo_redo">
 	<button id="reset_button" onclick="context.current_controller.undo_all()"><<- Reset</button>

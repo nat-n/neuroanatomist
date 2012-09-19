@@ -106,14 +106,7 @@ Jax.Controller.create "Quiz", ApplicationController,
       @labeler.clear()
     @tooltip = @tooltip_
     @labeler = null
-    
-  activate_labels: () ->
-    @labeler = @labeler_
-    @tooltip.clear()
-    @tooltip = null
-    @labeler.pressed = false
-    @labeler.source_labels()
-    @labeler.draw()
+    logger.log_event(type: 'activate_tt')
   
   update_quiz_mode: () ->
     if $('input[name=quiz_modes]:checked').attr('id') is "search_mode"
@@ -125,9 +118,15 @@ Jax.Controller.create "Quiz", ApplicationController,
     $('#target_list ul').html("")
     for r in quizable
       $('#target_list ul').append $("<li><label for='target_"+r[0]+"'>"+r[1]+"</label><input type='checkbox' id='target_"+r[0]+"' checked='checked'/></li>")
-    $('#quiz_list li label, #quiz_list li input[type=checkbox]').click((e) -> e.stopImmediatePropagation())
-    $('#quiz_list li').click((e)->$(this).children('input[type=checkbox]').attr('checked',!$(this).children('input[type=checkbox]').attr('checked')))
+    $('#quiz_list li label, #quiz_list li input[type=checkbox]').click (e) ->
+      e.stopImmediatePropagation()
+      logger.log_event(type: 'quiz_list_check', label: this.labels[0].innerHTML, checked: this.checked) if this.type
+    $('#quiz_list li').click (e)-> 
+      c = !$(this).children('input[type=checkbox]').attr('checked')
+      $(this).children('input[type=checkbox]').attr('checked',c)
+      logger.log_event(type: 'quiz_list_check', label: this.children[0].innerHTML, checked: c)
     logger.log_event(type: 'quiz_mode', mode:@qm.quiz.mode)
+    
     
     
     

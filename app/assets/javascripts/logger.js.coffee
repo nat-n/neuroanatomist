@@ -1,6 +1,7 @@
 window.Logger = class Logger
   log: []
   most_recent = 0
+  quizzed = false
   constructor: () ->
       
   log_input: (event, props={}) ->
@@ -19,6 +20,10 @@ window.Logger = class Logger
     props.dy = event.diffy
     props.wd = event.wheelDelta
     this.log_event(props)
+  
+  log_quiz: (props) ->
+    quizzed = true
+    @log.push props
   
   log_event: (props) -> # e.g. change in url/state/view
     props['ts'] = Date.now()

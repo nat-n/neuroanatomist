@@ -86,6 +86,7 @@ Jax.Controller.create "Explore", ApplicationController,
       @labeler.clear()
     @tooltip = @tooltip_
     @labeler = null
+    logger.log_event(type: 'activate_tt')
     
   activate_labels: () ->
     @labeler = @labeler_
@@ -93,5 +94,6 @@ Jax.Controller.create "Explore", ApplicationController,
     @tooltip = null
     @labeler.pressed = false
     @labeler.source_labels()
-    @labeler.draw()  
+    @labeler.draw()
+    logger.log_event(type: 'activate_labels')
     

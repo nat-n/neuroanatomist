@@ -46,6 +46,7 @@ $('#action_check_all').change(function(){
   if(this.checked) $(this).siblings('label').html('Uncheck all')
   else $(this).siblings('label').html('Check all')
   $('#quiz_list input[type=checkbox]').attr('checked', this.checked)
+  logger.log_event({type: 'quiz_list_check_all', checked: this.checked})
 })
 )
 $('#quiz_mode input[type=radio]').change(function(){window.context.current_controller.update_quiz_mode()})
