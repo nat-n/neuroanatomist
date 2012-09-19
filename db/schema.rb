@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120917234048) do
+ActiveRecord::Schema.define(:version => 20120919173625) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -325,6 +325,8 @@ ActiveRecord::Schema.define(:version => 20120917234048) do
     t.datetime "updated_at",                                 :null => false
     t.integer  "data_count",             :default => 0
     t.string   "group",                  :default => "none"
+    t.string   "quiz_stats"
+    t.boolean  "activated",              :default => false
   end
 
   add_index "users", ["alias"], :name => "index_users_on_alias", :unique => true
