@@ -9,6 +9,7 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
       correct: 0
       mode: null
       choices: 4
+      stats: {}
       timer: (()-> 
         init_time   = null
         timeout     = null
@@ -25,7 +26,6 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
             clearTimeout(to)
             Date.now-init_time
         }
-      stats: {}
       )()
   
   start: (list) ->
