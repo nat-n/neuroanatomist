@@ -31,6 +31,6 @@ Jax.getGlobal().GeneralEventRoutingHelper = Jax.Helper.create
     @activity.end updated, () =>
       this.hide_loading_spinner()
       for ssid of @activity.updated()
-        @loader.idb.dump_s3 ssid,  @activity.updated()[ssid] 
+        @loader.idb.dump_s3 ssid,  @activity.updated()[ssid] if @activity.updated(0)[ssid].length
       logger.log_event(type: 'finished_fetching_data')
     

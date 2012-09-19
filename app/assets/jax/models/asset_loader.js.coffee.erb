@@ -109,7 +109,6 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         success e if success            
         undefined
       
-      
       load_s3: (ssid, callback, determined=true) =>
         # load all items of the given shape_set from idb into s3
         ssid = parseInt(ssid)
@@ -157,21 +156,15 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
           @idb.loaded = true
           # this is quite a clever pattern if i may say so myself
           return false unless callback
-          
           exec_cb_stack = (stack) =>
             cb = () =>
               stack.pop() cb if stack.length
             stack.pop() cb
-          
           ssids = (ssid for ssid of @s3)
-
           stack = [callback]
-          
-          # something truly bizare happens around here somewhere, but it doesn't seem to matter !?!?!
           for ssid of @s3
             new_func = ((ssid)=>((cb) => @idb.load_s3(ssid,cb)))(ssids.shift())
             stack.push new_func
-          
           exec_cb_stack stack
 
         creq = t.objectStore("shape_set").openCursor()
@@ -264,12 +257,11 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     true
 
   fetch_regions: (shape_set_id, region_ids, callback) ->
-    this.fetch_start()
     exclude = (mesh_id for mesh_id of @s3[shape_set_id].meshes)
     region_ids = (rid for rid in region_ids when not this.verify_region(shape_set_id,rid))
-    unless region_ids.length
-      this.fetch_end(shape_set_id, [])
-      return callback()
+    return callback() unless region_ids.length
+    
+    this.fetch_start()
     url = "/vdata/#{shape_set_id}/r:#{region_ids.join(",")}?full=t"
     url += "&excl=#{exclude.join(",")}" if exclude.length
     console.log url
