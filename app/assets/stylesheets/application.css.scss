@@ -228,6 +228,8 @@ footer.page, .footer_push {
 	position: relative;
 	top: -20px;
 	font-size: 3em;
+	text-shadow: #747474 1px 1px 3px;
+	color: #0c0c0c;
 }
 
 .finetext {
@@ -237,7 +239,7 @@ footer.page, .footer_push {
 /* @group user */
 
 #user_prefs {
-	margin: 20px;
+	margin: 40px 20px 20px;
 	width: 300px;
 }
 
