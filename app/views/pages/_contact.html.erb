@@ -3,6 +3,7 @@
 <div id="contact_modal">
 <p>If you have any questions or comments regarding neuroanatomist, or if you think you might have discovered a bug then please don't hesitate to send me (the developer) a message using this form. You can also <%= link_to_function "email me directly", "window.location.href = ['mail','to',':','feed','back','@','neuroanatomist','.','org'].join('')" %>.</p>
 <div id="contact_fields">
+  <% unless current_user %><%= label :message, :reply_to %>: <%= text_field_tag :message_reply_to %><br><% end %>
   <%= label :message, :subject %>: <%= text_field_tag :message_subject %><br>
   <%= label :body, :message %><br>
   <%= text_area_tag :body_message, "", :rows => 20 %>

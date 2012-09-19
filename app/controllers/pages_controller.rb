@@ -34,7 +34,7 @@ class PagesController < ApplicationController
   end
   
   def contact
-    DataMailer.feedback(params[:subject],params[:message],(params[:anon] ? nil : current_user)).deliver if params[:subject] and params[:message]
+    DataMailer.feedback(params[:subject],params[:message],(params[:anon] ? nil : current_user),params[:reply_to]).deliver if params[:subject] and params[:message]
   end
   
   def blocked
