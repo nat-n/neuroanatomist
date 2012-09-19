@@ -23,6 +23,12 @@ class User < ActiveRecord::Base
     attributes["alias"]
   end
   
+  def self.number_of_data_emails_sent
+    count = 0
+    User.all.each { |user| count += user.data_count }
+    count
+  end
+  
   private
     def validate_alias
       return true unless user_alias
