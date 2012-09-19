@@ -1,6 +1,7 @@
 Jax.Controller.create "Quiz", ApplicationController,
   index: ->
     logger.log_event(type: 'quiz_index')
+    $('#label_type_labels').attr 'disabled', true
     @active_shape_set = false
     @active_perspective = false
     @init_complete = false
