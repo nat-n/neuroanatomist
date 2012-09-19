@@ -15,6 +15,7 @@ Jax.getGlobal().SupContentHelper = Jax.Helper.create
       dataType: 'json'
       success: (data) =>
         this.sc_init_node(data, fire)
+        logger.log_event(type: 'loading_node', node: node_name)
       error: (r) -> console.log("Couldn't fetch node") 
     
   sc_load_node_from_url: () ->

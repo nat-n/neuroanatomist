@@ -117,6 +117,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
         t = @idb.db.transaction(stores, "readwrite")
         t.oncomplete = callback if callback
         t.onerror = @idb.load_s3(ssid, callback, false) if callback and determined
+        logger.log_event(type: 'loading_stores', ss:ssid, stores: stores)
         for os in stores
           active_store = t.objectStore(os)
           greq = active_store.get ssid
@@ -188,6 +189,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     
   
   fetch_defaults: (callback) ->
+    logger.log_event(type: 'fetch_default')
     $.ajax
       url: "/vdata"
       dataType: 'json'
@@ -218,6 +220,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   fetch_shape_set: (shape_set_id,callback,cascade) ->
     this.fetch_start()
     url = "/vdata/#{shape_set_id}"
+    logger.log_event(type: 'fetch_ss', url: url)
     console.log url
     $.ajax
       url: url
@@ -234,6 +237,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   fetch_perspectives: (shape_set_id, perspective_ids, callback) ->
     this.fetch_start()
     url = "/vdata/#{shape_set_id}/p:#{perspective_ids.join(",")}"
+    logger.log_event(type: 'fetch_p', url: url)
     console.log url
     $.ajax
       url: url
@@ -269,6 +273,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     url = "/vdata/#{shape_set_id}/r:#{region_ids.join(",")}?full=t"
     url += "&excl=#{exclude.join(",")}" if exclude.length
     console.log url
+    logger.log_event(type: 'fetch_r', url: url)
     $.ajax
       type: 'get'
       url:  url

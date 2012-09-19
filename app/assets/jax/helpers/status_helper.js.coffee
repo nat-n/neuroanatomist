@@ -37,6 +37,7 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
 
   update_mode_from_url: () ->
     @mode = window.location.href.split('#')[1]
+    logger.log_event(type: 'update_mode_from_url', mode:@mode)
     if $('.embedded_node').length
       $('#node_options')[0].toggle_option("edit", "hide")
       $('#node_options')[0].toggle_option("history", "hide")
@@ -66,6 +67,8 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     return false if @history.back[@history.back.length-1] and @history.back[@history.back.length-1] == new_url
     window.history.pushState state_object, new_title, new_url if @url_updating
     this.change(new_url)
+    logger.log_event(type: 'update_url', url:new_url)
+    
   
   load_state_from_url: () ->
     this.load_perspective_from_url this.get_param('p'), false
@@ -82,6 +85,7 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     
     # initialse popstate event for use of forward/back buttons
     window.onpopstate = (e) => this.state_popped(e)
+    logger.log_event(type: 'init_complete')
     this.update_url()
     
   undo: () ->
@@ -89,6 +93,7 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     @history.forward.push @history.current
     @history.current = @history.back.pop()
     this.update_buttons()
+    logger.log_event(type: 'undo')
     return history.back() if @url_updating
     this.load_perspective_from_url this.get_param('p', @history.log[@history.current]), false
   
@@ -99,6 +104,7 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     @history.log.push "reset"
     @history.forward = []
     @history.back = []
+    logger.log_event(type: 'undo_all')
     this.update_buttons()
 
   redo: () ->
@@ -106,6 +112,7 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     @history.back.push @history.current
     @history.current = @history.forward.pop()
     this.update_buttons()
+    logger.log_event(type: 'redo')
     return history.forward() if @url_updating
     this.load_perspective_from_url this.get_param('p', @history.log[@history.current]), false    
     

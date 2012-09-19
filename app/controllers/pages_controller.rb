@@ -1,5 +1,6 @@
 class PagesController < ApplicationController
   include NodesHelper
+  before_filter :get_page_data
   before_filter :determine_access, :only => [:home, :access_node, :access_thing, :explore, :quiz]
   
   def home
@@ -76,6 +77,12 @@ class PagesController < ApplicationController
       render :action => :blocked
       return false
     end
+  end
+  
+  def get_page_data
+    @page_data = Hash.new
+    @page_data[:user] = (current_user ? current_user.id : 0)
+    @page_data[:action] = params[:action]
   end
   
 end

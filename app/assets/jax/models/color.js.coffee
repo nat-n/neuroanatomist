@@ -55,12 +55,15 @@ Jax.getGlobal()['Color'] = Jax.Model.create
       .click (e) ->
         c = this.attr('fill')
         context.current_controller.color_.target_region.mesh.setColor [c.r/255,c.g/255,c.b/255,1]
+        logger.log_event(type: 'pick_color', color:c, target: context.current_controller.color_.target_region.region_id)
       r+=1
     @paper.text(@paper.width-5,5,'X').click () => context.current_controller.color_.hide()
+    logger.log_event(type: 'show_colors')
   
   
   hide: () ->
     @paper.canvas.style.opacity = 0
     @paper.canvas.style.left = ""+(-1000)+"px"
+    logger.log_event(type: 'hide_colors')
     
   

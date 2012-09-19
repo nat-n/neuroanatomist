@@ -1,5 +1,6 @@
 Jax.Controller.create "Explore", ApplicationController,
   index: ->
+    logger.log_event(type: 'explore_index')
     @active_shape_set = false
     @active_perspective = false
     @active_node = false
@@ -43,6 +44,7 @@ Jax.Controller.create "Explore", ApplicationController,
   helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper, StatusHelper, SceneHelper ]
   
   start: (tried_loading=false) ->
+    logger.log_event(type: 'explore_start')
     this.show_loading_spinner($('#visualisation'), true)
     
     return @loader.idb.load_everything(()=>this.start(true)) unless tried_loading

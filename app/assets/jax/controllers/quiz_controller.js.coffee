@@ -1,5 +1,6 @@
 Jax.Controller.create "Quiz", ApplicationController,
   index: ->
+    logger.log_event(type: 'quiz_index')
     @active_shape_set = false
     @active_perspective = false
     @init_complete = false
@@ -51,6 +52,7 @@ Jax.Controller.create "Quiz", ApplicationController,
   helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, StatusHelper, SceneHelper ]
   
   start: (tried_loading=false) ->
+    logger.log_event(type: 'quiz_start')
     this.show_loading_spinner($('#visualisation'), true)
     
     return @loader.idb.load_everything(()=>this.start(true)) unless tried_loading
@@ -86,6 +88,7 @@ Jax.Controller.create "Quiz", ApplicationController,
         this.hide_loading_spinner()
       
   preload_quiz_content: () ->
+    logger.log_event(type: 'quiz_preloading')
     this.update_quiz_mode()
     region_data = $('#target_list').data('regions')
     p_ids = (region_data[r].p for r of region_data when region_data[r].p)
@@ -96,6 +99,7 @@ Jax.Controller.create "Quiz", ApplicationController,
           @s3[@active_shape_set].regions[r_id].default_perspective = region_data[r_id].p if region_data[r_id].p
         @qm.update_status("Click to start!")
         @qm.ready = true
+        logger.log_event(type: 'quiz_preloaded')
   
   activate_tooltip: () ->
     if @labeler
@@ -123,6 +127,7 @@ Jax.Controller.create "Quiz", ApplicationController,
       $('#target_list ul').append $("<li><label for='target_"+r[0]+"'>"+r[1]+"</label><input type='checkbox' id='target_"+r[0]+"' checked='checked'/></li>")
     $('#quiz_list li label, #quiz_list li input[type=checkbox]').click((e) -> e.stopImmediatePropagation())
     $('#quiz_list li').click((e)->$(this).children('input[type=checkbox]').attr('checked',!$(this).children('input[type=checkbox]').attr('checked')))
+    logger.log_event(type: 'quiz_mode', mode:@qm.quiz.mode)
     
     
     
