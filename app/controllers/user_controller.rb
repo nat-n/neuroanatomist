@@ -22,11 +22,13 @@ class UserController < ApplicationController
     # update log count of this user to get the id of this log dump
     log_id = "#{user.id}-#{user.next_data_count}"
     params[:logs][:user] = user.email
+    params[:logs][:ip] = request.ip
     DataMailer.data(params[:logs],log_id).deliver
     render :text => "logs saved"
   end
   
   def update
+    return submit_log_data if params[:logs]
     params[:user][:alias].strip.squeeze(' ')
     params[:user][:alias] = nil if params[:user][:alias].empty?
     @user.alias = params[:user][:alias] if params[:user][:alias]

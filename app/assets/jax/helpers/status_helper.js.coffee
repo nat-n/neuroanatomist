@@ -106,7 +106,7 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     @history.back = []
     logger.log_event(type: 'undo_all')
     this.update_buttons()
-
+  
   redo: () ->
     return false unless @history.forward.length
     @history.back.push @history.current
@@ -115,7 +115,7 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     logger.log_event(type: 'redo')
     return history.forward() if @url_updating
     this.load_perspective_from_url this.get_param('p', @history.log[@history.current]), false    
-    
+  
   change: (new_url) ->
     @history.forward = []
     @history.log.push new_url
@@ -127,6 +127,4 @@ Jax.getGlobal().StatusHelper = Jax.Helper.create
     $('#undo_redo button').removeAttr('disabled')
     $('#undo_button').attr('disabled', 'disabled') unless @history.back.length
     $('#redo_button').attr('disabled', 'disabled') unless @history.forward.length
-    
   
-

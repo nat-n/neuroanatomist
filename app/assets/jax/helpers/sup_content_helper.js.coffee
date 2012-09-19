@@ -4,7 +4,11 @@ ntabs = 0
 Jax.getGlobal().SupContentHelper = Jax.Helper.create
   
   sc_load_node: (thing_id, node_name, fire) ->
-    $(tabs_id).tabs() # not sure why but this is neccessary...
+    $(tabs_id).tabs
+      select: () -> setTimeout (() -> logger.log_event 
+        type: 'select_tag'
+        tab:  $('.ui-tabs-selected a span').text()
+        node: context.current_controller.active_node), 100
     if thing_id
       url = '/ontology/things/'+thing_id+':node:embed'
     else
@@ -28,7 +32,6 @@ Jax.getGlobal().SupContentHelper = Jax.Helper.create
       node_data = $('#sup_content').data('node')
       unless node_data
         return this.sc_load_node(61) # this shouldn't be hard coded!
-    this.sc_clear_tabs
     this.sc_clear_tabs()
     this.sc_new_tab 'Notes',         node_data.embedded_node
     this.sc_new_tab 'Wikipedia',    "<iframe src='"+node_data.wikipedia_uri+"'></iframe>"    if node_data.wikipedia_uri

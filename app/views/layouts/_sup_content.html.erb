@@ -6,7 +6,7 @@
   </div>
 
 <%= # this embeded script just makes the tabs formatting work a little better than css alone can
-javascript_tag "$(\"#sup_tabs\").tabs();
+javascript_tag "$(\"#sup_tabs\").tabs({select: function(){setTimeout(function(){logger.log_event({type: 'select_tag', tab:  $('.ui-tabs-selected a span').text(), node: context.current_controller.active_node});}, 100) }});
 tab_height = function(){
   new_h = $(window).height() - $('.ui-tabs-panel:not(.ui-tabs-hide)').offset().top - $('footer.page').height() -1 + Math.min($(document).height()-$(window).height(),$('footer.page').height());
   if($(window).scrollTop()) new_h += (Math.max(0,$(window).scrollTop()-$('footer.page').height())-Math.max(0,$(window).scrollTop()+$(window).height()-$(document).height()));

@@ -54,8 +54,10 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
       $('#quiz_controls').slideDown(500)
       $('#quiz_setup').slideUp(500)
       this.proceed()
+    logger.log_quiz type: 'quiz_start', mode: @quiz.mode, length: @quiz.list.size
   
   pass: () ->
+    logger.log_quiz type: 'quiz_pass'
     this.current().object.mesh.setColor([1,1,1,1]) if this.current().object
     this.proceed() if this.is_active()
   
@@ -72,7 +74,8 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
     $('#quiz_progress').html("Question "+(@quiz.active+1)+" of "+@quiz.list.length+" ")
     @quiz.timer.reset()
   
-  terminate: (complete=false) -> 
+  terminate: (complete=false) ->
+    logger.log_quiz type: 'quiz_end', complete: complete
     @quiz.times.push Date.now
     if complete
       this.update_status("Quiz Complete! you scored "+@quiz.correct+"/"+@quiz.list.length+"<br>Click to Start another Quiz!", "neutral")
@@ -82,6 +85,7 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
     $('#mcq_widgets').hide()
     $('#quiz_controls').slideUp(500)
     $('#quiz_setup').slideDown(500)
+    logger.store_logs()
   
   user_select: (id) ->
     return null unless this.is_active()
@@ -154,7 +158,4 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
       a_rid:answer
       c:correct
     
-    
-    
-    
-    
+  
