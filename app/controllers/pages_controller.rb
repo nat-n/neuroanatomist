@@ -28,6 +28,37 @@ class PagesController < ApplicationController
     
     @quiz_list = Hash[accessible.map{|r| [r.id, {name:r.name, a:true}]}]
     viewable.each { |r| @quiz_list[r.id] = {name:r.name, a:(@quiz_list[r.id] ? true : false), p:r.default_perspective_id} }
+    
+    if current_user and current_user.quiz_stats and !current_user.quiz_stats.strip.empty?
+      quiz_stats = JSON.load(current_user.quiz_stats)
+      
+      quiz_stats = JSON.load(current_user.quiz_stats)
+      
+      @quiz_list.each do |rid, stuff|
+       # if quiz_stats[rid]
+      end
+      
+      quiz_stats.regions.each do |variable|
+        
+      end
+    
+    end
+    
+  end
+  
+  def topics
+    params[:node_name] = "Topics_Home" unless params[:node_name]
+    @nodes = Node.where(:include_in_index => true)
+    if params[:node_name]
+      show_topic
+      render :action => :show_topic
+    end
+  end
+  
+  def show_topic
+    params[:node_name].gsub!(/\s+/,"_")
+    @node = Node.where(:name => params[:node_name]).first
+    @node_data = embedded_json
   end
   
   def about

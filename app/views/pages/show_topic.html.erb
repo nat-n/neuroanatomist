@@ -38,6 +38,8 @@ $(tabs_id).tabs('select', 0)
 
 var tab_height = function() {$('.ui-tabs-panel').height($(window).height() - $('.ui-tabs-panel:not(.ui-tabs-hide)').offset().top - $('footer.page').height() -1 + Math.min($(document).height()-$(window).height(),$('footer.page').height()))}
 $(window).resize(tab_height); $(window).scroll(tab_height);$(tab_height)
+
+$('#node_options a').click(function(){setTimeout(function(){window.update_mode_from_url()},100)})
 "%>
 
 <% end %>

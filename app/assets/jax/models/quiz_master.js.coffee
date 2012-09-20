@@ -158,4 +158,9 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
       a_rid:answer
       c:correct
     
+  update_stats_view: () ->
+    # aggregate stats from @accessible and @viewable with @quiz.stats and display the results
+    return null if $.isEmptyObject(@quiz.stats)
+    
+    
   
