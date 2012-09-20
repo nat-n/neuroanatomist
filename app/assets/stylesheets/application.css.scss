@@ -73,7 +73,7 @@ h1#header_title a {
 
 .header_nav {
 	float: left;
-	margin-left: 100px;
+	margin-left: 50px;
 	margin-top: 20px;
 }
 
@@ -422,6 +422,54 @@ div#content {
 }
 
 /* @group nodes */
+
+#static_col.topic_index {
+	width: 235px;
+	overflow: auto;
+	position: absolute;
+	top: $header_height;
+	left: 0;
+	bottom: $footer_height;
+	padding: 0;
+}
+
+#dynamic_col.topic_tabs {
+	left: 235px;
+}
+
+/* @group index */
+
+.topic_index ul {
+	margin: 0;
+	padding: 2px 0;
+}
+
+.topic_index li {
+	padding: 0;
+	margin: 0;
+}
+
+.topic_index li a {
+	margin: 0;
+	padding: 1px 1px 1px 10px;
+	display: block;
+	color: #141414;
+	text-shadow: #ffffff 1px 1px 0;
+	text-decoration: none;
+	font-size: 1em;
+	letter-spacing: 0.08em;
+}
+
+.topic_index li a:hover {
+	
+	text-shadow:none;
+	color: #efefef;
+	background: #0f72ea url(/assets/jquery_ui/images/ui-bg_highlight-soft_25_0b5fa5_1x100.png) repeat-x 0 -30px;
+}
+
+
+
+/* @end */
 
 /* @group options */
 

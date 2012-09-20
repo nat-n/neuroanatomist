@@ -5,6 +5,7 @@
     <th>Title</th>
     <th>Introduction</th>
     <th>Thing</th>
+    <th>Index</th>
     <th></th>
     <th></th>
     <th></th>
@@ -14,7 +15,8 @@
   <tr>
     <td><%= node.name %></td>
     <td><%= node.introduction %></td>
-    <td><%= link_to node.thing ? node.thing.name : "" , [:ontology, node.thing] %></td>
+    <td><%= node.thing ? link_to(node.thing.name, [:ontology, node.thing]) : "" %></td>
+    <td><%= check_box_tag "node_#{node.id}", :include_in_index, node.include_in_index %></td>
     <td><%= link_to 'Show', node %></td>
     <td><%= link_to 'Edit', edit_node_path(node) %></td>
     <td><%= link_to 'Destroy', node, confirm: 'Are you sure?', method: :delete %></td>
@@ -25,3 +27,13 @@
 <br />
 
 <%= link_to 'New Node', new_node_path %>
+
+<%= javascript_tag "
+$('input[value=include_in_index]').change(function(){
+  $.ajax({
+    type: 'PUT',
+    url:  '/nodes/' + this.name.split('_')[1] + ':no_render',
+    data: {'node':{'include_in_index':(this.checked)}}
+  });
+});
+"%>

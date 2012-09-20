@@ -10,10 +10,12 @@
   <%= @node.introduction %>
 </p>
 
+<% if @node.thing%>
 <p>
   <b>Thing:</b>
   <%= link_to @node.thing.name, [:ontology,@node.thing] %>
 </p>
+<% end %>
 
 
 <%= link_to 'Edit', edit_node_path(@node) %> |

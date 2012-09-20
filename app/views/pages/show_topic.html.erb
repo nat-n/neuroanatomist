@@ -1,0 +1,43 @@
+<div id="static_col" class="topic_index">
+<ul><% @nodes.sort{|a,b| a.name<=>b.name }.each do |node| %>
+<li><%= link_to node.name, "/topics/#{node.name.gsub(/\s/,"_")}", :title => "#{node.word_count} words" %></li>
+<% end %></ul>
+</div>
+
+<%= content_tag :div, :id => :dynamic_col, :class => :topic_tabs, :data=>({node: @node_data} if @node_data) do %>
+
+<%= render :partial => "layouts/sup_content"%>
+
+<%= javascript_tag "
+var tabs_id = '#sup_tabs';
+var ntabs = 0;
+
+function new_tab(tabs_id, ntabs, title, content) {
+  $(tabs_id).tabs('add', '#tab-'+title, title).tabs('select', ntabs);
+  $('#tab-'+title).html(content);
+  return ntabs + 1;
+}
+
+$(tabs_id).tabs({select: function(){setTimeout(function(){
+  logger.log_event({
+    type: 'select_tag',
+    tab:  $('.ui-tabs-selected a span').text(),
+    node: context.current_controller.active_node}), 100
+  })
+}},100)
+
+node_data = $('#dynamic_col.topic_tabs').data('node')
+
+ntabs = new_tab(tabs_id, ntabs, 'Notes',         node_data.embedded_node);
+if (node_data.wikipedia_uri)
+  ntabs = new_tab(tabs_id, ntabs, 'Wikipedia',    \"<iframe src='\"+node_data.wikipedia_uri+\"'></iframe>\");
+if (node_data.scholarpedia_uri)
+  ntabs = new_tab(tabs_id, ntabs, 'Scholarpedia', \"<iframe src='\"+node_data.scholarpedia_uri+\"'></iframe>\");
+
+$(tabs_id).tabs('select', 0)
+
+var tab_height = function() {$('.ui-tabs-panel').height($(window).height() - $('.ui-tabs-panel:not(.ui-tabs-hide)').offset().top - $('footer.page').height() -1 + Math.min($(document).height()-$(window).height(),$('footer.page').height()))}
+$(window).resize(tab_height); $(window).scroll(tab_height);$(tab_height)
+"%>
+
+<% end %>

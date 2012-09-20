@@ -7,11 +7,12 @@ Neuroanatomist::Application.routes.draw do
   end
     
   root :to => 'pages#home'
-  match "/node:node_name" => "pages#access_node", :constraints => { :node_name => /:.*/}
-  match "/thing:thing_name" => "pages#access_thing", :constraints => { :thing_name => /:.*/}
-  match "/quiz" => "pages#quiz"
-  match "/about" => "pages#about"
-  match "/contact" => "pages#contact"
+  match "/node:node_name"     => "pages#access_node",   :constraints => { :node_name  => /:.*/}
+  match "/thing:thing_name"   => "pages#access_thing",  :constraints => { :thing_name => /:.*/}
+  match "/quiz"               => "pages#quiz"
+  match "/about"              => "pages#about"
+  match "/contact"            => "pages#contact"
+  match "/topics(/:node_name)"  => "pages#topics"
   
   match "/user" => "user#index"
   

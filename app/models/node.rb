@@ -14,7 +14,13 @@ class Node < ActiveRecord::Base
   def save *args
     saved = super *args
     Version.init_for self, {} if saved
+    update_word_count
     saved
+  end
+  
+  def update_word_count
+    new_wc = RedCloth.new((introduction or "")).to_html.gsub(%r{</?[^>]+?>}, '').split(/\s/).size
+    update_column(:word_count, new_wc)
   end
   
   def name

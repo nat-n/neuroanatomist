@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120919173625) do
+ActiveRecord::Schema.define(:version => 20120920114101) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -77,9 +77,11 @@ ActiveRecord::Schema.define(:version => 20120919173625) do
     t.string   "name"
     t.string   "introduction"
     t.integer  "thing_id"
-    t.datetime "created_at",                      :null => false
-    t.datetime "updated_at",                      :null => false
-    t.boolean  "is_default",   :default => false
+    t.datetime "created_at",                          :null => false
+    t.datetime "updated_at",                          :null => false
+    t.boolean  "is_default",       :default => false
+    t.boolean  "include_in_index", :default => true
+    t.integer  "word_count",       :default => 0
   end
 
   add_index "nodes", ["name"], :name => "index_nodes_on_name", :unique => true
