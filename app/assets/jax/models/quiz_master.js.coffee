@@ -10,6 +10,7 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
       mode: null
       choices: 4
       stats: {}
+      stats_stored: {}
       timer: (()-> 
         init_time   = null
         timeout     = null
@@ -159,7 +160,7 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
       c:correct
     
   update_stats_view: () ->
-    # aggregate stats from @accessible and @viewable with @quiz.stats and display the results
+    # aggregate stats from @accessible and @viewable with @quiz.stats and @quiz.stats_stored and display the results
     return null if $.isEmptyObject(@quiz.stats)
     
     

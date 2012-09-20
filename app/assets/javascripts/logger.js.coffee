@@ -1,3 +1,16 @@
+
+dump_logs: (ids,quiz=false) =>
+  # dumps ids from window.logger.log and quiz stats from window.context.current_controller.qm.stats u<user_id>t<time>
+  return false unless ids.length or quiz
+  ulogs = (logger.log[id] for id in ids)
+  stats = if context.current_controller.qm then context.current_controller.qm.quiz.stats else {}
+  @idb.db.transaction(["logs"], "readwrite").objectStore("logs").put {sid:"u#{page_data.user}t#{Date.now}", logs:ulogs, stats:stats}
+
+load_logs: () =>
+  # load logs and quiz_stats and attempt to upload them
+  # ••extend•• stored_logs with logs... this could cause errors in displayed stats if upload fails twice in a row without page reload!
+  # if upload succeeds then remove them from idb
+
 window.Logger = class Logger
   log: {}
   most_recent = 0
@@ -31,23 +44,25 @@ window.Logger = class Logger
     props['a'] = page_data.action
     @log[props['ts']] = props
     
-  store_logs: () ->
+  store_logs: (success=(()->)) ->
     # attempt to post the logs to the server, on fail save them to indexedDB
     upload_times = (time for time of @log)
-    console.log upload_times
+    if @quizzed
+      stats = $.extend context.current_controller.qm.quiz.stats_stored, context.current_controller.qm.quiz.stats #### THIS IS WRONG !!!
+      context.current_controller.qm.quiz.stats = {}
     $.ajax
       type: 'POST'
       url:  '/user'
-      data: {logs: (@log[time] for time in upload_times)}
+      data: {logs: (@log[time] for time in upload_times), stats:stats}
       success: (response) =>
         # clear log of uploaded times
+        console.lo response
         if response = "logs saved"
           for time in upload_times
             console.log @log[time]
             delete @log[time]
-      error: () ->
-        # dump log in indexedDB
-        
+        success()
+      error: () -> dump_logs(upload_times,@quizzed)
 
 window.logger = new Logger()
 
