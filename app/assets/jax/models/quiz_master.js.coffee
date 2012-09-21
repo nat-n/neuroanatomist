@@ -78,6 +78,8 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
   terminate: (complete=false) ->
     logger.log_quiz type: 'quiz_end', complete: complete
     @quiz.times.push Date.now
+    this.current().object.mesh.setColor([1,1,1,1]) if this.current().object
+    context.current_controller.undo_all()
     if complete
       this.update_status("Quiz Complete! you scored "+@quiz.correct+"/"+@quiz.list.length+"<br>Click to Start another Quiz!", "neutral")
     else
@@ -91,7 +93,7 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
   user_select: (id) ->
     return null unless this.is_active()
     @quiz.times.push @quiz.timer.read()
-    unless this.current().object and this.current().object.id of context.current_controller.world
+    unless this.current().object and this.current().object.id of context.current_controller.world.objects
       context.current_controller.show_region(context.current_controller.scene.new_region(@active_shape_set, this.current().id, [1,1,1,1]), false)
       @temp_region = this.current().object.id
     correct = parseInt(id) is this.current().id

@@ -56,7 +56,7 @@ window.Logger = class Logger
       data: {logs: (@log[time] for time in upload_times), stats:stats}
       success: (response) =>
         # clear log of uploaded times
-        console.lo response
+        console.log response
         if response = "logs saved"
           for time in upload_times
             console.log @log[time]
