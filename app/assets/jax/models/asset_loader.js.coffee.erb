@@ -79,7 +79,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
           request.onerror = (e) -> console.log "ERROR: Unable to open indexedDB"
       ###
       
-      window.load_logs = () =>
+      load_logs: () =>
         # load from idb logs and quiz_stats and attempt to upload them
         # add quiz_stats to context.current_controller.qm.quiz.stats if it exists
         # delete loaded data from idb if upload is successful

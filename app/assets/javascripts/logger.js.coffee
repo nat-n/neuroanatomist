@@ -4,7 +4,7 @@ window.dump_logs = (ids,quiz_stats) =>
   return false unless ids.length or quiz_stats
   ulogs = (logger.log[id] for id in ids)
   context.current_controller.loader.idb.db.transaction(["logs"], "readwrite").objectStore("logs").put
-    sid:        "u#{page_data.user}t#{Date.now}"
+    sid:        "u#{page_data.user}t#{Date.now()}"
     logs:       ulogs
     quiz_stats: quiz_stats
 
