@@ -79,6 +79,23 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
           request.onerror = (e) -> console.log "ERROR: Unable to open indexedDB"
       ###
       
+      window.load_logs = () =>
+        # load from idb logs and quiz_stats and attempt to upload them
+        # add quiz_stats to context.current_controller.qm.quiz.stats if it exists
+        # delete loaded data from idb if upload is successful
+        creq = @idb.db.transaction(["logs"], "readwrite").objectStore("logs").openCursor()
+        creq.onsuccess = (e) =>
+          csr = e.target.result
+          if csr and (sid = csr.key) and (data = csr.value)
+            $.ajax
+              type: 'POST'
+              url:  '/user'
+              data: data
+              success: (response) =>
+                csr.remove() if response = "logs saved"
+              error: () -> console.log "couldn't upload cached data"
+            csr.continue()
+      
       dump_s3: (ssid, stores, success, failure) =>
         # cache all assets of the specified shape_set from s3 using a single transaction
         # use one object store per object type and one object per shape_set
@@ -137,21 +154,15 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
           greq.onerror = (e) -> console.log "ERROR: Unable to retrieve data for " + os
         undefined          
       
-      load_everything: (callback, determined=true) =>
+      load_everything: (callback) =>
         return false if @idb.loaded
         stores = (os for os in @idb.config.stores when @idb.db.objectStoreNames.contains(os) and os != "logs" and os != "shape_set")
         shape_sets = []
         t = @idb.db.transaction(stores.concat(["shape_set"]), "readwrite")
         callback = callback or (()->null)
-        if determined # seems to skirt random errors, not entirely sure why, maybe chrome's memory management.
-          t.onerror = (e) => 
-            setTimeout (()=>@idb.load_everything(callback, false)), 100
-            console.log "caught error:"; console.log e
-        else 
-          console.log "second time"
-          t.onerror = (e) =>
-            console.log "caught error:"; console.log e
-            callback()
+        t.onerror = (e) => 
+          setTimeout (()=>@idb.load_everything(callback)), 100
+          console.log "caught error:"; console.log e
         t.oncomplete = () =>
           @idb.loaded = true
           # this is quite a clever pattern if i may say so myself

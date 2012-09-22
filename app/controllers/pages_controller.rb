@@ -30,20 +30,10 @@ class PagesController < ApplicationController
     viewable.each { |r| @quiz_list[r.id] = {name:r.name, a:(@quiz_list[r.id] ? true : false), p:r.default_perspective_id} }
     
     if current_user and current_user.quiz_stats and !current_user.quiz_stats.strip.empty?
-      quiz_stats = JSON.load(current_user.quiz_stats)
-      
-      quiz_stats = JSON.load(current_user.quiz_stats)
-      
-      @quiz_list.each do |rid, stuff|
-       # if quiz_stats[rid]
-      end
-      
-      quiz_stats.regions.each do |variable|
-        
-      end
-    
+      @quiz_stats = Hash[JSON.load(current_user.quiz_stats).map { |region_name,counts| [region_name.gsub(/\s/,";"),counts] }]
+    else
+      @quiz_stats = Hash.new
     end
-    
   end
   
   def topics

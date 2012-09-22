@@ -27,21 +27,24 @@
 
 <%= content_tag :div, :id=>"quiz_list", :class=>"quiz_panel" do %>
   <h3>Quiz Contents</h3>
-  <span class="check_all"><%= label :action, :check_all %>
-  <%= check_box :action, :check_all, :checked=>true %></span>
-  <%= content_tag :fieldset, :id=>:target_list, :data=>{:regions=>@quiz_list} do %><ul>
   
-  </ul><% end %>
+  <%= content_tag :fieldset, :id=>:target_list, :data=>{:regions => @quiz_list, :quiz_stats => @quiz_stats} do %>
+  <table>
+    <thead>
+      <th colspan=2><span class="check_all"><%= label :action, :check_all %>
+      <%= check_box :action, :check_all, :checked=>true %></span></th>
+      <th>Previous<br>Attempts</th><th>Previous<br>Accuracy</th>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  <% end %>
 <% end %>
 
-<%= content_tag :div, :id=>"quiz_stats", :class=>"quiz_panel" do %>
-<h3>Your Quiz Stats</h3>
-Graph accuracy for each item
-<% end %>
 </div>
 
 <%= javascript_tag "
-$(window.get_quiz_list = function() { tlist = []; $('#target_list input[type=checkbox]:checked').each(function(f){tlist.push(parseInt(this.id.split('_')[1]))}); return tlist;},
+$(window.get_quiz_list = function() { tlist = []; $('#target_list input[type=checkbox]:checked').each(function(f){if(parseInt(this.id.split('_')[1]))tlist.push(parseInt(this.id.split('_')[1]))}); return tlist;},
 $('#action_check_all').change(function(){
   if(this.checked) $(this).siblings('label').html('Uncheck all')
   else $(this).siblings('label').html('Check all')

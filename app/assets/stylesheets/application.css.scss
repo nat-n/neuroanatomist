@@ -741,36 +741,30 @@ iframe {
 	text-align: right;
 	display: block;
 	width: auto;
-	padding-right: 1px;
-	margin-top: -18px;
 	text-decoration: underline;
 }
 
 #quiz_list {
-	width: 250px;
+	min-width: 250px;
 }
 
-#quiz_list ul {
+#quiz_list table {
 	margin: 0;
 	padding: 0;
+	display: none;
 }
 
-#quiz_list li {
-	list-style-type: none;
+#quiz_list table th {
 	padding: 1px;
-	width: auto;
-	height: auto;
-	margin-top: 2px;
-	margin-bottom: 1px;
 }
 
-#quiz_list li label {
-	width: 220px;
-	height: auto;
+#quiz_list td {
+	text-align: center;
 }
 
-#quiz_list li input[type=checkbox] {
-	float: right;
+#quiz_list .label_cell {
+	width: 250px;
+	text-align: left;
 }
 
 /* @end */

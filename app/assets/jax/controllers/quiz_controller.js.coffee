@@ -1,3 +1,15 @@
+extend_name = (name) ->
+  if name.substring(0,3) is "L. "
+    name.replace("L. ","Left ")
+  else
+    name.replace("R. ","Right ")
+
+abrv_name = (name) ->
+  if name.substring(0,5) is "Left "
+    name.replace("Left ", "L. ")
+  else
+    name.replace("Right ","R. ") 
+
 Jax.Controller.create "Quiz", ApplicationController,
   index: ->
     logger.log_event(type: 'quiz_index')
@@ -41,9 +53,9 @@ Jax.Controller.create "Quiz", ApplicationController,
     @qm = QuizMaster.find('select')
     
     region_data = $('#target_list').data('regions')
-    @accessible = ([r,(if region_data[r].name.substring(0,3) is "L. " then region_data[r].name.replace("L. ","Left ") else region_data[r].name.replace("R. ","Right "))] for r of region_data when region_data[r].a)
+    @accessible = ([r,extend_name(region_data[r].name)] for r of region_data when region_data[r].a)
     @accessible = @accessible.sortBy(1)
-    @viewable = ([r,(if region_data[r].name.substring(0,3) is "L. " then region_data[r].name.replace("L. ","Left ") else region_data[r].name.replace("R. ","Right ")), region_data[r].p] for r of region_data when region_data[r].p)
+    @viewable = ([r,extend_name(region_data[r].name), region_data[r].p] for r of region_data when region_data[r].p)
     @viewable = @viewable.sortBy(1)
     
     @qm.update_status("Loading quiz data...")
@@ -110,22 +122,39 @@ Jax.Controller.create "Quiz", ApplicationController,
     logger.log_event(type: 'activate_tt')
   
   update_quiz_mode: () ->
+    # load stats from DOM if there aren't any others yet
+    dom_stats = $('#target_list').data('quizStats')
+    if $.isEmptyObject(@qm.quiz.stats) and not $.isEmptyObject(dom_stats)
+      @qm.quiz.stats[region_name.replace(/;/g," ")] = dom_stats[region_name] for region_name of dom_stats
+    logger.store_logs() # moves stats from @qm.quiz.stats_new into @qm.quiz.stats
+    
     if $('input[name=quiz_modes]:checked').attr('id') is "search_mode"
       @qm.quiz.mode = "search"
       quizable = @accessible
     else if $('input[name=quiz_modes]:checked').attr('id') is "mcq_mode"
       @qm.quiz.mode = "mcq"
       quizable = @viewable
-    $('#target_list ul').html("")
+    $('#target_list table').show()
+    $('#target_list tbody').html("")
     for r in quizable
-      $('#target_list ul').append $("<li><label for='target_"+r[0]+"'>"+r[1]+"</label><input type='checkbox' id='target_"+r[0]+"' checked='checked'/></li>")
-    $('#quiz_list li label, #quiz_list li input[type=checkbox]').click (e) ->
+      stats = (@qm.quiz.stats[abrv_name(r[1])] or @qm.quiz.stats[r[1]])
+      correct = 0
+      total   = 0
+      for m of stats
+        correct += (stats[m][0])
+        total   += (stats[m][1])
+      percentage = Math.round((correct/(total))*100)
+      unless total then percentage = '-'
+      else percentage = percentage+'%' 
+      
+      $('#target_list tbody').append $("<tr><td class='label_cell'><label for='target_"+r[0]+"'>"+r[1]+"</label></td><td><input type='checkbox' id='target_"+r[0]+"' checked='checked'/></td><td>#{total}</td><td>#{percentage}</td></tr>")
+    $('#quiz_list td label, #quiz_list td input[type=checkbox]').click (e) ->
       e.stopImmediatePropagation()
       logger.log_event(type: 'quiz_list_check', label: this.labels[0].innerHTML, checked: this.checked) if this.type
-    $('#quiz_list li').click (e)-> 
-      c = !$(this).children('input[type=checkbox]').attr('checked')
-      $(this).children('input[type=checkbox]').attr('checked',c)
-      logger.log_event(type: 'quiz_list_check', label: this.children[0].innerHTML, checked: c)
+    $('#quiz_list td').click (e)-> 
+      c = !$(this).parent().children().children('input[type=checkbox]').attr('checked')
+      $(this).parent().children().children('input[type=checkbox]').attr('checked',c)
+      logger.log_event(type: 'quiz_list_check', label: $(this).parent().children().children()[0].innerHTML, checked: c)
     logger.log_event(type: 'quiz_mode', mode:@qm.quiz.mode)
     
     

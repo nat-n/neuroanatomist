@@ -1,15 +1,12 @@
 
-dump_logs: (ids,quiz=false) =>
+window.dump_logs = (ids,quiz_stats) =>
   # dumps ids from window.logger.log and quiz stats from window.context.current_controller.qm.stats u<user_id>t<time>
-  return false unless ids.length or quiz
+  return false unless ids.length or quiz_stats
   ulogs = (logger.log[id] for id in ids)
-  stats = if context.current_controller.qm then context.current_controller.qm.quiz.stats else {}
-  @idb.db.transaction(["logs"], "readwrite").objectStore("logs").put {sid:"u#{page_data.user}t#{Date.now}", logs:ulogs, stats:stats}
-
-load_logs: () =>
-  # load logs and quiz_stats and attempt to upload them
-  # ••extend•• stored_logs with logs... this could cause errors in displayed stats if upload fails twice in a row without page reload!
-  # if upload succeeds then remove them from idb
+  context.current_controller.loader.idb.db.transaction(["logs"], "readwrite").objectStore("logs").put
+    sid:        "u#{page_data.user}t#{Date.now}"
+    logs:       ulogs
+    quiz_stats: quiz_stats
 
 window.Logger = class Logger
   log: {}
@@ -35,7 +32,7 @@ window.Logger = class Logger
     this.log_event(props)
   
   log_quiz: (props) ->
-    quizzed = true
+    @quizzed = true
     this.log_event props
   
   log_event: (props) -> # e.g. change in url/state/view
@@ -47,22 +44,33 @@ window.Logger = class Logger
   store_logs: (success=(()->)) ->
     # attempt to post the logs to the server, on fail save them to indexedDB
     upload_times = (time for time of @log)
-    if @quizzed
-      stats = $.extend context.current_controller.qm.quiz.stats_stored, context.current_controller.qm.quiz.stats #### THIS IS WRONG !!!
-      context.current_controller.qm.quiz.stats = {}
+    data = {logs: (@log[time] for time in upload_times)}
+    if @quizzed and context.current_controller.qm
+      data.quiz_stats = context.current_controller.qm.quiz.new_stats
+    copy_stats = () ->
+      quiz = context.current_controller.qm.quiz
+      for r of quiz.new_stats
+        quiz.stats[r] ?= {}
+        for m of quiz.new_stats[r]
+          quiz.stats[r][m] ?= [0,0]
+          quiz.stats[r][m][0] += quiz.new_stats[r][m][0]
+          quiz.stats[r][m][1] += quiz.new_stats[r][m][1]
+      quiz.new_stats = {}
     $.ajax
       type: 'POST'
       url:  '/user'
-      data: {logs: (@log[time] for time in upload_times), stats:stats}
+      data: data
       success: (response) =>
         # clear log of uploaded times
         console.log response
         if response = "logs saved"
           for time in upload_times
-            console.log @log[time]
             delete @log[time]
+        copy_stats()
         success()
-      error: () -> dump_logs(upload_times,@quizzed)
+      error: () ->
+        dump_logs(upload_times,context.current_controller.qm.quiz.new_stats)
+        copy_stats()
 
 window.logger = new Logger()
 
