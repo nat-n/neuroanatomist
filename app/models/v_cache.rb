@@ -80,16 +80,19 @@ class VCache < ActiveRecord::Base
       ids = vc.ids.split(",").map(&:to_i)
       vc.expire! delete if ids.shift == shape_set_id and !(ids & [*region_ids]).empty?
     end
+    ping_cache_server
   end
   
   def self.expire_perspectives perspective_ids, delete=false
     VCache.where(:cache_type => 'perspectives').each { |vc| 
       vc.expire! delete unless (vc.ids.split(",").map(&:to_i) & [*perspective_ids]).empty?
     }
+    ping_cache_server
   end
 
   def self.expire_shape_set shape_set_id, delete=false
     VCache.where(:cache_type => 'shape_set', :ids => shape_set_id).each { |vc| vc.expire! delete }
+    ping_cache_server
   end
   
   private
@@ -97,6 +100,10 @@ class VCache < ActiveRecord::Base
       dir = "#{Rails.root}/cached_responses"
       Dir.mkdir(dir) unless File.exists?(dir)
       dir
+    end
+    
+    def ping_cache_server
+      HTTParty.get("http://129.215.112.173:3000/check_hashes")
     end
   
 end
