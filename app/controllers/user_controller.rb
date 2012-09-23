@@ -45,7 +45,8 @@ class UserController < ApplicationController
   end
   
   def update
-    return submit_log_data if params[:logs]
+    return submit_log_data if params[:logs] or params[:quiz_stats]
+    return render :text => "post failed" if params[:sid]
     params[:user][:alias].strip.squeeze(' ')
     params[:user][:alias] = nil if params[:user][:alias].empty?
     @user.alias = params[:user][:alias] if params[:user][:alias]

@@ -20,7 +20,7 @@ class VDataController < ApplicationController
     response = Hash.new
     perspectives = Perspective.find(:all, :conditions => ["id IN (?)", ids]).select { |p| p.defined_for? @shape_set }
     perspectives.each { |p| response[p.id] = p.hash_partial }
-
+    
     cache_params = Hash[
       cache_type:   "perspectives",
       ids:          [@shape_set.id]+[*perspectives.map(&:id)]
@@ -71,6 +71,10 @@ class VDataController < ApplicationController
     else
       render :text => JSON.dump({error: "invalid shape_set_id"})
     end
+  end
+  
+  def updates
+    render :text => JSON.dump(ShapeSet.find(params[:shape_set_id]).latest)
   end
   
   private

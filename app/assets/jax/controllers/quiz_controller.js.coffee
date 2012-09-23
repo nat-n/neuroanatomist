@@ -70,6 +70,9 @@ Jax.Controller.create "Quiz", ApplicationController,
     
     return @loader.idb.load_everything(()=>this.start(true)) unless tried_loading
     
+    @loader.check_for_updates()
+    @loader.idb.load_logs()
+    
     shape_set =  $('#visualisation').data('shapeSet')
     perspective_id =  $('#visualisation').data('perspectiveId')
     

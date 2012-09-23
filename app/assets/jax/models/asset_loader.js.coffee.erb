@@ -11,6 +11,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
       db:           null
       ready:        false
       loaded:       false
+      cleanup:      {}
       config:
         stores:     ["shape_set","meshes","shapes","regions","perspectives","logs"]
         name:       "neuroanatomist"
@@ -79,6 +80,14 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
           request.onerror = (e) -> console.log "ERROR: Unable to open indexedDB"
       ###
       
+      do_cleanup: () =>
+        # removes items indicated in @idb.cleanup
+        return false if $.isEmptyObject(@idb.cleanup)
+        t = @idb.db.transaction((os for os of @idb.cleanup), "readwrite")
+        for os of @idb.cleanup
+          if store = t.objectStore(os)
+            store.delete(key) for key in @idb.cleanup[os]
+      
       load_logs: () =>
         # load from idb logs and quiz_stats and attempt to upload them
         # add quiz_stats to context.current_controller.qm.quiz.stats if it exists
@@ -92,9 +101,11 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
               url:  '/user'
               data: data
               success: (response) =>
-                csr.remove() if response = "logs saved"
-              error: () -> console.log "couldn't upload cached data"
+                @idb.cleanup["logs"] ?= []
+                @idb.cleanup["logs"].push csr.key if response = "logs saved"
+              error: () => console.log "couldn't upload cached data"
             csr.continue()
+          setTimeout((()=>@idb.do_cleanup()),1500)
       
       dump_s3: (ssid, stores, success, failure) =>
         # cache all assets of the specified shape_set from s3 using a single transaction
@@ -195,7 +206,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   fetch_defaults: (callback) ->
     logger.log_event(type: 'fetch_default')
     $.ajax
-      url: "/vdata"
+      url: "#{@cache_server}/vdata"
       dataType: 'json'
       error: (jqXHR, textStatus, errorThrown) -> console.log "AJAX Error: " + textStatus
       success: (data, textStatus, jqXHR) =>
@@ -221,9 +232,9 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     @s3[ss].perspectives[p_def.id] = p_def
     return p_def.id
   
-  fetch_shape_set: (shape_set_id,callback,cascade) ->
+  fetch_shape_set: (shape_set_id,callback) ->
     this.fetch_start()
-    url = "/vdata/#{shape_set_id}"
+    url = "#{@cache_server}/vdata/#{shape_set_id}"
     logger.log_event(type: 'fetch_ss', url: url)
     console.log url
     $.ajax
@@ -240,7 +251,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
   
   fetch_perspectives: (shape_set_id, perspective_ids, callback) ->
     this.fetch_start()
-    url = "/vdata/#{shape_set_id}/p:#{perspective_ids.join(",")}"
+    url = "#{@cache_server}/vdata/#{shape_set_id}/p:#{perspective_ids.join(",")}"
     logger.log_event(type: 'fetch_p', url: url)
     console.log url
     $.ajax
@@ -273,7 +284,7 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     return callback() unless region_ids.length
     
     this.fetch_start()
-    url = "/vdata/#{shape_set_id}/r:#{region_ids.join(",")}?full=t"
+    url = "#{@cache_server}/vdata/#{shape_set_id}/r:#{region_ids.join(",")}?full=t"
     url += "&excl=#{exclude.join(",")}" if exclude.length
     console.log url
     logger.log_event(type: 'fetch_r', url: url)
@@ -321,4 +332,47 @@ Jax.getGlobal()['AssetLoader'] = Jax.Model.create
     @s3[ssid].meshes ?= {}
     @s3[ssid].shapes ?= {}
     @s3[ssid].regions ?= {}
+  
+  check_for_updates: () ->
+    # check the validity of all loaded shape_sets and if neccessary all their included assets
+    # remove expired shape_sets from s3 and clean their assets from idb
+    # download a replacement for updated shape_sets immediately
+    # remove outdated regions from s3 and dump regions (overwriting the stored object excluding outdated regions)
+    for ssid of @s3
+      $.ajax
+        type: 'GET'
+        url:  "/vdata_updates/#{ssid}"
+        dataType: 'json'
+        success: (response) =>
+          if response.this_status is "expired" # remove all expried data imediately
+            delete @s3[ssid]
+            cleanup.shape_set ?= []
+            cleanup.shape_set.push ssid
+            cleanup.shapes ?= []
+            cleanup.shapes.push ssid
+            cleanup.meshes ?= []
+            cleanup.meshes.push ssid
+            cleanup.regions ?= []
+            cleanup.regions.push ssid
+            cleanup.perspectives ?= []
+            cleanup.perspectives.push ssid
+            @idb.do_cleanup()
+          present_version = @s3[ssid].name.split(' - ')[1]
+          present_minor = parseInt(present_version.split(".")[1])
+          this_minor = parseInt(response.this_version.split(".")[1])
+          if this_minor and this_minor > present_minor
+            this.fetch_shape_set ssid, () =>
+              updated_regions = false
+              for r in response.regions
+                continue unless (r of @s3[ssid].regions)
+                pres_r_major = parseInt(@s3[ssid].regions[r].split(".")[0])
+                r_major = parseInt(response.regions[r].split(".")[0])
+                if r_major > pres_r_major
+                  updated = true
+                  delete s3[ssid].regions[r]
+              if updated_regions
+                @idb.dump_s3 ssid, ['regions']
+    
+                
+    
   

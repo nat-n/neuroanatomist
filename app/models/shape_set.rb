@@ -24,8 +24,8 @@ class ShapeSet < ActiveRecord::Base
   end
 
   def deploy!
-    deploy = true
-    save
+    self.deploy = true
+    self.save
   end
   
   def deployed?

@@ -49,8 +49,11 @@ Jax.Controller.create "Explore", ApplicationController,
     
     return @loader.idb.load_everything(()=>this.start(true)) unless tried_loading
     
+    @loader.check_for_updates()
+    @loader.idb.load_logs()
+    
     perspective_id =  $('#visualisation').data('perspectiveId')
-    shape_set =  $('#visualisation').data('shapeSet')
+    console.log shape_set =  $('#visualisation').data('shapeSet')
     node_data = $('#sup_content').data('node')
     
     this.sc_init_node(node_data)
