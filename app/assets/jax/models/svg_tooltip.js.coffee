@@ -6,14 +6,16 @@ gradient = (h) ->
 
 menus = 
   default:
-    Hide: () ->
+    Remove: () ->
       window.context.current_controller.tooltip.paper.canvas.style["pointer-events"] = "none"
       window.context.current_controller.hide_region(window.context.current_controller.tooltip.hovered_region.id)
       window.context.current_controller.tooltip.clear()
+      window.logger.log_event(type: 'tt_remove', target: window.context.current_controller.tooltip.hovered_region.region_id)
   explore:
     "More Info": () -> 
       window.context.current_controller.sc_load_node(window.context.current_controller.tooltip.hovered_region.thing)
       window.context.current_controller.tooltip.clear()
+      window.logger.log_event(type: 'tt_more_info', target: window.context.current_controller.tooltip.hovered_region.region_id)
     "Change Colour": () ->
       window.context.current_controller.color_.show_at(730,350,window.context.current_controller.tooltip.hovered_region)
       window.context.current_controller.tooltip.clear()
@@ -21,6 +23,7 @@ menus =
       window.context.current_controller.decompose(window.context.current_controller.tooltip.hovered_region.id)
       window.context.current_controller.tooltip.hovered_region.decomposed = true
       window.context.current_controller.tooltip.clear()
+      window.logger.log_event(type: 'tt_devide', target: window.context.current_controller.tooltip.hovered_region.region_id)
   quiz:
     Select: () -> 
       window.context.current_controller.qm.user_select window.context.current_controller.tooltip.hovered_region.region_id
@@ -29,6 +32,7 @@ menus =
       window.context.current_controller.decompose(window.context.current_controller.tooltip.hovered_region.id, true, [1,1,1,1])
       window.context.current_controller.tooltip.hovered_region.decomposed = true
       window.context.current_controller.tooltip.clear()
+      window.logger.log_event(type: 'tt_devide', target: window.context.current_controller.tooltip.hovered_region.region_id)
   
 
 Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
@@ -111,8 +115,8 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
     @box.set[0].attr path: @box.path(@label.h, @box.w)
     @menu.button.w             = @box.w
     @menu.button.text.offset.x = @menu.button.offset.x+@menu.button.w/2
+    window.logger.log_event(type: 'tt_label', target: @hovered_region.name)
     
-
   clear: (none_hovered=true) ->
     @paper.canvas.style.opacity = 0
     @menu.active = false
@@ -172,7 +176,7 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
       @menu.set.forEach (elem) => elem.animate
         "clip-rect": "0,0,"+(@box.offset.x+@box.w)+","+new_box_height
         200
-      
+      window.logger.log_event(type: 'tt_show_menu', target: @hovered_region.name)
   
   hide_menu: (pageX,pageY,region) ->
     @menu.active = false
@@ -192,4 +196,5 @@ Jax.getGlobal()['SVGTooltip'] = Jax.Model.create
     else
       this.clear()
     this.hover_region(pageX,pageY,region)
-  
+    window.logger.log_event(type: 'tt_hide_menu', target: @hovered_region.name)
+    

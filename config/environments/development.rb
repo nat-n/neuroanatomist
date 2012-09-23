@@ -8,6 +8,8 @@ if File.exist? '../secrets.yaml'
   end
 end
 
+ENV["CACHE_SERVER"] = 'local'
+
 Neuroanatomist::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 

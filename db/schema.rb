@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120913185555) do
+ActiveRecord::Schema.define(:version => 20120920114101) do
 
   create_table "bibliographies", :force => true do |t|
     t.string   "name"
@@ -58,23 +58,6 @@ ActiveRecord::Schema.define(:version => 20120913185555) do
   add_index "facts", ["relation_id"], :name => "index_facts_on_relation_id"
   add_index "facts", ["subject_id"], :name => "index_facts_on_subject_id"
 
-  create_table "jax_data", :force => true do |t|
-    t.string   "request_string"
-    t.string   "response_description"
-    t.string   "cache_id"
-    t.string   "destroy_key"
-    t.integer  "shape_set_id"
-    t.string   "perspectives"
-    t.integer  "count",                :default => 0
-    t.boolean  "expired",              :default => false
-    t.datetime "created_at",                              :null => false
-    t.datetime "updated_at",                              :null => false
-    t.string   "regions"
-  end
-
-  add_index "jax_data", ["request_string"], :name => "index_jax_data_on_request_string", :unique => true
-  add_index "jax_data", ["shape_set_id"], :name => "index_jax_data_on_shape_set_id"
-
   create_table "meshes", :force => true do |t|
     t.string   "mesh_data_id"
     t.integer  "back_shape_id"
@@ -94,9 +77,11 @@ ActiveRecord::Schema.define(:version => 20120913185555) do
     t.string   "name"
     t.string   "introduction"
     t.integer  "thing_id"
-    t.datetime "created_at",                      :null => false
-    t.datetime "updated_at",                      :null => false
-    t.boolean  "is_default",   :default => false
+    t.datetime "created_at",                          :null => false
+    t.datetime "updated_at",                          :null => false
+    t.boolean  "is_default",       :default => false
+    t.boolean  "include_in_index", :default => true
+    t.integer  "word_count",       :default => 0
   end
 
   add_index "nodes", ["name"], :name => "index_nodes_on_name", :unique => true
@@ -325,28 +310,43 @@ ActiveRecord::Schema.define(:version => 20120913185555) do
   add_index "types", ["supertype_id"], :name => "index_types_on_supertype_id"
 
   create_table "users", :force => true do |t|
-    t.string   "email",                                 :default => "",     :null => false
-    t.string   "encrypted_password",     :limit => 128, :default => "",     :null => false
+    t.string   "email",                  :default => "",     :null => false
+    t.string   "encrypted_password",     :default => "",     :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",                         :default => 0
+    t.integer  "sign_in_count",          :default => 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
     t.string   "alias"
     t.string   "name"
-    t.boolean  "admin",                                 :default => false
-    t.datetime "created_at",                                                :null => false
-    t.datetime "updated_at",                                                :null => false
-    t.integer  "data_count",                            :default => 0
-    t.string   "group",                                 :default => "none"
+    t.boolean  "admin",                  :default => false
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
+    t.integer  "data_count",             :default => 0
+    t.string   "group",                  :default => "none"
+    t.string   "quiz_stats"
+    t.boolean  "activated",              :default => false
   end
 
   add_index "users", ["alias"], :name => "index_users_on_alias", :unique => true
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
+
+  create_table "v_caches", :force => true do |t|
+    t.string   "request_string"
+    t.string   "destroy_key"
+    t.string   "cache_type"
+    t.string   "ids"
+    t.integer  "count",          :default => 0
+    t.boolean  "expired",        :default => false
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.string   "request_hash"
+    t.string   "response_hash"
+  end
 
   create_table "versions", :force => true do |t|
     t.string   "version_string"

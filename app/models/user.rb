@@ -14,13 +14,19 @@ class User < ActiveRecord::Base
   scope :admins, where(:admin => true)
   
   def next_data_count
-    data_count += 1
-    save
-    data_count
+    self.data_count += 1
+    self.save
+    self.data_count
   end
   
   def user_alias
     attributes["alias"]
+  end
+  
+  def self.number_of_data_emails_sent
+    count = 0
+    User.all.each { |user| count += user.data_count }
+    count
   end
   
   private
@@ -30,7 +36,7 @@ class User < ActiveRecord::Base
       errors.add :alias, "Your alias may not be longer 10 characters." if u_alias.length > 10
       errors.add :alias, "Your alias must be at least 3 characters long." if u_alias.length < 3
       errors.add :alias, "You cannot use this alias." if ["anon.", "anon"].include?(u_alias) or 
-        ["shit", "fuck", "cunt", "admin", "cock", "crap", "suck"].include? u_alias and not admin
+        ["shit", "fuck", "cunt", "admin", "cock", "crap", "suck"].include? u_alias.downcase and not admin
       existing = User.where(alias: u_alias).first
       errors.add :alias, "This alias is already in use." if existing and not existing.id == id
     end

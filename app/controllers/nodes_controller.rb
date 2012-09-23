@@ -1,4 +1,5 @@
 class NodesController < ApplicationController
+  before_filter :authorize_admin!, :only => [:new, :index, :create, :destroy]
   before_filter :find_or_create_tag, :only => [:create, :update]
   before_filter :find_node, :only => [:show, :edit, :update, :destroy]
   
@@ -69,6 +70,13 @@ class NodesController < ApplicationController
   end
   
   def update
+    no_render = false
+    nr_id, no_render = params[:id].split(":")
+    if no_render
+      no_render = no_render == "no_render"
+      params[:id] = nr_id
+    end
+    
     description = nil
     if params[:revert]
       v = params[:revert].scan(/(\d*\-?\d*\-?\d*)/)[0][0].gsub(/\-/,".")
@@ -79,16 +87,22 @@ class NodesController < ApplicationController
     end
     show_author = (params[:node].delete("Show_my_alias_in_history") != "0")
     
+    @node.include_in_index = params[:node][:include_in_index] == "true" if params[:node] and params[:node][:include_in_index]
+    
     contents_changed = params[:node][:introduction] != @node.introduction if params[:node]
     respond_to do |format|
       if @node.update_attributes(params[:node])
         @node.version_bump(:minor, {:contents => params[:node][:introduction], :description => description}, current_user) if contents_changed
         @node.current_version.show_author = show_author
         @node.current_version.save
+        
+        return render :nothing => true, :status => 200 if no_render
+        
         if params[:revert]
           params[:id] += ":v"
           return show
         end
+        
         format.html { redirect_to (params[:return] ? :back : @node), notice: 'Node was successfully updated.' }
         format.json { head :ok }
       else

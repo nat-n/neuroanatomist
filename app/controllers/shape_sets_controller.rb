@@ -60,7 +60,7 @@ class ShapeSetsController  < Admin::BaseController
     #end
     S3Helper.destroy_dir @shape_set.data_path
     
-    @shape_set.jax_data.each {|jd| jd.destroy }
+    VCache.expire_shape_set @shape_set.id, true
     
     @shape_set.destroy
     

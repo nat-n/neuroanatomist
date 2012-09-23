@@ -1,3 +1,15 @@
+extend_name = (name) ->
+  if name.substring(0,3) is "L. "
+    name.replace("L. ","Left ")
+  else
+    name.replace("R. ","Right ")
+
+abrv_name = (name) ->
+  if name.substring(0,5) is "Left "
+    name.replace("Left ", "L. ")
+  else
+    name.replace("Right ","R. ") 
+
 Jax.getGlobal()['QuizMaster'] = Jax.Model.create
   after_initialize: ->
     @ready = false
@@ -6,10 +18,11 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
       list: []
       active: false
       times: []
-      answers: []
       correct: 0
       mode: null
       choices: 4
+      stats: {}
+      new_stats: {}
       timer: (()-> 
         init_time   = null
         timeout     = null
@@ -35,12 +48,12 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
     @active_shape_set = context.current_controller.active_shape_set
     @quiz.list = []
     missing_regions = []
-    for i in list
+    for i in list when typeof(i) is 'number'
       if i of regions then @quiz.list.push regions[i]
       else missing_regions.push i
     if missing_regions.length
-      @qm.update_status("Loading quiz data...")
-      context.current_controller.asset_loader.fetch_regions @active_shape_set, missing_regions, () =>
+      this.update_status("Loading quiz data...")
+      context.current_controller.loader.fetch_regions @active_shape_set, missing_regions, () =>
         @quiz.list = @quiz.list.sort () -> 0.5 - Math.random()
         @quiz.active = -1
         @quiz.times.push Date.now()
@@ -54,8 +67,10 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
       $('#quiz_controls').slideDown(500)
       $('#quiz_setup').slideUp(500)
       this.proceed()
+    logger.log_quiz type: 'quiz_start', mode: @quiz.mode, length: @quiz.list.length
   
   pass: () ->
+    logger.log_quiz type: 'quiz_pass'
     this.current().object.mesh.setColor([1,1,1,1]) if this.current().object
     this.proceed() if this.is_active()
   
@@ -63,7 +78,7 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
     @quiz.active += 1
     return this.terminate(true) unless @quiz.list[@quiz.active]
     if @quiz.mode is "search"
-      this.update_status("Find the "+this.current().name, "neutral")
+      this.update_status("Find the "+extend_name(this.current().name), "neutral")
     else if @quiz.mode is "mcq"
       this.update_status("Name the coloured area", "neutral")
       this.update_MCQs()
@@ -72,8 +87,11 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
     $('#quiz_progress').html("Question "+(@quiz.active+1)+" of "+@quiz.list.length+" ")
     @quiz.timer.reset()
   
-  terminate: (complete=false) -> 
+  terminate: (complete=false) ->
+    logger.log_quiz type: 'quiz_end', complete: complete
     @quiz.times.push Date.now
+    this.current().object.mesh.setColor([1,1,1,1]) if this.current() and this.current().object
+    context.current_controller.undo_all()
     if complete
       this.update_status("Quiz Complete! you scored "+@quiz.correct+"/"+@quiz.list.length+"<br>Click to Start another Quiz!", "neutral")
     else
@@ -82,24 +100,27 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
     $('#mcq_widgets').hide()
     $('#quiz_controls').slideUp(500)
     $('#quiz_setup').slideDown(500)
+    this.update_stats_view()
   
   user_select: (id) ->
     return null unless this.is_active()
     @quiz.times.push @quiz.timer.read()
-    unless this.current().object and this.current().object.id of context.current_controller.world
+    unless this.current().object and this.current().object.id of context.current_controller.world.objects
       context.current_controller.show_region(context.current_controller.scene.new_region(@active_shape_set, this.current().id, [1,1,1,1]), false)
       @temp_region = this.current().object.id
-    if parseInt(id) is this.current().id
+    correct = parseInt(id) is this.current().id
+    this.log_result id, correct
+    if correct
       this.correct(this.current().object)
     else
       this.incorrect(this.current().object)
     setTimeout (()=>
-      this.current().object.mesh.setColor([1,1,1,1])
+      this.current().object.mesh.setColor([1,1,1,1]) if this.current() and this.current().object
       context.current_controller.show_hover=true
       if @temp_region
         context.current_controller.hide_region @temp_region
         @temp_region = 0
-      this.proceed()), 1500
+      this.proceed() if this.is_active()), 1200
     
   correct: (region) ->
     this.update_status "Correct!", "positive"
@@ -130,12 +151,32 @@ Jax.getGlobal()['QuizMaster'] = Jax.Model.create
     random_regions = this.all_regions().sort(()->0.5-Math.random())
     until options.length is @quiz.choices or options.length is this.all_regions().length
       r = random_regions.pop()
-      options.push [r.id,(if r.name.substring(0,3) is "L. " then r.name.replace("L. ","Left ") else r.name.replace("R. ","Right "))]
+      options.push [r.id,extend_name(r.name)]
       options = options.uniqBy(0)
     $('#mcq_widgets').slideDown(500)
     $('#mcq_answers').html("")
     options.sort(()->0.5-Math.random())
     for option in options
       $('#mcq_answers').append $("<li><input type='radio', id='answer_"+option[0]+"' name='mcq_answers'><label for='answer_"+option[0]+"'>"+option[1]+"</label></li>")
+    
+  log_result: (answer,correct) ->
+    @quiz.new_stats[this.current().name] ?= {}
+    @quiz.new_stats[this.current().name][@quiz.mode] ?= [0,0]
+    @quiz.new_stats[this.current().name][@quiz.mode][0] += 1 if correct
+    @quiz.new_stats[this.current().name][@quiz.mode][1] += 1
+    logger.log_quiz
+      type: 'quiz_response'
+      m:@quiz.mode
+      n:@quiz.active
+      s:@quiz.list.length
+      q:this.current().name
+      a_rid:answer
+      c:correct
+    
+  update_stats_view: () ->
+    context.current_controller.update_quiz_mode()
+    
+    
+    
     
   

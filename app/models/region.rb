@@ -35,11 +35,11 @@ class Region < ActiveRecord::Base
       region_styles.each { |rs|  rs.version_bump size, description, user }
     end
     # MINOR or MAJOR updates queue a refresh of all server caches that include this region
-    JaxData.invalidate_caches_with region: self if size == :minor or size == :major
+    shape_sets.each { |ss| VCache.expire_regions ss.id, self.id } if size == :minor or size == :major
   end
   
-  def save
-    saved = super
+  def save *args
+    saved = super *args
     Version.init_for self, {} if saved
     saved
   end
@@ -60,19 +60,21 @@ class Region < ActiveRecord::Base
     attributes["name"]
   end
   
-  def hash_partial shape_set, cascade
+  def hash_partial shape_set, full=false
     definition = self.definition_for(shape_set)
     hp = Hash[
-      attrs: Hash[
-        id:             self.id,
-        version:        definition.version.to_s,
-        name:           self.name,
-        thing:          (self.thing ? self.thing.id : nil),
-        decompositions: self.decompositions.map(&:hash_partial)
-      ]
+      id:             self.id,
+      version:        definition.version.to_s,
+      name:           self.name,
+      thing:          (self.thing ? self.thing.id : nil),
+      decompositions: self.decompositions.map(&:hash_partial),
     ]
-    hp[:shapes] = definition.shapes.map(&:id) if cascade
-    return hp
+    if full
+      hp[:shapes] = definition.shapes.map(&:hash_partial)
+    else
+      hp[:shapes] = definition.shapes.map(&:id)
+    end
+    hp
   end
   
   def description_hash
@@ -87,6 +89,6 @@ class Region < ActiveRecord::Base
   end
   
   def invalidate_caches
-    JaxData.invalidate_caches_with shape_sets: shape_sets, region: self
+    VCache.expire_perspectives self.id, false
   end
 end

@@ -40,6 +40,8 @@ end
 
 gem 'devise'
 gem 'cancan'
+gem 'omniauth-shibboleth'
+gem 'rack-saml'
 
 gem 'searcher'
 

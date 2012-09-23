@@ -7,11 +7,12 @@ Neuroanatomist::Application.routes.draw do
   end
     
   root :to => 'pages#home'
-  match "/node:node_name" => "pages#access_node", :constraints => { :node_name => /:.*/}
-  match "/thing:thing_name" => "pages#access_thing", :constraints => { :thing_name => /:.*/}
-  match "/quiz" => "pages#quiz"
-  match "/about" => "pages#about"
-  match "/contact" => "pages#contact"
+  match "/node:node_name"     => "pages#access_node",   :constraints => { :node_name  => /:.*/}
+  match "/thing:thing_name"   => "pages#access_thing",  :constraints => { :thing_name => /:.*/}
+  match "/quiz"               => "pages#quiz"
+  match "/about"              => "pages#about"
+  match "/contact"            => "pages#contact"
+  match "/topics(/:node_name)"  => "pages#topics"
   
   match "/user" => "user#index"
   
@@ -46,11 +47,14 @@ Neuroanatomist::Application.routes.draw do
   resources :regions
   resources :region_definitions
   resources :decompositions
-
-  match "/jaxdata(/:shape_set_id)" => "jax_data#fetch", :as => :jax_data
-  match "/jaxdata/c/:cache_id" => "jax_data#fetch_partial_response", :as => :jax_data
-  match "/jaxdata/i/:shape_set_id" => "jax_data#fetch_shape_set_ids", :as => :jax_data
-  match "/jaxdata/:shape_set_id/update" => "jax_data#update", :as => :jax_data
+  
+  match "/vdata/:shape_set_id"        => "v_data#shape_set",    :constraints => { :shape_set_id => /\d+/ }
+  match "/vdata/:shape_set_id/r:ids"  => "v_data#regions",      :constraints => { :shape_set_id => /\d+/, :ids => /:[\d,]*/ }
+  match "/vdata/:shape_set_id/p:ids"  => "v_data#perspectives", :constraints => { :ids => /:[\d,]*/ }
+  match "/vdata"                      => "v_data#defaults"
+  match "/vdata_hashes"               => "v_data#check_hashes"
+  match "/vdata_ids/:subject/:major_version"  => "v_data#shape_set_ids"
+  match "/vdata_updates/:shape_set_id"        => "v_data#updates"
   
   match "/images/:file" => redirect {|params| "/assets/#{params[:file]}.#{params[:format]}" }
   

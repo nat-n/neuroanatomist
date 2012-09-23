@@ -1,5 +1,6 @@
 class PagesController < ApplicationController
   include NodesHelper
+  before_filter :get_page_data
   before_filter :determine_access, :only => [:home, :access_node, :access_thing, :explore, :quiz]
   
   def home
@@ -16,24 +17,46 @@ class PagesController < ApplicationController
   end
   
   def quiz
-    @shape_set = ShapeSet.default
-    @perspective = ( @shape_set.default_perspective or nil )
+    shape_set = ShapeSet.default
+    @shape_set = shape_set.hash_partial
+    @perspective = ( shape_set.default_perspective or nil )
     @jax = Hash[
       controller: 'quiz'
     ]
-    
-    accessible = Quiz.accessible_regions.select{|r| r.definition_for @shape_set}
-    viewable   = Quiz.viewable_regions.select{|r| r.definition_for @shape_set}
+        
+    accessible = Quiz.accessible_regions.select{|r| r.definition_for shape_set}
+    viewable   = Quiz.viewable_regions.select{|r| r.definition_for shape_set}
     
     @quiz_list = Hash[accessible.map{|r| [r.id, {name:r.name, a:true}]}]
     viewable.each { |r| @quiz_list[r.id] = {name:r.name, a:(@quiz_list[r.id] ? true : false), p:r.default_perspective_id} }
+    
+    if current_user and current_user.quiz_stats and !current_user.quiz_stats.strip.empty?
+      @quiz_stats = Hash[JSON.load(current_user.quiz_stats).map { |region_name,counts| [region_name.gsub(/\s/,";"),counts] }]
+    else
+      @quiz_stats = Hash.new
+    end
+  end
+  
+  def topics
+    params[:node_name] = "Topics_Home" unless params[:node_name]
+    @nodes = Node.where(:include_in_index => true)
+    if params[:node_name]
+      show_topic
+      render :action => :show_topic
+    end
+  end
+  
+  def show_topic
+    params[:node_name].gsub!(/\s+/,"_")
+    @node = Node.where(:name => params[:node_name]).first
+    @node_data = embedded_json
   end
   
   def about
   end
   
   def contact
-    DataMailer.feedback(params[:subject],params[:message],(params[:anon] ? nil : current_user)).deliver if params[:subject] and params[:message]
+    DataMailer.feedback(params[:subject],params[:message],(params[:anon] ? nil : current_user),params[:reply_to]).deliver if params[:subject] and params[:message]
   end
   
   def blocked
@@ -50,8 +73,7 @@ class PagesController < ApplicationController
       @node_data = embedded_json
       shape_set = (shape_set or ShapeSet.default)
       @perspective = ( @node.perspective or shape_set.default_perspective or nil )
-      @shape_set = shape_set.hash_partial(@cascade)
-      @shape_set = @shape_set.merge(@shape_set.delete(:attrs))
+      @shape_set = shape_set.hash_partial
     
       # NOTE TO FUTURE SELF: will probably need some kind of check for perspective/shape_set compatibility here eventually
       @jax = Hash[
@@ -77,6 +99,12 @@ class PagesController < ApplicationController
       render :action => :blocked
       return false
     end
+  end
+  
+  def get_page_data
+    @page_data = Hash.new
+    @page_data[:user] = (current_user ? current_user.id : 0)
+    @page_data[:action] = params[:action]
   end
   
 end

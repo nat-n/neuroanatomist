@@ -1,0 +1,23 @@
+
+<div>
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Visualise</th>
+      <th>Read</th>
+      <th>Size</th>
+      <th>Edits</th>
+    </tr>
+  </thead>
+  <% @nodes.each do |node| %>
+  <tr>
+    <td><%= node.name %></td>
+    <td><%= link_to "Click to View", "/node:#{node.name}" %></td>
+    <td><%= link_to "Click to Read", "/topics/#{node.name}" %></td>
+    <td><%= node.word_count ? node.word_count : 0 %></td>
+    <td><%= node.versions ? node.versions.size : 0 %></td>
+  </tr>    
+  <% end %>
+</table>
+</div>

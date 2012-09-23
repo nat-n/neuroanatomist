@@ -2,7 +2,7 @@ class ShapeSet < ActiveRecord::Base
   has_many    :region_definitions, :dependent => :destroy
   has_many    :regions, :through => :region_definitions
   has_many    :shapes, :dependent => :destroy
-  has_many    :meshes, :through => :shapes, :source => :low_meshes
+  has_many    :meshes
   has_one     :default_perspective_attr, :class_name => 'Perspective', :foreign_key => 'default_for_shape_set_id'
   validates_presence_of   :subject
   
@@ -10,16 +10,13 @@ class ShapeSet < ActiveRecord::Base
   
   include VersioningHelper
   
-  def jax_data # because the has_many doesn't seem to work for this
-    JaxData.where(:shape_set_id => id)
-  end
-  
   def expire!
     expired = true
     is_default = false
     notes = "#{notes}\n**EXPIRED AT #{Time.now}"
     save
-    (region_definitions+shapes+meshes+jax_data).each {|dependant| dependant.destroy }
+    VCache.expire_shape_set id
+    (region_definitions+shapes+meshes).each {|dependant| dependant.destroy }
   end
   
   def expired?
@@ -27,8 +24,8 @@ class ShapeSet < ActiveRecord::Base
   end
 
   def deploy!
-    deploy = true
-    save
+    self.deploy = true
+    self.save
   end
   
   def deployed?
@@ -144,20 +141,16 @@ class ShapeSet < ActiveRecord::Base
     regions.include? region
   end
   
-  def hash_partial cascade
-    hp = Hash[
-      attrs: Hash[
-        type:                 'shape_set',
-        id:                   self.id,
-        version:              self.version.to_s,
-        name:                 self.name,
-        radius:               self.radius,
-        center_point:         (self.center_point or nil),
-        default_perspective:  (self.default_perspective.id or nil rescue nil)
-      ]
+  def hash_partial
+    Hash[
+      type:                 'shape_set',
+      id:                   self.id,
+      version:              self.version.to_s,
+      name:                 self.name,
+      radius:               self.radius,
+      center_point:         (self.center_point or nil),
+      default_perspective:  (self.default_perspective.id or nil rescue nil)
     ]
-    hp[:shapes] = self.shapes.map(&:id) if [true,:yes,:partial].include? cascade
-    return hp
   end
   
   def latest

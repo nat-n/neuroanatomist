@@ -21,12 +21,32 @@ class UserController < ApplicationController
     user = (User.find(params[:logs][:user]) rescue current_user) or current_user
     # update log count of this user to get the id of this log dump
     log_id = "#{user.id}-#{user.next_data_count}"
+    log_id += "###{params[:sid]}" if params[:sid]
+    save_quiz_stats user, params[:quiz_stats] if user and params[:quiz_stats]
     params[:logs][:user] = user.email
+    params[:logs][:ip] = request.ip
     DataMailer.data(params[:logs],log_id).deliver
     render :text => "logs saved"
   end
   
+  def save_quiz_stats user, stats
+    stats = JSON.load(stats) if stats.is_a? String
+    quiz_stats = (JSON.load(user.quiz_stats) or {})
+    stats.each do |region_name, s|
+      quiz_stats[region_name] ||= {}
+      stats[region_name].each do |mode, counts|
+        quiz_stats[region_name][mode] = [0,0] unless quiz_stats[region_name][mode]
+        quiz_stats[region_name][mode][0] += stats[region_name][mode][0].to_i
+        quiz_stats[region_name][mode][1] += stats[region_name][mode][1].to_i
+      end
+    end
+    user.quiz_stats = JSON.dump(quiz_stats)
+    user.save
+  end
+  
   def update
+    return submit_log_data if params[:logs] or params[:quiz_stats]
+    return render :text => "post failed" if params[:sid]
     params[:user][:alias].strip.squeeze(' ')
     params[:user][:alias] = nil if params[:user][:alias].empty?
     @user.alias = params[:user][:alias] if params[:user][:alias]

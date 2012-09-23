@@ -48,6 +48,7 @@
         $('#inline_notice').addClass('success_notice');
         $('#inline_notice').removeClass('error_notice');
         $('#inline_notice').html('Preview updated Sucessfully!');
+        logger.log_event({type:'node_text_previewed', node: context.current_controller.active_node});
       },
       error: function(r){
         $('#inline_notice').addClass('error_notice');
@@ -62,6 +63,7 @@
         $('#inline_notice').html('Text updated Sucessfully!');
         $('#node_intro')[0].display_version();
         $('#node_history')[0].refresh_history();
+        logger.log_event({type:'node_text_submitted', node: context.current_controller.active_node});
       }).bind('ajax:error', function(data, status, xhr){
         $('#inline_notice').addClass('error_notice');
         $('#inline_notice').removeClass('success_notice');
@@ -70,7 +72,10 @@
     $('#node_intro')[0].display_version = function(v){$.ajax({
       type: 'GET',
       url: '/nodes/#{@node.id}:v' + (v||''),
-      success: function(response){$('#node_intro').html(response)}
+      success: function(response){
+        $('#node_intro').html(response)
+        logger.log_event({type:'node_history_viewed', node: context.current_controller.active_node});
+      }
     })};
     $('#node_intro')[0].revert_to_version = function(v){
       if(!confirm('Are you sure you want to revert to this older version of this content?')) return false;
@@ -79,7 +84,10 @@
       $.ajax({
       type: 'PUT',
       url: '/nodes/#{@node.id}?revert=' + (v||''),
-      success: function(response){$('#node_intro').html(response); $('#node_history')[0].refresh_history()}
+      success: function(response){
+        $('#node_intro').html(response); $('#node_history')[0].refresh_history()
+        logger.log_event({type:'node_history_reverted', node: context.current_controller.active_node});
+        }
     })}
     $('#node_history')[0].refresh_history = function(){ $.ajax({
       type: 'GET',
@@ -92,5 +100,9 @@
       $('#inline_notice').removeClass();
       $('#inline_notice').html("");
     };
+    
+    $('textarea#node_introduction').focus(function(){logger.log_event({type:'node_edit_focus', node: context.current_controller.active_node});})
+    $('textarea#node_introduction').change(function(){logger.log_event({type:'node_text_altered', node: context.current_controller.active_node});})
+  
   "%>
 </div>

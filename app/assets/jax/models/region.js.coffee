@@ -91,7 +91,7 @@ Jax.getGlobal()['Region'] = Jax.Model.create
       index_map[bvi] = model_data.borders[bi][i++] for bvi in mesh.borders[bi]
     
     new_index = model_data.vertex_positions.length/3-1
-    should_reverse = model_data.shapes and mesh["name"].split("-")[0] in model_data.shapes
+    should_reverse = model_data.shapes and parseInt(mesh.name.split("-")[0]) in model_data.shapes
     for vi in [0...mesh.vertex_positions.length/3]
       unless vi in all_border_vi
         # reindex remaining vertices

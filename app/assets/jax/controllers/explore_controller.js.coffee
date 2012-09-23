@@ -1,5 +1,6 @@
 Jax.Controller.create "Explore", ApplicationController,
   index: ->
+    logger.log_event(type: 'explore_index')
     @active_shape_set = false
     @active_perspective = false
     @active_node = false
@@ -43,12 +44,16 @@ Jax.Controller.create "Explore", ApplicationController,
   helpers: -> [ CameraHelper, CanvasEventRoutingHelper, PerspectiveHelper, GeneralEventRoutingHelper, SupContentHelper, StatusHelper, SceneHelper ]
   
   start: (tried_loading=false) ->
+    logger.log_event(type: 'explore_start')
     this.show_loading_spinner($('#visualisation'), true)
     
     return @loader.idb.load_everything(()=>this.start(true)) unless tried_loading
     
+    @loader.check_for_updates()
+    @loader.idb.load_logs()
+    
     perspective_id =  $('#visualisation').data('perspectiveId')
-    shape_set =  $('#visualisation').data('shapeSet')
+    console.log shape_set =  $('#visualisation').data('shapeSet')
     node_data = $('#sup_content').data('node')
     
     this.sc_init_node(node_data)
@@ -84,6 +89,7 @@ Jax.Controller.create "Explore", ApplicationController,
       @labeler.clear()
     @tooltip = @tooltip_
     @labeler = null
+    logger.log_event(type: 'activate_tt')
     
   activate_labels: () ->
     @labeler = @labeler_
@@ -91,5 +97,6 @@ Jax.Controller.create "Explore", ApplicationController,
     @tooltip = null
     @labeler.pressed = false
     @labeler.source_labels()
-    @labeler.draw()  
+    @labeler.draw()
+    logger.log_event(type: 'activate_labels')
     

@@ -17,11 +17,11 @@ class Perspective < ActiveRecord::Base
   
   def version_bump size, description, user
     super
-    JaxData.invalidate_caches_with :perspective => self, :shape_sets => ShapeSet.all
+    VCache.expire_perspectives self.id, false
   end
   
-  def save
-    saved = super
+  def save *args
+    saved = super *args
     Version.init_for self, {} if saved
     saved
   end
@@ -96,20 +96,17 @@ class Perspective < ActiveRecord::Base
     end
   end
   
-  def hash_partial shape_set, cascade=true
-    hp = Hash[
-      attrs: Hash[
-        id:         self.id,
-        version:    self.version.to_s,
-        name:       self.name,
-        style_set:  (self.has_external_styles? ? self.style_set.id : false),
-        height:     self.height,
-        angle:      self.angle,
-        distance:   self.distance
-      ]
+  def hash_partial
+    Hash[
+      id:         self.id,
+      version:    self.version.to_s,
+      name:       self.name,
+      style_set:  (self.has_external_styles? ? self.style_set.id : false),
+      height:     self.height,
+      angle:      self.angle,
+      distance:   self.distance,
+      regions:    self.active_regions.map(&:id)
     ]
-    hp[:regions] = (cascade and cascade!=:no) ? self.active_regions.map {|ar| ar.hash_partial(shape_set,cascade)} : self.active_regions.map(&:id)
-    return hp
   end
   
   def description_hash
@@ -154,8 +151,7 @@ class Perspective < ActiveRecord::Base
   end
   
   def invalidate_caches
-    return false unless defined? shape_set
-    JaxData.invalidate_caches_with shape_set: shape_set, perspective: self
+    VCache.expire_perspectives self.id, false
   end
   
 end

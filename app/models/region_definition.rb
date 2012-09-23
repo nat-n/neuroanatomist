@@ -20,7 +20,7 @@ class RegionDefinition < ActiveRecord::Base
     super
     if size == :major
       # invalidate caches with this region AND shape_set
-      JaxData.where(:shape_set_id => shape_set_id).select{|jd| jd.regions.include? region_id }.each { |jd| jd.destroy }
+      VCache.expire_regions shape_set_id, region_id
     end
     if size != :tiny
       # should propagate to shape_set as one grade lower
@@ -30,8 +30,8 @@ class RegionDefinition < ActiveRecord::Base
     end
   end
   
-  def save
-    saved = super
+  def save *args
+    saved = super *args
     Version.init_for self, {} if saved
     saved
   end
@@ -162,7 +162,7 @@ class RegionDefinition < ActiveRecord::Base
   end
   
   def invalidate_caches
-    JaxData.invalidate_caches_with shape_set: shape_set, region: region
+    VCache.expire_regions shape_set.id, region_id
   end
   
 end
